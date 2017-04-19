@@ -127,6 +127,20 @@ class PipedriveModel(models.Model):
 
         return True
 
+    def upload(self):
+
+        kwargs = self.build_kwargs()
+
+        post_data = self.post_api_call(kwargs)
+
+        self.external_id = post_data['data']['id']
+        self.last_updated_at = timezone.now()
+        self.save()
+
+        self.__class__.update_or_create_entity_from_api_post(post_data[u'data'])
+        return True
+
+
 
 
 
@@ -206,20 +220,18 @@ class Organization(PipedriveModel):
     )
 
     def __unicode__(self):
-        return str(self.external_organization_id) + " : " + str(self.name)
+        return str(self.external_id) + " : " + str(self.name)
 
     @classmethod
     def get_api_call(cls, start):
         return pipedrive_api_client.get_organizations(start=start)
 
-    @classmethod
-    def post_api_call(cls, **kwargs):
-        return pipedrive_api_client.post_organization(kwargs)
-
+    
+    
     @classmethod
     def update_or_create_entity_from_api_post(cls, el):
         return Organization.objects.update_or_create(
-            external_organization_id=el[u'id'],
+            external_id=el[u'id'],
             defaults={
                 'name': el[u'name'],
                 'owner_id': el[u'owner_id'][u'id'],
@@ -250,16 +262,13 @@ class Organization(PipedriveModel):
             'name': self.name
         }
 
-    def upload(self):
+    def post_api_call(self, kwargs):
+        return pipedrive_api_client.post_organization(**kwargs)
 
-        post_data = self.__class__.post_api_call(self.build_kwargs())
 
-        self.external_id = post_data['data']['id']
-        self.last_updated_at = timezone.now()
-        self.save()
+    
 
-        self.__class__.update_or_create_entity_from_api_post(post_data[u'data'])
-        return True
+    
 
 
 class Person(PipedriveModel):
@@ -299,7 +308,7 @@ class Person(PipedriveModel):
         null=True,
         blank=True,
     )
-    org_id = models.IntegerField(
+    external_organization_id = models.IntegerField(
         null=True,
     )
     owner_id = models.IntegerField(
@@ -351,16 +360,20 @@ class Person(PipedriveModel):
     )
 
     def __unicode__(self):
-        return str(self.external_person_id) + " : " + str(self.name)
+        return str(self.external_id) + " : " + str(self.name)
 
     @classmethod
     def get_api_call(cls, start):
         return pipedrive_api_client.get_persons(start=start)
 
     @classmethod
+    def post_api_call(cls, kwargs):
+        return pipedrive_api_client.post_person(**kwargs)
+
+    @classmethod
     def update_or_create_entity_from_api_post(cls, el):
         return Person.objects.update_or_create(
-            external_person_id=el[u'id'],
+            external_id=el[u'id'],
             defaults={
                 'name': el[u'name'],
                 'phone': cls.get_primary(el, u'phone'),
@@ -389,11 +402,10 @@ class Person(PipedriveModel):
             }
         )
 
-    def upload_and_update(self):
-        """
-        Person.upload_and_update
-        """
-        pass
+    def build_kwargs(self):
+        return {
+            'name': self.name
+        }
 
 
 class Deal(PipedriveModel):
@@ -515,16 +527,20 @@ class Deal(PipedriveModel):
     )
 
     def __unicode__(self):
-        return str(self.external_deal_id) + " : " + str(self.title)
+        return str(self.externalid) + " : " + str(self.title)
 
     @classmethod
     def get_api_call(cls, start):
         return pipedrive_api_client.get_deals(start=start)
 
     @classmethod
+    def post_api_call(cls, kwargs):
+        return pipedrive_api_client.post_deal(**kwargs)
+
+    @classmethod
     def update_or_create_entity_from_api_post(cls, el):
         return Deal.objects.update_or_create(
-            external_deal_id=el[u'id'],
+            external_id=el[u'id'],
             defaults={
                 'title': el[u'title'],
                 'creator_user_id': cls.get_internal_field(el, 'creator_user_id', 'id'),
@@ -567,12 +583,10 @@ class Deal(PipedriveModel):
             return default_value
 
 
-    def upload_and_update(self, stage=None):
-        """
-        Deal model.
-        uploads or updates a Deal on pipedrive
-        """
-        pass
+    def build_kwargs(self):
+        return {
+            'title': self.title
+        }
 
 
 class BaseField(models.Model):

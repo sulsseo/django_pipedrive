@@ -24,7 +24,7 @@ class TestPipedriveCreation(TestCase):
         result = organization.upload()
 
         self.assertTrue(result)
-        self.assertIsNotNone(organization.external_organization_id)
+        self.assertIsNotNone(organization.external_id)
 
     def test_create_person(self):
 
@@ -33,7 +33,7 @@ class TestPipedriveCreation(TestCase):
         result = person.upload()
 
         self.assertTrue(result)
-        self.assertIsNotNone(person.external_person_id)
+        self.assertIsNotNone(person.external_id)
 
     def test_create_deal(self):
 
@@ -42,7 +42,7 @@ class TestPipedriveCreation(TestCase):
         result = deal.upload()
 
         self.assertTrue(result)
-        self.assertIsNotNone(deal.external_deal_id)
+        self.assertIsNotNone(deal.external_id)
 
 class TestPipedrive(TestCase):
 
@@ -115,16 +115,16 @@ class TestPipedrive(TestCase):
             u'email':
                 [
                     {u'primary': False,
-                     u'value': u'biofisics.phm2@gmail.com',
+                     u'value': u'example2@example.com',
                      u'label': u'work'},
                     {u'primary': True,
-                     u'value': u'biofisics.phm@gmail.com',
+                     u'value': u'example@example.com',
                      u'label': u'work'}
                 ]
         }
 
         result = Person.get_primary(el, u'email')
-        expected = u'biofisics.phm@gmail.com'
+        expected = u'example@example.com'
 
         self.assertEquals(result, expected)
 
