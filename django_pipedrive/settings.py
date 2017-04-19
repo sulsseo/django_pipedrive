@@ -37,6 +37,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',
+    'pipedrive'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -76,8 +78,11 @@ WSGI_APPLICATION = 'django_pipedrive.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'django_pipedrive',
+        'USER': os.environ.get('DJANGO_DB_USER'),
+        'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD'),
+        'HOST': os.environ.get('DJANGO_DB_HOST'),
     }
 }
 
@@ -100,3 +105,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+
+PIPEDRIVE_API_KEY = os.environ.get('DJANGO_PIPEDRIVE_API_KEY')
