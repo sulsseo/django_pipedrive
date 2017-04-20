@@ -48,8 +48,12 @@ def handle_v1(json_data):
 
     if action == 'updated':
 
+        # The corresponding instance is found for update
         instance = model.objects.get(external_id=external_id)
 
+
+
+        # Compute difference between previous and current
         diffkeys = [k for k in previous if previous[k] != current[k]]
 
         for key in diffkeys:
@@ -59,8 +63,12 @@ def handle_v1(json_data):
         instance.save()
 
     if action == 'added':
+
+        # Object's key name is changed
         current['external_id'] = current.pop('id')
 
+        # Fields from the API that are not localy recognized 
+        # by the model are filtered
         current = filter_fields(current, model)
 
         model.objects.create(**current)
