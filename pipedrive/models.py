@@ -308,8 +308,11 @@ class Organization(PipedriveModel):
         null=True,
         blank=True,
     )
-    owner_id = models.IntegerField(
-        null=True
+    owner = models.ForeignKey(
+        User,
+        null=True,
+        blank=True,
+        to_field="external_id",
     )
     people_count = models.IntegerField(
         null=True

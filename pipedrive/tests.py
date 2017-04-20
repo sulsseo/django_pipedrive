@@ -652,12 +652,15 @@ class TestPipedriveWebhooks(TestCase):
         Organization.objects.create(
             name="TEST_ORGANIZATION_1",
             external_id=996,
+            owner_id=111
         )
 
         Organization.objects.create(
             name="TEST_ORGANIZATION_2",
             external_id=995,
         )
+
+        User.objects.create(external_id=111)
 
         self.assertEquals(Organization.objects.count(), 2)
 
@@ -692,7 +695,7 @@ class TestPipedriveWebhooks(TestCase):
             {
                 "id": 996,
                 "company_id": 1689563,
-                "owner_id": 2428657,
+                "owner_id": 111,
                 "name": "TEST_ORGANIZATION_1",
                 "open_deals_count": 0,
                 "related_open_deals_count": 0,
@@ -746,7 +749,7 @@ class TestPipedriveWebhooks(TestCase):
             {
                 "id": 995,
                 "company_id": 1689563,
-                "owner_id": 2428657,
+                "owner_id": 222,
                 "name": "TEST_ORGANIZATION_2",
                 "open_deals_count": 0,
                 "related_open_deals_count": 0,
@@ -801,6 +804,10 @@ class TestPipedriveWebhooks(TestCase):
         c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
 
         self.assertEquals(Organization.objects.count(), 2)
+
+        organization = Organization.objects.get(external_id=996)
+
+        self.assertEquals(organization.owner.external_id, 111)
 
     def test_create_person_note(self):
 
