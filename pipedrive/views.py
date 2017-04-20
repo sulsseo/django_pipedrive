@@ -26,7 +26,6 @@ def index(request):
             else:
                 raise NonImplementedVersionException
 
-
         except KeyError:
             HttpResponseServerError("Malformed data!")
 
@@ -41,7 +40,6 @@ def handle_v1(json_data):
     external_id = meta[u'id']
 
     model = map_models(object_type)
-    
 
     previous = json_data[u'previous']
     current = json_data[u'current']
@@ -50,8 +48,6 @@ def handle_v1(json_data):
 
         # The corresponding instance is found for update
         instance = model.objects.get(external_id=external_id)
-
-
 
         # Compute difference between previous and current
         diffkeys = [k for k in previous if previous[k] != current[k]]
@@ -72,6 +68,20 @@ def handle_v1(json_data):
         current = filter_fields(current, model)
 
         model.objects.create(**current)
+
+    if action == 'deleted':
+
+        # The corresponding instance is found for delete
+        instance = model.objects.get(external_id=external_id)
+
+        instance.delete()
+
+    if action == 'merged':
+
+        # The corresponding instance is found for update
+        instance = model.objects.get(external_id=external_id)
+
+
 
     return HttpResponse("OK!")
 

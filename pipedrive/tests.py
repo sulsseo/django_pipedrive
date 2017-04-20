@@ -202,7 +202,7 @@ class TestPipedriveWebhooks(TestCase):
                   "id":998,
                   "company_id":1689563,
                   "user_id":2428657,
-                  "host":"miempresa2.pipedrive.com",
+                  "host":"mycompany.pipedrive.com",
                   "timestamp":1492650227,
                   "timestamp_milli":1492650227536,
                   "permitted_user_ids":[2428657],
@@ -262,8 +262,8 @@ class TestPipedriveWebhooks(TestCase):
                   "last_incoming_mail_time":None,
                   "last_outgoing_mail_time":None,
                   "org_name":None,
-                  "cc_email":"miempresa2@pipedrivemail.com",
-                  "owner_name":"Gustavo"
+                  "cc_email":"mycompany@pipedrivemail.com",
+                  "owner_name":"OWNER"
                 },
               "previous":None,
               "indexable_fields":[],
@@ -277,6 +277,263 @@ class TestPipedriveWebhooks(TestCase):
         instance = Person.objects.get(external_id=998)
 
         self.assertEquals(instance.name, "TEST_NAME")
+
+    def test_delete_organization(self):
+
+        c = Client()
+
+        organization = Organization.objects.create(
+            name="TEST_ORGANIZATION",
+            external_id=997,
+        )
+
+        self.assertEquals(Organization.objects.count(), 1)
+
+        data = {
+          "v":1,
+          "matches_filters":
+            {
+              "current":[],
+              "previous":[]
+            },
+          "meta":
+            {
+              "v":1,
+              "action":"deleted",
+              "object":"organization",
+              "id":997,
+              "company_id":1689563,
+              "user_id":2428657,
+              "host":"mycompany.pipedrive.com",
+              "timestamp":1492653308,
+              "timestamp_milli":1492653308072,
+              "permitted_user_ids":[2428657],
+              "trans_pending":False,
+              "is_bulk_update":False,
+              "elastic_enabled":True,
+              "matches_filters":
+                {
+                  "current":[],
+                  "previous":[]
+                }
+            },
+          "retry":0,
+          "current":None,
+          "previous":
+            {
+              "id":997,
+              "company_id":1689563,
+              "owner_id":2428657,
+              "name":"TEST_ORGANIZATION",
+              "open_deals_count":0,
+              "related_open_deals_count":0,
+              "closed_deals_count":0,
+              "related_closed_deals_count":0,
+              "email_messages_count":0,
+              "people_count":0,
+              "activities_count":0,
+              "done_activities_count":0,
+              "undone_activities_count":0,
+              "reference_activities_count":0,
+              "files_count":0,
+              "notes_count":0,
+              "followers_count":1,
+              "won_deals_count":0,
+              "related_won_deals_count":0,
+              "lost_deals_count":0,
+              "related_lost_deals_count":0,
+              "active_flag":True,
+              "category_id":None,
+              "picture_id":None,
+              "country_code":None,
+              "first_char":"t",
+              "update_time":"2017-04-19 19:43:41",
+              "add_time":"2017-04-19 19:43:41",
+              "visible_to":"3",
+              "next_activity_date":None,
+              "next_activity_time":None,
+              "next_activity_id":None,
+              "last_activity_id":None,
+              "last_activity_date":None,
+              "address":None,
+              "address_lat":None,
+              "address_long":None,
+              "address_subpremise":None,
+              "address_street_number":None,
+              "address_route":None,
+              "address_sublocality":None,
+              "address_locality":None,
+              "address_admin_area_level_1":None,
+              "address_admin_area_level_2":None,
+              "address_country":None,
+              "address_postal_code":None,
+              "address_formatted_address":None,
+              "owner_name":"OWNER",
+              "cc_email":"mycompany@pipedrivemail.com"
+            },
+          "indexable_fields":[],
+          "event":"deleted.organization"
+        }
+
+        response = c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+
+        self.assertEquals(Organization.objects.count(), 0)
+
+    def test_merge_organizations(self):
+
+        c = Client()
+
+        organization = Organization.objects.create(
+            name="TEST_ORGANIZATION_1",
+            external_id=996,
+        )
+
+        organization = Organization.objects.create(
+            name="TEST_ORGANIZATION_2",
+            external_id=995,
+        )
+
+        self.assertEquals(Organization.objects.count(), 2)
+
+        data = {
+          "v":1,
+          "matches_filters":
+            {
+              "current":[],
+              "previous":[]
+            },
+          "meta":
+            {
+              "v":1,
+              "action":"merged",
+              "object":"organization",
+              "id":996,
+              "company_id":1689563,
+              "user_id":2428657,
+              "host":"mycompany.pipedrive.com",
+              "timestamp":1492654463,
+              "timestamp_milli":1492654463572,
+              "permitted_user_ids":[2428657],
+              "trans_pending":False,
+              "is_bulk_update":False,
+              "matches_filters":{"current":[],
+              "previous":[]}
+            },
+          "retry":0,
+          "current":
+            {
+              "id":996,
+              "company_id":1689563,
+              "owner_id":2428657,
+              "name":"TEST_ORGANIZATION_1",
+              "open_deals_count":0,
+              "related_open_deals_count":0,
+              "closed_deals_count":0,
+              "related_closed_deals_count":0,
+              "email_messages_count":0,
+              "people_count":0,
+              "activities_count":0,
+              "done_activities_count":0,
+              "undone_activities_count":0,
+              "reference_activities_count":0,
+              "files_count":0,
+              "notes_count":0,
+              "followers_count":1,
+              "won_deals_count":0,
+              "related_won_deals_count":0,
+              "lost_deals_count":0,
+              "related_lost_deals_count":0,
+              "active_flag":True,
+              "category_id":None,
+              "picture_id":None,
+              "country_code":None,
+              "first_char":"t",
+              "update_time":"2017-04-20 02:09:09",
+              "add_time":"2017-04-19 19:42:27",
+              "visible_to":"3",
+              "next_activity_date":None,
+              "next_activity_time":None,
+              "next_activity_id":None,
+              "last_activity_id":None,
+              "last_activity_date":None,
+              "address":"d asda sd 3 r1",
+              "address_lat":52.8761635,
+              "address_long":-1.493958,
+              "address_subpremise":None,
+              "address_street_number":"14",
+              "address_route":"Arleston Lane",
+              "address_sublocality":None,
+              "address_locality":"Sinfin District Centre",
+              "address_admin_area_level_1":"England",
+              "address_admin_area_level_2":"Derby",
+              "address_country":"Reino Unido",
+              "address_postal_code":"DE24 3DS",
+              "address_formatted_address":"Sinfin Shopping Centre-, Sinfin Health Centre, Arleston Ln, Sinfin District Centre, Sinfin DE24 3DS, Reino Unido",
+               "cc_email":"mycompany@pipedrivemail.com",
+              "owner_name":"OWNER",
+              "edit_name":True,
+              "merge_what_id":995
+            },
+          "previous":
+            {
+              "id":995,
+              "company_id":1689563,
+              "owner_id":2428657,
+              "name":"TEST_ORGANIZATION_2",
+              "open_deals_count":0,
+              "related_open_deals_count":0,
+              "closed_deals_count":0,
+              "related_closed_deals_count":0,
+              "email_messages_count":0,
+              "people_count":0,
+              "activities_count":0,
+              "done_activities_count":0,
+              "undone_activities_count":0,
+              "reference_activities_count":0,
+              "files_count":0,
+              "notes_count":0,
+              "followers_count":1,
+              "won_deals_count":0,
+              "related_won_deals_count":0,
+              "lost_deals_count":0,
+              "related_lost_deals_count":0,
+              "active_flag":True,
+              "category_id":None,
+              "picture_id":None,
+              "country_code":None,
+              "first_char":"t",
+              "update_time":"2017-04-20 02:09:09",
+              "add_time":"2017-04-19 19:42:27",
+              "visible_to":"3",
+              "next_activity_date":None,
+              "next_activity_time":None,
+              "next_activity_id":None,
+              "last_activity_id":None,
+              "last_activity_date":None,
+              "address":"d asda sd 3 r1",
+              "address_lat":52.8761635,
+              "address_long":-1.493958,
+              "address_subpremise":None,
+              "address_street_number":"14",
+              "address_route":"Arleston Lane",
+              "address_sublocality":None,
+              "address_locality":"Sinfin District Centre",
+              "address_admin_area_level_1":"England",
+              "address_admin_area_level_2":"Derby",
+              "address_country":"Reino Unido",
+              "address_postal_code":"DE24 3DS",
+              "address_formatted_address":"Sinfin Shopping Centre - Sinfin Health Centre, Arleston Ln, Sinfin District Centre, Sinfin DE24 3DS, Reino Unido",
+               "cc_email":"mycompany@pipedrivemail.com",
+              "owner_name":"OWNER",
+              "edit_name":True
+            },
+          "event":"merged.organization"
+        }
+
+        response = c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+
+        self.assertEquals(Organization.objects.count(), 1)
+
 
 
 
