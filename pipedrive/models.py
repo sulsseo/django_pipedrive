@@ -7,11 +7,7 @@ import logging
 
 # django
 from django.db import models
-from django.db.models import Sum
 from django.utils import timezone
-
-# postgres specific
-from django.contrib.postgres.fields import HStoreField
 
 # api
 from pipedrive.pipedrive_client import PipedriveAPIClient
@@ -141,9 +137,6 @@ class PipedriveModel(models.Model):
         return True
 
 
-
-
-
 class Organization(PipedriveModel):
     """
     saves a registry of Org sent to pipedrive
@@ -226,8 +219,6 @@ class Organization(PipedriveModel):
     def get_api_call(cls, start):
         return pipedrive_api_client.get_organizations(start=start)
 
-    
-    
     @classmethod
     def update_or_create_entity_from_api_post(cls, el):
         return Organization.objects.update_or_create(
@@ -266,11 +257,6 @@ class Organization(PipedriveModel):
         return pipedrive_api_client.post_organization(**kwargs)
 
 
-    
-
-    
-
-
 class Person(PipedriveModel):
     """
     saves a registry of Person sent to pipedrive
@@ -279,6 +265,7 @@ class Person(PipedriveModel):
         max_length=255,
         null=True,
         blank=True,
+        unique=True,
         db_index=True,
     )
     last_updated_at = models.DateTimeField(
@@ -397,8 +384,10 @@ class Person(PipedriveModel):
                 'done_activities_count': el[u'done_activities_count'],
                 'undone_activities_count': el[u'undone_activities_count'],
                 'email_messages_count': el[u'email_messages_count'],
-                'last_incoming_mail_time': cls.datetime_from_simple_time(el, u'last_incoming_mail_time'),
-                'last_outgoing_mail_time': cls.datetime_from_simple_time(el, u'last_outgoing_mail_time')
+                'last_incoming_mail_time': cls.datetime_from_simple_time(
+                    el, u'last_incoming_mail_time'),
+                'last_outgoing_mail_time': cls.datetime_from_simple_time(
+                    el, u'last_outgoing_mail_time')
             }
         )
 
@@ -581,7 +570,6 @@ class Deal(PipedriveModel):
             return self.additional_fields[field_name]
         else:
             return default_value
-
 
     def build_kwargs(self):
         return {
@@ -834,3 +822,65 @@ class Stage(models.Model):
                 active_flag=stage['active_flag'],
                 order_nr=stage['order_nr'],
             )
+
+
+class Note(PipedriveModel):
+    external_id = models.IntegerField(
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    external_user_id = models.IntegerField(
+        null=True,
+        blank=True,
+    )
+    external_deal_id = models.IntegerField(
+        null=True,
+        blank=True,
+    )
+    person = models.ForeignKey(
+        Person,
+        null=True,
+        blank=True,
+        to_field="external_id"
+    )
+    external_org_id = models.IntegerField(
+        null=True,
+        blank=True,
+    )
+    content = models.CharField(
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    add_time = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+    update_time = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+    active_flag = models.NullBooleanField(
+        null=True
+    )
+
+    @classmethod
+    def get_api_call(cls, start):
+        return pipedrive_api_client.get_notes(start=start)
+
+    @classmethod
+    def update_or_create_entity_from_api_post(cls, el):
+        return Note.objects.update_or_create(
+            external_id=el[u'id'],
+            defaults={
+                'external_user_id': el[u'user_id'],
+                'external_deal_id': el[u'deal_id'],
+                'external_person_id': el[u'person_id'],
+                'external_org_id': el[u'org_id'],
+                'content': el[u'content'],
+                'add_time': cls.datetime_from_simple_time(el, u'add_time'),
+                'update_time': cls.datetime_from_simple_time(el, u'update_time'),
+                'active_flag': el[u'active_flag'],
+            }
+        )

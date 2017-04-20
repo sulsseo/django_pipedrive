@@ -8,9 +8,12 @@ from django.http import HttpResponseServerError
 from pipedrive.models import Deal
 from pipedrive.models import Person
 from pipedrive.models import Organization
+from pipedrive.models import Note
+
 
 class NonImplementedVersionException(Exception):
     pass
+
 
 # Create your views here.
 def index(request):
@@ -30,6 +33,7 @@ def index(request):
             HttpResponseServerError("Malformed data!")
 
     return HttpResponse("Hello, world!")
+
 
 def handle_v1(json_data):
 
@@ -63,7 +67,7 @@ def handle_v1(json_data):
         # Object's key name is changed
         current['external_id'] = current.pop('id')
 
-        # Fields from the API that are not localy recognized 
+        # Fields from the API that are not localy recognized
         # by the model are filtered
         current = filter_fields(current, model)
 
@@ -81,21 +85,22 @@ def handle_v1(json_data):
         # The corresponding instance is found for update
         instance = model.objects.get(external_id=external_id)
 
-
-
     return HttpResponse("OK!")
+
 
 def map_models(object_type):
     return {
         'deal': Deal,
         'person': Person,
         'organization': Organization,
+        'note': Note,
     }[object_type]
+
 
 def filter_fields(data, model):
 
     keylist = [k.attname for k in model._meta.concrete_fields]
-    
+
     for k in data.keys():
         if k not in keylist:
             data.pop(k)
