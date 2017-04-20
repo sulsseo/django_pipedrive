@@ -81,7 +81,8 @@ def handle_v1(json_data):
         # The corresponding instance is found for delete
         instance = model.objects.get(external_id=external_id)
 
-        instance.delete()
+        instance.deleted = True;
+        instance.save()
 
     if action == 'merged':
 

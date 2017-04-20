@@ -578,7 +578,8 @@ class TestPipedriveWebhooks(TestCase):
 
         c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
 
-        self.assertEquals(Organization.objects.count(), 0)
+        self.assertEquals(Organization.objects.count(), 1)
+        self.assertEquals(Organization.objects.filter(deleted=True).count(), 1)
 
     def test_merge_organizations(self):
 

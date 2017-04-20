@@ -150,6 +150,9 @@ class User(PipedriveModel):
         db_index=True,
         unique=True,
     )
+    deleted = models.BooleanField(
+        default=False
+    )
     name = models.CharField(
         max_length=255,
         null=True,
@@ -216,6 +219,9 @@ class Organization(PipedriveModel):
         blank=True,
         unique=True,
         db_index=True,
+    )
+    deleted = models.BooleanField(
+        default=False
     )
     last_updated_at = models.DateTimeField(
         null=True,
@@ -337,6 +343,9 @@ class Person(PipedriveModel):
         blank=True,
         unique=True,
         db_index=True,
+    )
+    deleted = models.BooleanField(
+        default=False
     )
     last_updated_at = models.DateTimeField(
         null=True,
@@ -496,6 +505,9 @@ class Deal(PipedriveModel):
         blank=True,
         unique=True,
         db_index=True,
+    )
+    deleted = models.BooleanField(
+        default=False
     )
     last_updated_at = models.DateTimeField(
         null=True,
@@ -827,6 +839,9 @@ class Pipeline(models.Model):
     """
     external_id = models.IntegerField(
     )
+    deleted = models.BooleanField(
+        default=False
+    )
     name = models.CharField(
         max_length=255,
     )
@@ -860,6 +875,9 @@ class Stage(models.Model):
     :model:`pipeline.Stage`.
     """
     external_id = models.IntegerField(
+    )
+    deleted = models.BooleanField(
+        default=False
     )
     pipeline_id = models.IntegerField(
     )
@@ -903,6 +921,9 @@ class Note(PipedriveModel):
         null=True,
         blank=True,
         db_index=True,
+    )
+    deleted = models.BooleanField(
+        default=False
     )
     user = models.ForeignKey(
         User,
@@ -971,6 +992,9 @@ class Activity(PipedriveModel):
         null=True,
         blank=True,
         db_index=True,
+    )
+    deleted = models.BooleanField(
+        default=False
     )
     user = models.ForeignKey(
         User,
