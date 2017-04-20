@@ -296,8 +296,11 @@ class Person(PipedriveModel):
         null=True,
         blank=True,
     )
-    external_organization_id = models.IntegerField(
+    org = models.ForeignKey(
+        Organization,
         null=True,
+        blank=True,
+        to_field="external_id",
     )
     owner_id = models.IntegerField(
         null=True,
@@ -415,18 +418,14 @@ class Deal(PipedriveModel):
         'Person',
         null=True,
         blank=True,
+        db_index=True,
+        to_field="external_id",
     )
     external_id = models.CharField(
         max_length=255,
         null=True,
         blank=True,
         unique=True,
-        db_index=True,
-    )
-    external_person_id = models.CharField(
-        max_length=255,
-        null=True,
-        blank=True,
         db_index=True,
     )
     last_updated_at = models.DateTimeField(
@@ -442,8 +441,12 @@ class Deal(PipedriveModel):
     value = models.IntegerField(
         null=True
     )
-    external_org_id = models.IntegerField(
-        null=True
+    org = models.ForeignKey(
+        'Organization',
+        null=True,
+        blank=True,
+        db_index=True,
+        to_field="external_id",
     )
     external_pipeline_id = models.IntegerField(
         null=True
