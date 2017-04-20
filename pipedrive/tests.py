@@ -15,6 +15,7 @@ from pipedrive.models import DealField
 from pipedrive.models import OrganizationField
 from pipedrive.models import Pipeline
 from pipedrive.models import Stage
+from pipedrive.models import User
 from pipedrive.models import Note
 
 
@@ -1095,5 +1096,11 @@ class TestPipedrive(TestCase):
     def test_fetch_from_pipedrive_deals(self):
 
         result = Deal.fetch_from_pipedrive()
+
+        self.assertTrue(result)
+
+    def test_fetch_from_pipedrive_users(self):
+
+        result = User.fetch_from_pipedrive()
 
         self.assertTrue(result)

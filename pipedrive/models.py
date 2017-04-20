@@ -111,7 +111,7 @@ class PipedriveModel(models.Model):
             additional_data = post_data['additional_data']
 
             # Break the loop when the API replies there is no more pagination
-            if not additional_data['pagination']['more_items_in_collection']:
+            if 'pagination' not in additional_data or not additional_data['pagination']['more_items_in_collection']:
                 break
 
             start = additional_data['pagination']['next_start']
@@ -891,6 +891,67 @@ class Note(PipedriveModel):
                 'content': el[u'content'],
                 'add_time': cls.datetime_from_simple_time(el, u'add_time'),
                 'update_time': cls.datetime_from_simple_time(el, u'update_time'),
+                'active_flag': el[u'active_flag'],
+            }
+        )
+
+class User(PipedriveModel):
+    external_id = models.IntegerField(
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    name = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+    )
+    email = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+    )
+    phone = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+    )
+    last_login = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+    created = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+    modified = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+    role_id = models.IntegerField(
+        null=True,
+        blank=True,
+    )
+    active_flag = models.NullBooleanField(
+        null=True
+    )
+
+    @classmethod
+    def get_api_call(cls, start):
+        return pipedrive_api_client.get_users(start=start)
+
+    @classmethod
+    def update_or_create_entity_from_api_post(cls, el):
+        return User.objects.update_or_create(
+            external_id=el[u'id'],
+            defaults={
+                'name': el[u'name'],
+                'email': el[u'email'],
+                'phone': el[u'phone'],
+                'last_login': cls.datetime_from_simple_time(el, u'last_login'),
+                'created': cls.datetime_from_simple_time(el, u'created'),
+                'modified': cls.datetime_from_simple_time(el, u'modified'),
+                'role_id': el[u'role_id'],
                 'active_flag': el[u'active_flag'],
             }
         )

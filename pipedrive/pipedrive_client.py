@@ -201,9 +201,19 @@ class PipedriveAPIClient(object):
 
     def get_organizations(self, **kwargs):
         """
-        Obtain a list of deals from the api
+        Obtain a list of organization from the api
         """
         endpoint = 'organizations'
+
+        content = self.get(endpoint, kwargs)
+
+        return content
+
+    def get_users(self, **kwargs):
+        """
+        Obtain a list of users from the api
+        """
+        endpoint = 'users'
 
         content = self.get(endpoint, kwargs)
 
