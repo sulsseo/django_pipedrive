@@ -117,9 +117,9 @@ class PipedriveModel(models.Model):
             start = additional_data['pagination']['next_start']
 
         # report
-        print "Queries: " + str(queries)
-        print "Entities created: " + str(count_created)
-        print "Entities updated: " + str(queries - count_created)
+        logging.info("Queries: " + str(queries))
+        logging.info("Entities created: " + str(count_created))
+        logging.info("Entities updated: " + str(queries - count_created))
 
         return True
 

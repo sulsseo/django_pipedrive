@@ -179,7 +179,7 @@ class TestPipedriveWebhooks(TestCase):
             "event": "updated.deal"
         }
 
-        response = c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
 
         self.assertEquals(Deal.objects.count(), 1)
 
@@ -195,10 +195,10 @@ class TestPipedriveWebhooks(TestCase):
 
         data = {
             "v": 1,
-            "matches_filters": {"current":[],
-            "previous": []},
-            "meta":
-                {
+            "matches_filters": {
+                "current": [],
+                "previous": []},
+            "meta": {
                 "v": 1,
                 "action": "added",
                 "object": "person",
@@ -217,66 +217,71 @@ class TestPipedriveWebhooks(TestCase):
                     "current": [],
                     "previous": []
                 }
-                },
-              "retry": 0,
-              "current":
-                {
-                  "id": 998,
-                  "company_id": 1689563,
-                  "owner_id": 2428657,
-                  "org_id": None,
-                  "name": "TEST_NAME",
-                  "first_name": "TEST_LASTNAME",
-                  "last_name": None,
-                  "open_deals_count": 0,
-                  "related_open_deals_count": 0,
-                  "closed_deals_count": 0,
-                  "related_closed_deals_count": 0,
-                  "participant_open_deals_count": 0,
-                  "participant_closed_deals_count": 0,
-                  "email_messages_count": 0,
-                  "activities_count": 0,
-                  "done_activities_count": 0,
-                  "undone_activities_count": 0,
-                  "reference_activities_count": 0,
-                  "files_count": 0,
-                  "notes_count": 0,
-                  "followers_count": 0,
-                  "won_deals_count": 0,
-                  "related_won_deals_count": 0,
-                  "lost_deals_count": 0,
-                  "related_lost_deals_count": 0,
-                  "active_flag": True,
-                  "phone": [
-                    {"label": "work",
-                    "value": "22222222",
-                    "primary": True}],
-                  "email":[
-                    {"label": "work",
-                    "value": "mail@example.com",
-                    "primary": True}],
-                  "first_char": "p",
-                  "update_time": "2017-04-20 01:03:47",
-                  "add_time": "2017-04-20 01:03:47",
-                  "visible_to": "3",
-                  "picture_id": None,
-                  "next_activity_date": None,
-                  "next_activity_time": None,
-                  "next_activity_id": None,
-                  "last_activity_id": None,
-                  "last_activity_date": None,
-                  "last_incoming_mail_time": None,
-                  "last_outgoing_mail_time": None,
-                  "org_name": None,
-                  "cc_email": "mycompany@pipedrivemail.com",
-                  "owner_name": "OWNER"
-                },
-              "previous": None,
-              "indexable_fields": [],
-              "event": "added.person"
-            }
+            },
+            "retry": 0,
+            "current": {
+                "id": 998,
+                "company_id": 1689563,
+                "owner_id": 2428657,
+                "org_id": None,
+                "name": "TEST_NAME",
+                "first_name": "TEST_LASTNAME",
+                "last_name": None,
+                "open_deals_count": 0,
+                "related_open_deals_count": 0,
+                "closed_deals_count": 0,
+                "related_closed_deals_count": 0,
+                "participant_open_deals_count": 0,
+                "participant_closed_deals_count": 0,
+                "email_messages_count": 0,
+                "activities_count": 0,
+                "done_activities_count": 0,
+                "undone_activities_count": 0,
+                "reference_activities_count": 0,
+                "files_count": 0,
+                "notes_count": 0,
+                "followers_count": 0,
+                "won_deals_count": 0,
+                "related_won_deals_count": 0,
+                "lost_deals_count": 0,
+                "related_lost_deals_count": 0,
+                "active_flag": True,
+                "phone": [
+                    {
+                        "label": "work",
+                        "value": "22222222",
+                        "primary": True
+                    }
+                ],
+                "email": [
+                    {
+                        "label": "work",
+                        "value": "mail@example.com",
+                        "primary": True
+                    }
+                ],
+                "first_char": "p",
+                "update_time": "2017-04-20 01:03:47",
+                "add_time": "2017-04-20 01:03:47",
+                "visible_to": "3",
+                "picture_id": None,
+                "next_activity_date": None,
+                "next_activity_time": None,
+                "next_activity_id": None,
+                "last_activity_id": None,
+                "last_activity_date": None,
+                "last_incoming_mail_time": None,
+                "last_outgoing_mail_time": None,
+                "org_name": None,
+                "cc_email": "mycompany@pipedrivemail.com",
+                "owner_name": "OWNER"
+            },
+            "previous": None,
+            "indexable_fields": [],
+            "event": "added.person"
+        }
 
-        response = c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
 
         self.assertEquals(Person.objects.count(), 1)
 
@@ -288,7 +293,7 @@ class TestPipedriveWebhooks(TestCase):
 
         c = Client()
 
-        organization = Organization.objects.create(
+        Organization.objects.create(
             name="TEST_ORGANIZATION",
             external_id=997,
         )
@@ -296,92 +301,92 @@ class TestPipedriveWebhooks(TestCase):
         self.assertEquals(Organization.objects.count(), 1)
 
         data = {
-          "v": 1,
-          "matches_filters":
+            "v": 1,
+            "matches_filters":
             {
-              "current":[],
-              "previous":[]
+                "current": [],
+                "previous": []
             },
-          "meta":
+            "meta":
             {
-              "v": 1,
-              "action": "deleted",
-              "object": "organization",
-              "id": 997,
-              "company_id": 1689563,
-              "user_id": 2428657,
-              "host": "mycompany.pipedrive.com",
-              "timestamp": 1492653308,
-              "timestamp_milli": 1492653308072,
-              "permitted_user_ids": [2428657],
-              "trans_pending": False,
-              "is_bulk_update": False,
-              "elastic_enabled": True,
-              "matches_filters":
+                "v": 1,
+                "action": "deleted",
+                "object": "organization",
+                "id": 997,
+                "company_id": 1689563,
+                "user_id": 2428657,
+                "host": "mycompany.pipedrive.com",
+                "timestamp": 1492653308,
+                "timestamp_milli": 1492653308072,
+                "permitted_user_ids": [2428657],
+                "trans_pending": False,
+                "is_bulk_update": False,
+                "elastic_enabled": True,
+                "matches_filters":
                 {
-                  "current": [],
-                  "previous": []
+                    "current": [],
+                    "previous": []
                 }
             },
-          "retry": 0,
-          "current": None,
-          "previous":
+            "retry": 0,
+            "current": None,
+            "previous":
             {
-              "id": 997,
-              "company_id": 1689563,
-              "owner_id": 2428657,
-              "name": "TEST_ORGANIZATION",
-              "open_deals_count": 0,
-              "related_open_deals_count": 0,
-              "closed_deals_count": 0,
-              "related_closed_deals_count": 0,
-              "email_messages_count": 0,
-              "people_count": 0,
-              "activities_count": 0,
-              "done_activities_count": 0,
-              "undone_activities_count": 0,
-              "reference_activities_count": 0,
-              "files_count": 0,
-              "notes_count": 0,
-              "followers_count": 1,
-              "won_deals_count": 0,
-              "related_won_deals_count": 0,
-              "lost_deals_count": 0,
-              "related_lost_deals_count": 0,
-              "active_flag": True,
-              "category_id": None,
-              "picture_id": None,
-              "country_code": None,
-              "first_char": "t",
-              "update_time": "2017-04-19 19:43:41",
-              "add_time": "2017-04-19 19:43:41",
-              "visible_to": "3",
-              "next_activity_date": None,
-              "next_activity_time": None,
-              "next_activity_id": None,
-              "last_activity_id": None,
-              "last_activity_date": None,
-              "address": None,
-              "address_lat": None,
-              "address_long": None,
-              "address_subpremise": None,
-              "address_street_number": None,
-              "address_route": None,
-              "address_sublocality": None,
-              "address_locality": None,
-              "address_admin_area_level_1": None,
-              "address_admin_area_level_2": None,
-              "address_country": None,
-              "address_postal_code": None,
-              "address_formatted_address": None,
-              "owner_name": "OWNER",
-              "cc_email": "mycompany@pipedrivemail.com"
+                "id": 997,
+                "company_id": 1689563,
+                "owner_id": 2428657,
+                "name": "TEST_ORGANIZATION",
+                "open_deals_count": 0,
+                "related_open_deals_count": 0,
+                "closed_deals_count": 0,
+                "related_closed_deals_count": 0,
+                "email_messages_count": 0,
+                "people_count": 0,
+                "activities_count": 0,
+                "done_activities_count": 0,
+                "undone_activities_count": 0,
+                "reference_activities_count": 0,
+                "files_count": 0,
+                "notes_count": 0,
+                "followers_count": 1,
+                "won_deals_count": 0,
+                "related_won_deals_count": 0,
+                "lost_deals_count": 0,
+                "related_lost_deals_count": 0,
+                "active_flag": True,
+                "category_id": None,
+                "picture_id": None,
+                "country_code": None,
+                "first_char": "t",
+                "update_time": "2017-04-19 19:43:41",
+                "add_time": "2017-04-19 19:43:41",
+                "visible_to": "3",
+                "next_activity_date": None,
+                "next_activity_time": None,
+                "next_activity_id": None,
+                "last_activity_id": None,
+                "last_activity_date": None,
+                "address": None,
+                "address_lat": None,
+                "address_long": None,
+                "address_subpremise": None,
+                "address_street_number": None,
+                "address_route": None,
+                "address_sublocality": None,
+                "address_locality": None,
+                "address_admin_area_level_1": None,
+                "address_admin_area_level_2": None,
+                "address_country": None,
+                "address_postal_code": None,
+                "address_formatted_address": None,
+                "owner_name": "OWNER",
+                "cc_email": "mycompany@pipedrivemail.com"
             },
-          "indexable_fields": [],
-          "event": "deleted.organization"
+            "indexable_fields": [],
+            "event": "deleted.organization"
         }
 
-        response = c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
 
         self.assertEquals(Organization.objects.count(), 0)
 
@@ -402,342 +407,343 @@ class TestPipedriveWebhooks(TestCase):
         self.assertEquals(Organization.objects.count(), 2)
 
         data = {
-          "v": 1,
-          "matches_filters":
+            "v": 1,
+            "matches_filters":
             {
-              "current":[],
-              "previous":[]
+                "current": [],
+                "previous": []
             },
-          "meta":
+            "meta":
             {
-              "v": 1,
-              "action": "merged",
-              "object": "organization",
-              "id": 996,
-              "company_id": 1689563,
-              "user_id": 2428657,
-              "host": "mycompany.pipedrive.com",
-              "timestamp": 1492654463,
-              "timestamp_milli": 1492654463572,
-              "permitted_user_ids": [2428657],
-              "trans_pending": False,
-              "is_bulk_update": False,
-              "matches_filters":{"current": [],
-              "previous": []}
+                "v": 1,
+                "action": "merged",
+                "object": "organization",
+                "id": 996,
+                "company_id": 1689563,
+                "user_id": 2428657,
+                "host": "mycompany.pipedrive.com",
+                "timestamp": 1492654463,
+                "timestamp_milli": 1492654463572,
+                "permitted_user_ids": [2428657],
+                "trans_pending": False,
+                "is_bulk_update": False,
+                "matches_filters": {
+                    "current": [],
+                    "previous": []
+                }
             },
-          "retry": 0,
-          "current":
+            "retry": 0,
+            "current":
             {
-              "id": 996,
-              "company_id": 1689563,
-              "owner_id": 2428657,
-              "name": "TEST_ORGANIZATION_1",
-              "open_deals_count": 0,
-              "related_open_deals_count": 0,
-              "closed_deals_count": 0,
-              "related_closed_deals_count": 0,
-              "email_messages_count": 0,
-              "people_count": 0,
-              "activities_count": 0,
-              "done_activities_count": 0,
-              "undone_activities_count": 0,
-              "reference_activities_count": 0,
-              "files_count": 0,
-              "notes_count": 0,
-              "followers_count": 1,
-              "won_deals_count": 0,
-              "related_won_deals_count": 0,
-              "lost_deals_count": 0,
-              "related_lost_deals_count": 0,
-              "active_flag": True,
-              "category_id": None,
-              "picture_id": None,
-              "country_code": None,
-              "first_char": "t",
-              "update_time": "2017-04-20 02:09:09",
-              "add_time": "2017-04-19 19:42:27",
-              "visible_to": "3",
-              "next_activity_date": None,
-              "next_activity_time": None,
-              "next_activity_id": None,
-              "last_activity_id": None,
-              "last_activity_date": None,
-              "address": "d asda sd 3 r1",
-              "address_lat": 52.8761635,
-              "address_long": -1.493958,
-              "address_subpremise": None,
-              "address_street_number": "14",
-              "address_route": "Arleston Lane",
-              "address_sublocality": None,
-              "address_locality": "Sinfin District Centre",
-              "address_admin_area_level_1": "England",
-              "address_admin_area_level_2": "Derby",
-              "address_country": "Reino Unido",
-              "address_postal_code": "DE24 3DS",
-              "address_formatted_address": "Sinfin Shopping Centre-, Sinfin Health Centre, Arleston Ln, Sinfin District Centre, Sinfin DE24 3DS, Reino Unido",
-              "cc_email": "mycompany@pipedrivemail.com",
-              "owner_name": "OWNER",
-              "edit_name": True,
-              "merge_what_id": 995
+                "id": 996,
+                "company_id": 1689563,
+                "owner_id": 2428657,
+                "name": "TEST_ORGANIZATION_1",
+                "open_deals_count": 0,
+                "related_open_deals_count": 0,
+                "closed_deals_count": 0,
+                "related_closed_deals_count": 0,
+                "email_messages_count": 0,
+                "people_count": 0,
+                "activities_count": 0,
+                "done_activities_count": 0,
+                "undone_activities_count": 0,
+                "reference_activities_count": 0,
+                "files_count": 0,
+                "notes_count": 0,
+                "followers_count": 1,
+                "won_deals_count": 0,
+                "related_won_deals_count": 0,
+                "lost_deals_count": 0,
+                "related_lost_deals_count": 0,
+                "active_flag": True,
+                "category_id": None,
+                "picture_id": None,
+                "country_code": None,
+                "first_char": "t",
+                "update_time": "2017-04-20 02:09:09",
+                "add_time": "2017-04-19 19:42:27",
+                "visible_to": "3",
+                "next_activity_date": None,
+                "next_activity_time": None,
+                "next_activity_id": None,
+                "last_activity_id": None,
+                "last_activity_date": None,
+                "address": "d asda sd 3 r1",
+                "address_lat": 52.8761635,
+                "address_long": -1.493958,
+                "address_subpremise": None,
+                "address_street_number": "14",
+                "address_route": "Arleston Lane",
+                "address_sublocality": None,
+                "address_locality": "Sinfin District Centre",
+                "address_admin_area_level_1": "England",
+                "address_admin_area_level_2": "Derby",
+                "address_country": "Reino Unido",
+                "address_postal_code": "DE24 3DS",
+                "address_formatted_address": "Sinfin Shopping Centre-, Sinfin Health Centre, Arleston Ln, Sinfin District Centre, Sinfin DE24 3DS, Reino Unido",
+                "cc_email": "mycompany@pipedrivemail.com",
+                "owner_name": "OWNER",
+                "edit_name": True,
+                "merge_what_id": 995
             },
-          "previous":
+            "previous":
             {
-              "id": 995,
-              "company_id": 1689563,
-              "owner_id": 2428657,
-              "name": "TEST_ORGANIZATION_2",
-              "open_deals_count": 0,
-              "related_open_deals_count": 0,
-              "closed_deals_count": 0,
-              "related_closed_deals_count": 0,
-              "email_messages_count": 0,
-              "people_count": 0,
-              "activities_count": 0,
-              "done_activities_count": 0,
-              "undone_activities_count": 0,
-              "reference_activities_count": 0,
-              "files_count": 0,
-              "notes_count": 0,
-              "followers_count": 1,
-              "won_deals_count": 0,
-              "related_won_deals_count": 0,
-              "lost_deals_count": 0,
-              "related_lost_deals_count": 0,
-              "active_flag": True,
-              "category_id": None,
-              "picture_id": None,
-              "country_code": None,
-              "first_char": "t",
-              "update_time": "2017-04-20 02:09:09",
-              "add_time": "2017-04-19 19:42:27",
-              "visible_to": "3",
-              "next_activity_date": None,
-              "next_activity_time": None,
-              "next_activity_id": None,
-              "last_activity_id": None,
-              "last_activity_date": None,
-              "address": "d asda sd 3 r1",
-              "address_lat": 52.8761635,
-              "address_long": -1.493958,
-              "address_subpremise": None,
-              "address_street_number": "14",
-              "address_route": "Arleston Lane",
-              "address_sublocality": None,
-              "address_locality": "Sinfin District Centre",
-              "address_admin_area_level_1": "England",
-              "address_admin_area_level_2": "Derby",
-              "address_country": "Reino Unido",
-              "address_postal_code": "DE24 3DS",
-              "address_formatted_address": "Sinfin Shopping Centre - Sinfin Health Centre, Arleston Ln, Sinfin District Centre, Sinfin DE24 3DS, Reino Unido",
-               "cc_email": "mycompany@pipedrivemail.com",
-              "owner_name": "OWNER",
-              "edit_name": True
+                "id": 995,
+                "company_id": 1689563,
+                "owner_id": 2428657,
+                "name": "TEST_ORGANIZATION_2",
+                "open_deals_count": 0,
+                "related_open_deals_count": 0,
+                "closed_deals_count": 0,
+                "related_closed_deals_count": 0,
+                "email_messages_count": 0,
+                "people_count": 0,
+                "activities_count": 0,
+                "done_activities_count": 0,
+                "undone_activities_count": 0,
+                "reference_activities_count": 0,
+                "files_count": 0,
+                "notes_count": 0,
+                "followers_count": 1,
+                "won_deals_count": 0,
+                "related_won_deals_count": 0,
+                "lost_deals_count": 0,
+                "related_lost_deals_count": 0,
+                "active_flag": True,
+                "category_id": None,
+                "picture_id": None,
+                "country_code": None,
+                "first_char": "t",
+                "update_time": "2017-04-20 02:09:09",
+                "add_time": "2017-04-19 19:42:27",
+                "visible_to": "3",
+                "next_activity_date": None,
+                "next_activity_time": None,
+                "next_activity_id": None,
+                "last_activity_id": None,
+                "last_activity_date": None,
+                "address": "d asda sd 3 r1",
+                "address_lat": 52.8761635,
+                "address_long": -1.493958,
+                "address_subpremise": None,
+                "address_street_number": "14",
+                "address_route": "Arleston Lane",
+                "address_sublocality": None,
+                "address_locality": "Sinfin District Centre",
+                "address_admin_area_level_1": "England",
+                "address_admin_area_level_2": "Derby",
+                "address_country": "Reino Unido",
+                "address_postal_code": "DE24 3DS",
+                "address_formatted_address": "Sinfin Shopping Centre - Sinfin Health Centre, Arleston Ln, Sinfin District Centre, Sinfin DE24 3DS, Reino Unido",
+                "cc_email": "mycompany@pipedrivemail.com",
+                "owner_name": "OWNER",
+                "edit_name": True
             },
-          "event": "merged.organization"
+            "event": "merged.organization"
         }
 
-        response = c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
 
         self.assertEquals(Organization.objects.count(), 2)
 
     def test_create_person_note(self):
 
-      c = Client()
+        c = Client()
 
-      data = {
-        "v": 1,
-        "matches_filters": None,
-        "meta":
-            {
+        data = {
             "v": 1,
-            "action": "added",
-            "object": "note",
-            "id": 995,
-            "company_id": 1689563,
-            "user_id": 2428657,
-            "host": "miempresa2.pipedrive.com",
-            "timestamp": 1492687681,
-            "timestamp_milli": 1492687681417,
-            "permitted_user_ids": ["*"],
-            "trans_pending": False,
-            "is_bulk_update": False,
-            "elastic_enabled": True
-        },
-        "retry": 0,
-        "current": {
-            "id": 995,
-            "user_id": 2428657,
-            "deal_id": None,
-            "person_id": 994,
-            "org_id": None,
-            "content": "This is an example note",
-            "add_time": "2017-04-20 11:28:01",
-            "update_time": "2017-04-20 11:28:01",
-            "active_flag": True,
-            "pinned_to_deal_flag": False,
-            "pinned_to_person_flag": False,
-            "pinned_to_organization_flag": False,
-            "last_update_user_id": None,
-            "organization": None,
-            "person": {"name": "TEST_PERSON"},
-            "deal": None,
-            "user": {
-                "email": "user@example.com",
-                "name": "TEST_USER",
-                "icon_url": None,
-                "is_you": True
-            }
-        },
-        "previous": None,
-        "event": "added.note"
-      }
+            "matches_filters": None,
+            "meta":
+            {
+                "v": 1,
+                "action": "added",
+                "object": "note",
+                "id": 995,
+                "company_id": 1689563,
+                "user_id": 2428657,
+                "host": "miempresa2.pipedrive.com",
+                "timestamp": 1492687681,
+                "timestamp_milli": 1492687681417,
+                "permitted_user_ids": ["*"],
+                "trans_pending": False,
+                "is_bulk_update": False,
+                "elastic_enabled": True
+            },
+            "retry": 0,
+            "current": {
+                "id": 995,
+                "user_id": 2428657,
+                "deal_id": None,
+                "person_id": 994,
+                "org_id": None,
+                "content": "This is an example note",
+                "add_time": "2017-04-20 11:28:01",
+                "update_time": "2017-04-20 11:28:01",
+                "active_flag": True,
+                "pinned_to_deal_flag": False,
+                "pinned_to_person_flag": False,
+                "pinned_to_organization_flag": False,
+                "last_update_user_id": None,
+                "organization": None,
+                "person": {"name": "TEST_PERSON"},
+                "deal": None,
+                "user": {
+                    "email": "user@example.com",
+                    "name": "TEST_USER",
+                    "icon_url": None,
+                    "is_you": True
+                }
+            },
+            "previous": None,
+            "event": "added.note"
+        }
 
-      Person.objects.create(external_id=994)
+        Person.objects.create(external_id=994)
 
-      response = c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
 
-      self.assertEquals(Note.objects.count(), 1)
+        self.assertEquals(Note.objects.count(), 1)
 
-      note = Note.objects.get(external_id=995)
+        note = Note.objects.get(external_id=995)
 
-      self.assertEquals(note.content, "This is an example note")
+        self.assertEquals(note.content, "This is an example note")
 
-      person = Person.objects.get(external_id=994)
+        person = Person.objects.get(external_id=994)
 
-      self.assertEquals(person.note_set.count(), 1)
+        self.assertEquals(person.note_set.count(), 1)
 
 
     def test_create_organization_note(self):
 
-      c = Client()
+        c = Client()
 
-      data = {
-        "v": 1,
-        "matches_filters": None,
-        "meta":
-            {
+        data = {
             "v": 1,
-            "action": "added",
-            "object": "note",
-            "id": 995,
-            "company_id": 1689563,
-            "user_id": 2428657,
-            "host": "miempresa2.pipedrive.com",
-            "timestamp": 1492687681,
-            "timestamp_milli": 1492687681417,
-            "permitted_user_ids": ["*"],
-            "trans_pending": False,
-            "is_bulk_update": False,
-            "elastic_enabled": True
-        },
-        "retry": 0,
-        "current": {
-            "id": 995,
-            "user_id": 2428657,
-            "deal_id": None,
-            "person_id": None,
-            "org_id": 993,
-            "content": "This is an example note",
-            "add_time": "2017-04-20 11:28:01",
-            "update_time": "2017-04-20 11:28:01",
-            "active_flag": True,
-            "pinned_to_deal_flag": False,
-            "pinned_to_person_flag": False,
-            "pinned_to_organization_flag": False,
-            "last_update_user_id": None,
-            "organization": None,
-            "person": {"name": "TEST_PERSON"},
-            "deal": None,
-            "user": {
-                "email": "user@example.com",
-                "name": "TEST_USER",
-                "icon_url": None,
-                "is_you": True
-            }
-        },
-        "previous": None,
-        "event": "added.note"
-      }
+            "matches_filters": None,
+            "meta":
+            {
+                "v": 1,
+                "action": "added",
+                "object": "note",
+                "id": 995,
+                "company_id": 1689563,
+                "user_id": 2428657,
+                "host": "miempresa2.pipedrive.com",
+                "timestamp": 1492687681,
+                "timestamp_milli": 1492687681417,
+                "permitted_user_ids": ["*"],
+                "trans_pending": False,
+                "is_bulk_update": False,
+                "elastic_enabled": True
+            },
+            "retry": 0,
+            "current": {
+                "id": 995,
+                "user_id": 2428657,
+                "deal_id": None,
+                "person_id": None,
+                "org_id": 993,
+                "content": "This is an example note",
+                "add_time": "2017-04-20 11:28:01",
+                "update_time": "2017-04-20 11:28:01",
+                "active_flag": True,
+                "pinned_to_deal_flag": False,
+                "pinned_to_person_flag": False,
+                "pinned_to_organization_flag": False,
+                "last_update_user_id": None,
+                "organization": None,
+                "person": {"name": "TEST_PERSON"},
+                "deal": None,
+                "user": {
+                    "email": "user@example.com",
+                    "name": "TEST_USER",
+                    "icon_url": None,
+                    "is_you": True
+                }
+            },
+            "previous": None,
+            "event": "added.note"
+        }
 
-      Organization.objects.create(external_id=993)
+        Organization.objects.create(external_id=993)
 
-      response = c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
 
-      self.assertEquals(Note.objects.count(), 1)
+        self.assertEquals(Note.objects.count(), 1)
 
-      note = Note.objects.get(external_id=995)
+        note = Note.objects.get(external_id=995)
 
-      self.assertEquals(note.content, "This is an example note")
+        self.assertEquals(note.content, "This is an example note")
 
-      organization = Organization.objects.get(external_id=993)
+        organization = Organization.objects.get(external_id=993)
 
-      self.assertEquals(organization.note_set.count(), 1)
+        self.assertEquals(organization.note_set.count(), 1)
 
     def test_create_deal_note(self):
 
-      c = Client()
+        c = Client()
 
-      data = {
-        "v": 1,
-        "matches_filters": None,
-        "meta":
-            {
+        data = {
             "v": 1,
-            "action": "added",
-            "object": "note",
-            "id": 995,
-            "company_id": 1689563,
-            "user_id": 2428657,
-            "host": "miempresa2.pipedrive.com",
-            "timestamp": 1492687681,
-            "timestamp_milli": 1492687681417,
-            "permitted_user_ids": ["*"],
-            "trans_pending": False,
-            "is_bulk_update": False,
-            "elastic_enabled": True
-        },
-        "retry": 0,
-        "current": {
-            "id": 995,
-            "user_id": 2428657,
-            "deal_id": 992,
-            "person_id": None,
-            "org_id": None,
-            "content": "This is an example note",
-            "add_time": "2017-04-20 11:28:01",
-            "update_time": "2017-04-20 11:28:01",
-            "active_flag": True,
-            "pinned_to_deal_flag": False,
-            "pinned_to_person_flag": False,
-            "pinned_to_organization_flag": False,
-            "last_update_user_id": None,
-            "organization": None,
-            "person": {"name": "TEST_PERSON"},
-            "deal": None,
-            "user": {
-                "email": "user@example.com",
-                "name": "TEST_USER",
-                "icon_url": None,
-                "is_you": True
-            }
-        },
-        "previous": None,
-        "event": "added.note"
-      }
+            "matches_filters": None,
+            "meta": {
+                "v": 1,
+                "action": "added",
+                "object": "note",
+                "id": 995,
+                "company_id": 1689563,
+                "user_id": 2428657,
+                "host": "miempresa2.pipedrive.com",
+                "timestamp": 1492687681,
+                "timestamp_milli": 1492687681417,
+                "permitted_user_ids": ["*"],
+                "trans_pending": False,
+                "is_bulk_update": False,
+                "elastic_enabled": True
+            },
+            "retry": 0,
+            "current": {
+                "id": 995,
+                "user_id": 2428657,
+                "deal_id": 992,
+                "person_id": None,
+                "org_id": None,
+                "content": "This is an example note",
+                "add_time": "2017-04-20 11:28:01",
+                "update_time": "2017-04-20 11:28:01",
+                "active_flag": True,
+                "pinned_to_deal_flag": False,
+                "pinned_to_person_flag": False,
+                "pinned_to_organization_flag": False,
+                "last_update_user_id": None,
+                "organization": None,
+                "person": {"name": "TEST_PERSON"},
+                "deal": None,
+                "user": {
+                    "email": "user@example.com",
+                    "name": "TEST_USER",
+                    "icon_url": None,
+                    "is_you": True
+                }
+            },
+            "previous": None,
+            "event": "added.note"
+        }
 
-      Deal.objects.create(external_id=992)
+        Deal.objects.create(external_id=992)
 
-      response = c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
 
-      self.assertEquals(Note.objects.count(), 1)
+        self.assertEquals(Note.objects.count(), 1)
 
-      note = Note.objects.get(external_id=995)
+        note = Note.objects.get(external_id=995)
 
-      self.assertEquals(note.content, "This is an example note")
+        self.assertEquals(note.content, "This is an example note")
 
-      deal = Deal.objects.get(external_id=992)
+        deal = Deal.objects.get(external_id=992)
 
-      self.assertEquals(deal.note_set.count(), 1)
+        self.assertEquals(deal.note_set.count(), 1)
 
 
 class TestPipedriveCreation(TestCase):
@@ -768,6 +774,7 @@ class TestPipedriveCreation(TestCase):
 
         self.assertTrue(result)
         self.assertIsNotNone(deal.external_id)
+
 
 class TestPipedrive(TestCase):
 
