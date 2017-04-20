@@ -31,7 +31,10 @@ class TestPipedriveWebhooks(TestCase):
             value=0,
         )
 
+        Pipeline.objects.create(external_id=1)
+
         self.assertEquals(Deal.objects.count(), 1)
+        self.assertEquals(Pipeline.objects.count(), 1)
 
         data = {
             "v": 1,
@@ -144,7 +147,7 @@ class TestPipedriveWebhooks(TestCase):
                     "lost_reason": None,
                     "visible_to": "3",
                     "close_time": None,
-                    "pipeline_id": 1,
+                    "pipeline_id": 5,
                     "won_time": None,
                     "first_won_time": None,
                     "lost_time": None,
@@ -188,6 +191,8 @@ class TestPipedriveWebhooks(TestCase):
         instance = Deal.objects.get(external_id=999)
 
         self.assertEquals(instance.value, 1000)
+
+        self.assertEquals(instance.pipeline.external_id, 1)
 
     def test_update_pipeline(self):
 

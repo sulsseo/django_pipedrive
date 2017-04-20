@@ -209,6 +209,82 @@ class User(PipedriveModel):
         )
 
 
+class Pipeline(PipedriveModel):
+    """
+    Stores a single pipe line stage entry.
+    :model:`pipeline.Pipeline`.
+    """
+    external_id = models.IntegerField(
+        null=True,
+        blank=True,
+        unique=True,
+        db_index=True,
+    )
+    deleted = models.BooleanField(
+        default=False
+    )
+    name = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+    )
+    url_title = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+    )
+    active = models.NullBooleanField(
+        null=True,
+        blank=True,
+    )
+    add_time = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+    update_time = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+
+    def __unicode__(self):
+        return u'Pipe ID: {}, Name: {}.'.format(
+            self.external_id, self.name)
+
+    @classmethod
+    def get_fields(cls):
+        """
+        Gets and stores all Org Fields from the api
+        """
+        raw_stages = pipedrive_api_client.get_pipeline_stages()
+        pipeline_stages = pipedrive_api_client.get_data_list(raw_stages)
+
+        for pipeline_stage in pipeline_stages:
+
+            stage_object, created = cls.objects.get_or_create(
+                external_id=pipeline_stage['id'],
+                name=pipeline_stage['name'],
+                active=pipeline_stage['active']
+            )
+
+    @classmethod
+    def get_api_call(cls, start):
+        return pipedrive_api_client.get_pipelines(start=start)
+
+    @classmethod
+    def update_or_create_entity_from_api_post(cls, el):
+        return Pipeline.objects.update_or_create(
+            external_id=el[u'id'],
+            defaults={
+                'name': el[u'name'],
+                'url_title': el[u'url_title'],
+                'active': el[u'active'],
+                'add_time': cls.datetime_from_simple_time(el, u'add_time'),
+                'update_time': cls.datetime_from_simple_time(el, u'update_time'),
+                'active': el[u'active'],
+            }
+        )
+
+
 class Organization(PipedriveModel):
     """
     saves a registry of Org sent to pipedrive
@@ -529,9 +605,14 @@ class Deal(PipedriveModel):
         db_index=True,
         to_field="external_id",
     )
-    external_pipeline_id = models.IntegerField(
-        null=True
+    pipeline = models.ForeignKey(
+        Pipeline,
+        null=True,
+        blank=True,
+        db_index=True,
+        to_field="external_id",
     )
+
     external_stage_id = models.IntegerField(
         null=True
     )
@@ -622,7 +703,7 @@ class Deal(PipedriveModel):
                 'external_user_id': cls.get_internal_field(el, 'user_id', 'id'),
                 'value': el[u'value'],
                 'org_id': cls.get_internal_field(el, u'org_id', u'value'),
-                'external_pipeline_id': el[u'pipeline_id'],
+                'pipeline_id': el[u'pipeline_id'],
                 'person_id': cls.get_internal_field(el, 'person_id', 'value'),
                 'external_stage_id': el[u'stage_id'],
                 'add_time': cls.datetime_from_simple_time(el, u'add_time'),
@@ -830,81 +911,6 @@ class PersonField(BaseField):
             fields_object.edit_flag = person_field['edit_flag'],
 
             fields_object.save()
-
-
-class Pipeline(PipedriveModel):
-    """
-    Stores a single pipe line stage entry.
-    :model:`pipeline.Pipeline`.
-    """
-    external_id = models.IntegerField(
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    deleted = models.BooleanField(
-        default=False
-    )
-    name = models.CharField(
-        max_length=255,
-        null=True,
-        blank=True,
-    )
-    url_title = models.CharField(
-        max_length=255,
-        null=True,
-        blank=True,
-    )
-    active = models.NullBooleanField(
-        null=True,
-        blank=True,
-    )
-    add_time = models.DateTimeField(
-        null=True,
-        blank=True,
-    )
-    update_time = models.DateTimeField(
-        null=True,
-        blank=True,
-    )
-
-    def __unicode__(self):
-        return u'Pipe ID: {}, Name: {}.'.format(
-            self.external_id, self.name)
-
-    @classmethod
-    def get_fields(cls):
-        """
-        Gets and stores all Org Fields from the api
-        """
-        raw_stages = pipedrive_api_client.get_pipeline_stages()
-        pipeline_stages = pipedrive_api_client.get_data_list(raw_stages)
-
-        for pipeline_stage in pipeline_stages:
-
-            stage_object, created = cls.objects.get_or_create(
-                external_id=pipeline_stage['id'],
-                name=pipeline_stage['name'],
-                active=pipeline_stage['active']
-            )
-
-    @classmethod
-    def get_api_call(cls, start):
-        return pipedrive_api_client.get_pipelines(start=start)
-
-    @classmethod
-    def update_or_create_entity_from_api_post(cls, el):
-        return Pipeline.objects.update_or_create(
-            external_id=el[u'id'],
-            defaults={
-                'name': el[u'name'],
-                'url_title': el[u'url_title'],
-                'active': el[u'active'],
-                'add_time': cls.datetime_from_simple_time(el, u'add_time'),
-                'update_time': cls.datetime_from_simple_time(el, u'update_time'),
-                'active': el[u'active'],
-            }
-        )
 
 
 class Stage(PipedriveModel):
