@@ -151,12 +151,31 @@ class PipedriveModel(models.Model):
 
         post_data = self.post_api_call(kwargs)
 
+        if not post_data[u'success']:
+            logging.error(post_data)
+
         self.external_id = post_data['data']['id']
         self.last_updated_at = timezone.now()
         self.save()
 
         self.__class__.update_or_create_entity_from_api_post(post_data[u'data'])
         return True
+
+    # def build_kwargs(self):
+
+    #     model = type(self)
+
+    #     kwargs = {}
+    #     import pdb; pdb.set_trace()
+    #     for k in model._meta.concrete_fields:
+    #         attrname = k.attname
+    #         kwargs[str(attrname)] = getattr(self, attrname)
+
+    #     # Handle external_id to id conversion
+    #     kwargs[u'id'] = kwargs[u'external_id']
+    #     kwargs.pop(u'external_id')
+
+    #     return kwargs
 
 
 class User(PipedriveModel):
@@ -207,6 +226,9 @@ class User(PipedriveModel):
     @classmethod
     def get_api_call(cls, start):
         return pipedrive_api_client.get_users(start=start)
+
+    def post_api_call(self, kwargs):
+        return pipedrive_api_client.post_user(**kwargs)
 
     @classmethod
     def update_or_create_entity_from_api_post(cls, el):
@@ -285,6 +307,9 @@ class Pipeline(PipedriveModel):
     @classmethod
     def get_api_call(cls, start):
         return pipedrive_api_client.get_pipelines(start=start)
+
+    def post_api_call(self, kwargs):
+        return pipedrive_api_client.post_pipeline(**kwargs)
 
     @classmethod
     def update_or_create_entity_from_api_post(cls, el):
@@ -421,7 +446,8 @@ class Organization(PipedriveModel):
 
     def build_kwargs(self):
         return {
-            'name': self.name
+            'id': self.external_id,
+            'name': self.name,
         }
 
     def post_api_call(self, kwargs):
@@ -573,7 +599,8 @@ class Person(PipedriveModel):
 
     def build_kwargs(self):
         return {
-            'name': self.name
+            'id': self.external_id,
+            'name': self.name,
         }
 
 
@@ -772,7 +799,8 @@ class Deal(PipedriveModel):
 
     def build_kwargs(self):
         return {
-            'title': self.title
+            'id': self.external_id,
+            'title': self.title,
         }
 
 
@@ -968,6 +996,8 @@ class Stage(PipedriveModel):
     )
     pipeline_name = models.CharField(
         max_length=255,
+        null=True,
+        blank=True,
     )
     name = models.CharField(
         max_length=255,
@@ -1007,6 +1037,9 @@ class Stage(PipedriveModel):
     def get_api_call(cls, start):
         return pipedrive_api_client.get_stages(start=start)
 
+    def post_api_call(self, kwargs):
+        return pipedrive_api_client.post_stage(**kwargs)
+
     @classmethod
     def update_or_create_entity_from_api_post(cls, el):
         return Stage.objects.update_or_create(
@@ -1014,7 +1047,7 @@ class Stage(PipedriveModel):
             defaults={
                 'name': el[u'name'],
                 'pipeline_id': el[u'pipeline_id'],
-                'pipeline_name': el[u'pipeline_name'],
+                'pipeline_name': cls.get_str_or_none(el, u'pipeline_name'),
                 'name': el[u'name'],
                 'order_nr': el[u'order_nr'],
                 'active_flag': el[u'active_flag'],
@@ -1022,6 +1055,13 @@ class Stage(PipedriveModel):
                 'update_time': cls.datetime_from_simple_time(el, u'update_time'),
             }
         )
+
+    def build_kwargs(self):
+        return {
+            'id': self.external_id,
+            'name': self.name,
+            'pipeline_id': self.pipeline_id
+        }
 
 
 class Note(PipedriveModel):
@@ -1078,6 +1118,9 @@ class Note(PipedriveModel):
     def get_api_call(cls, start):
         return pipedrive_api_client.get_notes(start=start)
 
+    def post_api_call(self, kwargs):
+        return pipedrive_api_client.post_note(**kwargs)
+
     @classmethod
     def update_or_create_entity_from_api_post(cls, el):
         return Note.objects.update_or_create(
@@ -1093,6 +1136,12 @@ class Note(PipedriveModel):
                 'active_flag': el[u'active_flag'],
             }
         )
+
+    def build_kwargs(self):
+        return {
+            'id': self.external_id,
+            'content': self.content,
+        }
 
 
 class Activity(PipedriveModel):
@@ -1178,6 +1227,9 @@ class Activity(PipedriveModel):
     def get_api_call(cls, start):
         return pipedrive_api_client.get_activities(start=start)
 
+    def post_api_call(self, kwargs):
+        return pipedrive_api_client.post_activity(**kwargs)
+
     @classmethod
     def update_or_create_entity_from_api_post(cls, el):
         return Activity.objects.update_or_create(
@@ -1200,3 +1252,9 @@ class Activity(PipedriveModel):
                 'active_flag': el[u'active_flag'],
             }
         )
+
+    def build_kwargs(self):
+        return {
+            'id': self.external_id,
+            'subject': self.subject,
+        }

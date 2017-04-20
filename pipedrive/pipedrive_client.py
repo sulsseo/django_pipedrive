@@ -300,6 +300,67 @@ class PipedriveAPIClient(object):
 
         return content
 
+    def post_activity(self, **kwargs):
+        """
+        Add a activity to Pipedrive
+        """
+        endpoint = 'activities'
+
+        restpoint = self.post_put_restify(endpoint)
+
+        content = self.post(restpoint, kwargs)
+
+        return content
+
+    def post_note(self, **kwargs):
+        """
+        Add a note to Pipedrive
+        """
+        endpoint = 'notes'
+
+        restpoint = self.post_put_restify(endpoint)
+
+        content = self.post(restpoint, kwargs)
+
+        return content
+
+    def post_pipeline(self, **kwargs):
+        """
+        Add a organization to Pipedrive
+        'name' is required
+        """
+        endpoint = 'pipelines'
+
+        restpoint = self.post_put_restify(endpoint)
+
+        content = self.post(restpoint, kwargs)
+
+        return content
+
+    def post_stage(self, **kwargs):
+        """
+        Add a stage to Pipedrive
+        """
+        endpoint = 'stages'
+
+        restpoint = self.post_put_restify(endpoint)
+
+        content = self.post(restpoint, kwargs)
+
+        return content
+
+    def post_user(self, **kwargs):
+        """
+        Add a user to Pipedrive
+        """
+        endpoint = 'users'
+
+        restpoint = self.post_put_restify(endpoint)
+
+        content = self.post(restpoint, kwargs)
+
+        return content
+
     def get_restify(self, endpoint, pk):
         """
         Creates and returns a valid Pipedrive url for

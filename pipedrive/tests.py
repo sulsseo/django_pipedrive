@@ -1188,6 +1188,60 @@ class TestPipedriveCreation(TestCase):
         self.assertTrue(result)
         self.assertIsNotNone(deal.external_id)
 
+    def test_create_stage(self):
+        pipeline = Pipeline.objects.create(
+            name="TEST_PIPELINE",
+            external_id=888,
+        )
+
+        stage = Stage.objects.create(name="TEST_STAGE", pipeline_id=888)
+
+        print "HOLA"
+        print stage.pipeline_id
+
+        self.assertEquals(stage.pipeline_id, 888)
+
+        result = stage.upload()
+
+        self.assertTrue(result)
+        self.assertIsNotNone(stage.external_id)
+
+    def test_create_user(self):
+
+        user = User.objects.create(name="TEST_USER")
+
+        result = user.upload()
+
+        self.assertTrue(result)
+        self.assertIsNotNone(user.external_id)
+
+    def test_create_pipeline(self):
+
+        pipeline = Pipeline.objects.create(name="TEST_PIPELINE")
+
+        result = pipeline.upload()
+
+        self.assertTrue(result)
+        self.assertIsNotNone(pipeline.external_id)
+
+    def test_create_note(self):
+
+        note = Note.objects.create(content="TEST_NOTE")
+
+        result = note.upload()
+
+        self.assertTrue(result)
+        self.assertIsNotNone(note.external_id)
+
+    def test_create_activity(self):
+
+        activity = Activity.objects.create(subject="TEST_ACTIVITY")
+
+        result = activity.upload()
+
+        self.assertTrue(result)
+        self.assertIsNotNone(activity.external_id)
+
 
 class TestPipedrive(TestCase):
 
