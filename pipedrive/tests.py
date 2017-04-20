@@ -17,6 +17,7 @@ from pipedrive.models import Pipeline
 from pipedrive.models import Stage
 from pipedrive.models import User
 from pipedrive.models import Note
+from pipedrive.models import Activity
 
 
 class TestPipedriveWebhooks(TestCase):
@@ -289,6 +290,84 @@ class TestPipedriveWebhooks(TestCase):
         instance = Person.objects.get(external_id=998)
 
         self.assertEquals(instance.name, "TEST_NAME")
+
+    def test_create_activity(self):
+
+        c = Client()
+
+        self.assertEquals(Activity.objects.count(), 0)
+
+        data = {
+            "v": 1,
+            "matches_filters": {
+                "current": [],
+                "previous": []
+            },
+            "meta": {
+                "v": 1,
+                "action": "added",
+                "object": "activity",
+                "id": 1,
+                "company_id": 1689563,
+                "user_id": 2428657,
+                "host": "mycompany.pipedrive.com",
+                "timestamp": 1492700133,
+                "timestamp_milli": 1492700133328,
+                "permitted_user_ids": ["*"],
+                "trans_pending": False,
+                "is_bulk_update": False,
+                "matches_filters": {
+                    "current": [],
+                    "previous": []
+                }
+            },
+            "retry": 0,
+            "current": {
+                "id": 1,
+                "company_id": 1689563,
+                "user_id": 2428657,
+                "done": False,
+                "type": "call",
+                "reference_type": "none",
+                "reference_id": None,
+                "due_date": "2017-04-20",
+                "due_time": "16:00",
+                "duration": "01:30",
+                "add_time": "2017-04-20 14:55:33",
+                "marked_as_done_time": "",
+                "subject": "That call",
+                "deal_id": 14,
+                "org_id": 18,
+                "person_id": 6,
+                "active_flag": True,
+                "update_time": "2017-04-20 14:55:33",
+                "gcal_event_id": None,
+                "google_calendar_id": None,
+                "google_calendar_etag": None,
+                "note": "It is an important call",
+                "person_name": "TEST_PERSON",
+                "org_name": "TEST_ORGANIZATION",
+                "deal_title": "TEST_DEAL",
+                "assigned_to_user_id": 2428657,
+                "created_by_user_id": 2428657,
+                "owner_name": "Gustavo",
+                "person_dropbox_bcc": "mycompany@pipedrivemail.com",
+                "deal_dropbox_bcc": "mycompany+deal14@pipedrivemail.com",
+                "updates_story_id": 69,
+                "no_gcal": False
+            },
+            "previous": None,
+            "event": "added.activity"
+        }
+
+        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+
+        self.assertEquals(Activity.objects.count(), 1)
+
+        activity = Activity.objects.get(external_id=1)
+
+        self.assertEquals(activity.type, "call")
+        self.assertEquals(activity.subject, "That call")
 
     def test_create_person_in_organization(self):
 
@@ -673,7 +752,7 @@ class TestPipedriveWebhooks(TestCase):
                 "id": 995,
                 "company_id": 1689563,
                 "user_id": 2428657,
-                "host": "miempresa2.pipedrive.com",
+                "host": "mycompany.pipedrive.com",
                 "timestamp": 1492687681,
                 "timestamp_milli": 1492687681417,
                 "permitted_user_ids": ["*"],
@@ -739,7 +818,7 @@ class TestPipedriveWebhooks(TestCase):
                 "id": 995,
                 "company_id": 1689563,
                 "user_id": 2428657,
-                "host": "miempresa2.pipedrive.com",
+                "host": "mycompany.pipedrive.com",
                 "timestamp": 1492687681,
                 "timestamp_milli": 1492687681417,
                 "permitted_user_ids": ["*"],
@@ -804,7 +883,7 @@ class TestPipedriveWebhooks(TestCase):
                 "id": 995,
                 "company_id": 1689563,
                 "user_id": 2428657,
-                "host": "miempresa2.pipedrive.com",
+                "host": "mycompany.pipedrive.com",
                 "timestamp": 1492687681,
                 "timestamp_milli": 1492687681417,
                 "permitted_user_ids": ["*"],
@@ -877,7 +956,7 @@ class TestPipedriveWebhooks(TestCase):
                 "id": 9,
                 "company_id": 1689563,
                 "user_id": 2428657,
-                "host": "miempresa2.pipedrive.com",
+                "host": "mycompany.pipedrive.com",
                 "timestamp": 1492695625,
                 "timestamp_milli": 1492695625650,
                 "permitted_user_ids": [2428657],
@@ -942,7 +1021,7 @@ class TestPipedriveWebhooks(TestCase):
                 "weighted_value": 3500,
                 "formatted_weighted_value": "3 500 CLF",
                 "owner_name": "TEST_USER",
-                "cc_email": "miempresa2+deal9@pipedrivemail.com",
+                "cc_email": "mycompany+deal9@pipedrivemail.com",
                 "org_hidden": False,
                 "person_hidden": False
             },
@@ -1108,5 +1187,11 @@ class TestPipedrive(TestCase):
     def test_fetch_from_pipedrive_notes(self):
 
         result = Note.fetch_from_pipedrive()
+
+        self.assertTrue(result)
+
+    def test_fetch_from_pipedrive_activities(self):
+
+        result = Activity.fetch_from_pipedrive()
 
         self.assertTrue(result)

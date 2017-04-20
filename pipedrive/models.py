@@ -79,6 +79,12 @@ class PipedriveModel(models.Model):
         return None
 
     @classmethod
+    def get_str_or_none(cls, el, field_name):
+        if field_name in el and el[field_name] is not None and el[field_name] != '':
+            return el[field_name]
+        return None
+
+    @classmethod
     def fetch_from_pipedrive(cls):
         """
         The function iterates requesting for Organizations while in steps defined
@@ -959,3 +965,106 @@ class Note(PipedriveModel):
             }
         )
 
+
+class Activity(PipedriveModel):
+    external_id = models.IntegerField(
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    user = models.ForeignKey(
+        User,
+        null=True,
+        blank=True,
+        to_field="external_id",
+    )
+    deal = models.ForeignKey(
+        Deal,
+        null=True,
+        blank=True,
+        to_field="external_id",
+    )
+    org = models.ForeignKey(
+        Organization,
+        null=True,
+        blank=True,
+        to_field="external_id",
+    )
+    person = models.ForeignKey(
+        Person,
+        null=True,
+        blank=True,
+        to_field="external_id",
+    )
+    done = models.NullBooleanField(
+        null=True
+    )
+    subject = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+    )
+    note = models.CharField(
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    type = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+    )
+    due_date = models.DateField(
+        null=True,
+        blank=True,
+    )
+    due_time = models.TimeField(
+        null=True,
+        blank=True,
+    )
+    duration = models.TimeField(
+        null=True,
+        blank=True,
+    )
+    marked_as_done_time = models.TimeField(
+        null=True,
+        blank=True,
+    )
+    active_flag = models.NullBooleanField(
+        null=True
+    )
+    update_time = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+    add_time = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+
+    @classmethod
+    def get_api_call(cls, start):
+        return pipedrive_api_client.get_activities(start=start)
+
+    @classmethod
+    def update_or_create_entity_from_api_post(cls, el):
+        return Activity.objects.update_or_create(
+            external_id=el[u'id'],
+            defaults={
+                'user_id': el[u'user_id'],
+                'deal_id': el[u'deal_id'],
+                'person_id': el[u'person_id'],
+                'org_id': el[u'org_id'],
+                'subject': el[u'subject'],
+                'note': el[u'note'],
+                'done': el[u'done'],
+                'type': el[u'type'],
+                'due_date': el[u'due_date'],
+                'due_time': el[u'due_time'],
+                'duration': el[u'duration'],
+                'marked_as_done_time': cls.get_str_or_none(el, u'marked_as_done_time'),
+                'add_time': cls.datetime_from_simple_time(el, u'add_time'),
+                'update_time': cls.datetime_from_simple_time(el, u'update_time'),
+                'active_flag': el[u'active_flag'],
+            }
+        )

@@ -9,6 +9,7 @@ from pipedrive.models import Deal
 from pipedrive.models import Person
 from pipedrive.models import Organization
 from pipedrive.models import Note
+from pipedrive.models import Activity
 
 
 class NonImplementedVersionException(Exception):
@@ -66,10 +67,12 @@ def handle_v1(json_data):
 
         # Object's key name is changed
         current['external_id'] = current.pop('id')
-
+        print current
         # Fields from the API that are not localy recognized
         # by the model are filtered
         current = filter_fields(current, model)
+        current = fix_fields(current)
+        print current
 
         model.objects.create(**current)
 
@@ -94,6 +97,7 @@ def map_models(object_type):
         'person': Person,
         'organization': Organization,
         'note': Note,
+        'activity': Activity,
     }[object_type]
 
 
@@ -104,5 +108,18 @@ def filter_fields(data, model):
     for k in data.keys():
         if k not in keylist:
             data.pop(k)
+
+    return data
+
+
+def fix_fields(data):
+    """
+    fix_fields fixes type issues with some fields
+    for example marked_as_done_time datetime field appears
+    as '' instead of None
+    """
+    for k in data.keys():
+        if k == u'marked_as_done_time' and data[k] == u'':
+            data[k] = None
 
     return data

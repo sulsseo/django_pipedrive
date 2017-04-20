@@ -229,6 +229,16 @@ class PipedriveAPIClient(object):
 
         return content
 
+    def get_activities(self, **kwargs):
+        """
+        Obtain a list of activities from the api
+        """
+        endpoint = 'activities'
+
+        content = self.get(endpoint, kwargs)
+
+        return content
+
     def get_organization_fields(self, **kwargs):
         """
         Get organization fields & custom fields
