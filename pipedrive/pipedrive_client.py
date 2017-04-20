@@ -219,6 +219,16 @@ class PipedriveAPIClient(object):
 
         return content
 
+    def get_notes(self, **kwargs):
+        """
+        Obtain a list of notes from the api
+        """
+        endpoint = 'notes'
+
+        content = self.get(endpoint, kwargs)
+
+        return content
+
     def get_organization_fields(self, **kwargs):
         """
         Get organization fields & custom fields

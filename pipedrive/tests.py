@@ -1104,3 +1104,9 @@ class TestPipedrive(TestCase):
         result = User.fetch_from_pipedrive()
 
         self.assertTrue(result)
+
+    def test_fetch_from_pipedrive_notes(self):
+
+        result = Note.fetch_from_pipedrive()
+
+        self.assertTrue(result)

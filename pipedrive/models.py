@@ -137,6 +137,69 @@ class PipedriveModel(models.Model):
         return True
 
 
+class User(PipedriveModel):
+    external_id = models.IntegerField(
+        null=True,
+        blank=True,
+        db_index=True,
+        unique=True,
+    )
+    name = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+    )
+    email = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+    )
+    phone = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+    )
+    last_login = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+    created = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+    modified = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+    role_id = models.IntegerField(
+        null=True,
+        blank=True,
+    )
+    active_flag = models.NullBooleanField(
+        null=True
+    )
+
+    @classmethod
+    def get_api_call(cls, start):
+        return pipedrive_api_client.get_users(start=start)
+
+    @classmethod
+    def update_or_create_entity_from_api_post(cls, el):
+        return User.objects.update_or_create(
+            external_id=el[u'id'],
+            defaults={
+                'name': el[u'name'],
+                'email': el[u'email'],
+                'phone': el[u'phone'],
+                'last_login': cls.datetime_from_simple_time(el, u'last_login'),
+                'created': cls.datetime_from_simple_time(el, u'created'),
+                'modified': cls.datetime_from_simple_time(el, u'modified'),
+                'role_id': el[u'role_id'],
+                'active_flag': el[u'active_flag'],
+            }
+        )
+
+
 class Organization(PipedriveModel):
     """
     saves a registry of Org sent to pipedrive
@@ -533,7 +596,6 @@ class Deal(PipedriveModel):
 
     @classmethod
     def update_or_create_entity_from_api_post(cls, el):
-        print el
         return Deal.objects.update_or_create(
             external_id=el[u'id'],
             defaults={
@@ -836,9 +898,11 @@ class Note(PipedriveModel):
         blank=True,
         db_index=True,
     )
-    external_user_id = models.IntegerField(
+    user = models.ForeignKey(
+        User,
         null=True,
         blank=True,
+        to_field="external_id",
     )
     deal = models.ForeignKey(
         Deal,
@@ -895,63 +959,3 @@ class Note(PipedriveModel):
             }
         )
 
-class User(PipedriveModel):
-    external_id = models.IntegerField(
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    name = models.CharField(
-        max_length=255,
-        null=True,
-        blank=True,
-    )
-    email = models.CharField(
-        max_length=255,
-        null=True,
-        blank=True,
-    )
-    phone = models.CharField(
-        max_length=255,
-        null=True,
-        blank=True,
-    )
-    last_login = models.DateTimeField(
-        null=True,
-        blank=True,
-    )
-    created = models.DateTimeField(
-        null=True,
-        blank=True,
-    )
-    modified = models.DateTimeField(
-        null=True,
-        blank=True,
-    )
-    role_id = models.IntegerField(
-        null=True,
-        blank=True,
-    )
-    active_flag = models.NullBooleanField(
-        null=True
-    )
-
-    @classmethod
-    def get_api_call(cls, start):
-        return pipedrive_api_client.get_users(start=start)
-
-    @classmethod
-    def update_or_create_entity_from_api_post(cls, el):
-        return User.objects.update_or_create(
-            external_id=el[u'id'],
-            defaults={
-                'name': el[u'name'],
-                'email': el[u'email'],
-                'phone': el[u'phone'],
-                'last_login': cls.datetime_from_simple_time(el, u'last_login'),
-                'created': cls.datetime_from_simple_time(el, u'created'),
-                'modified': cls.datetime_from_simple_time(el, u'modified'),
-                'role_id': el[u'role_id'],
-                'active_flag': el[u'active_flag'],
-            }
-        )
