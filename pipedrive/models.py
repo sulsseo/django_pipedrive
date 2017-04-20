@@ -145,7 +145,8 @@ class Organization(PipedriveModel):
         max_length=255,
         null=True,
         blank=True,
-        db_index=True
+        unique=True,
+        db_index=True,
     )
     last_updated_at = models.DateTimeField(
         null=True,
@@ -419,6 +420,7 @@ class Deal(PipedriveModel):
         max_length=255,
         null=True,
         blank=True,
+        unique=True,
         db_index=True,
     )
     external_person_id = models.CharField(
@@ -834,19 +836,23 @@ class Note(PipedriveModel):
         null=True,
         blank=True,
     )
-    external_deal_id = models.IntegerField(
+    deal = models.ForeignKey(
+        Deal,
         null=True,
         blank=True,
+        to_field="external_id",
     )
     person = models.ForeignKey(
         Person,
         null=True,
         blank=True,
-        to_field="external_id"
+        to_field="external_id",
     )
-    external_org_id = models.IntegerField(
+    org = models.ForeignKey(
+        Organization,
         null=True,
         blank=True,
+        to_field="external_id",
     )
     content = models.CharField(
         max_length=1024,
@@ -874,10 +880,10 @@ class Note(PipedriveModel):
         return Note.objects.update_or_create(
             external_id=el[u'id'],
             defaults={
-                'external_user_id': el[u'user_id'],
-                'external_deal_id': el[u'deal_id'],
-                'external_person_id': el[u'person_id'],
-                'external_org_id': el[u'org_id'],
+                'user_id': el[u'user_id'],
+                'deal_id': el[u'deal_id'],
+                'person_id': el[u'person_id'],
+                'org_id': el[u'org_id'],
                 'content': el[u'content'],
                 'add_time': cls.datetime_from_simple_time(el, u'add_time'),
                 'update_time': cls.datetime_from_simple_time(el, u'update_time'),

@@ -540,7 +540,7 @@ class TestPipedriveWebhooks(TestCase):
 
         self.assertEquals(Organization.objects.count(), 2)
 
-    def test_create_note(self):
+    def test_create_person_note(self):
 
       c = Client()
 
@@ -582,8 +582,8 @@ class TestPipedriveWebhooks(TestCase):
             "person": {"name": "TEST_PERSON"},
             "deal": None,
             "user": {
-                "email": "gsoto@masaval.cl",
-                "name": "Gustavo",
+                "email": "user@example.com",
+                "name": "TEST_USER",
                 "icon_url": None,
                 "is_you": True
             }
@@ -607,6 +607,137 @@ class TestPipedriveWebhooks(TestCase):
       self.assertEquals(person.note_set.count(), 1)
 
 
+    def test_create_organization_note(self):
+
+      c = Client()
+
+      data = {
+        "v": 1,
+        "matches_filters": None,
+        "meta":
+            {
+            "v": 1,
+            "action": "added",
+            "object": "note",
+            "id": 995,
+            "company_id": 1689563,
+            "user_id": 2428657,
+            "host": "miempresa2.pipedrive.com",
+            "timestamp": 1492687681,
+            "timestamp_milli": 1492687681417,
+            "permitted_user_ids": ["*"],
+            "trans_pending": False,
+            "is_bulk_update": False,
+            "elastic_enabled": True
+        },
+        "retry": 0,
+        "current": {
+            "id": 995,
+            "user_id": 2428657,
+            "deal_id": None,
+            "person_id": None,
+            "org_id": 993,
+            "content": "This is an example note",
+            "add_time": "2017-04-20 11:28:01",
+            "update_time": "2017-04-20 11:28:01",
+            "active_flag": True,
+            "pinned_to_deal_flag": False,
+            "pinned_to_person_flag": False,
+            "pinned_to_organization_flag": False,
+            "last_update_user_id": None,
+            "organization": None,
+            "person": {"name": "TEST_PERSON"},
+            "deal": None,
+            "user": {
+                "email": "user@example.com",
+                "name": "TEST_USER",
+                "icon_url": None,
+                "is_you": True
+            }
+        },
+        "previous": None,
+        "event": "added.note"
+      }
+
+      Organization.objects.create(external_id=993)
+
+      response = c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+
+      self.assertEquals(Note.objects.count(), 1)
+
+      note = Note.objects.get(external_id=995)
+
+      self.assertEquals(note.content, "This is an example note")
+
+      organization = Organization.objects.get(external_id=993)
+
+      self.assertEquals(organization.note_set.count(), 1)
+
+    def test_create_deal_note(self):
+
+      c = Client()
+
+      data = {
+        "v": 1,
+        "matches_filters": None,
+        "meta":
+            {
+            "v": 1,
+            "action": "added",
+            "object": "note",
+            "id": 995,
+            "company_id": 1689563,
+            "user_id": 2428657,
+            "host": "miempresa2.pipedrive.com",
+            "timestamp": 1492687681,
+            "timestamp_milli": 1492687681417,
+            "permitted_user_ids": ["*"],
+            "trans_pending": False,
+            "is_bulk_update": False,
+            "elastic_enabled": True
+        },
+        "retry": 0,
+        "current": {
+            "id": 995,
+            "user_id": 2428657,
+            "deal_id": 992,
+            "person_id": None,
+            "org_id": None,
+            "content": "This is an example note",
+            "add_time": "2017-04-20 11:28:01",
+            "update_time": "2017-04-20 11:28:01",
+            "active_flag": True,
+            "pinned_to_deal_flag": False,
+            "pinned_to_person_flag": False,
+            "pinned_to_organization_flag": False,
+            "last_update_user_id": None,
+            "organization": None,
+            "person": {"name": "TEST_PERSON"},
+            "deal": None,
+            "user": {
+                "email": "user@example.com",
+                "name": "TEST_USER",
+                "icon_url": None,
+                "is_you": True
+            }
+        },
+        "previous": None,
+        "event": "added.note"
+      }
+
+      Deal.objects.create(external_id=992)
+
+      response = c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+
+      self.assertEquals(Note.objects.count(), 1)
+
+      note = Note.objects.get(external_id=995)
+
+      self.assertEquals(note.content, "This is an example note")
+
+      deal = Deal.objects.get(external_id=992)
+
+      self.assertEquals(deal.note_set.count(), 1)
 
 
 class TestPipedriveCreation(TestCase):
