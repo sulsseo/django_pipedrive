@@ -67,12 +67,11 @@ def handle_v1(json_data):
 
         # Object's key name is changed
         current['external_id'] = current.pop('id')
-        print current
+
         # Fields from the API that are not localy recognized
         # by the model are filtered
         current = filter_fields(current, model)
         current = fix_fields(current)
-        print current
 
         model.objects.create(**current)
 
@@ -81,7 +80,7 @@ def handle_v1(json_data):
         # The corresponding instance is found for delete
         instance = model.objects.get(external_id=external_id)
 
-        instance.deleted = True;
+        instance.deleted = True
         instance.save()
 
     if action == 'merged':

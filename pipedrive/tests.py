@@ -350,7 +350,7 @@ class TestPipedriveWebhooks(TestCase):
                 "deal_title": "TEST_DEAL",
                 "assigned_to_user_id": 2428657,
                 "created_by_user_id": 2428657,
-                "owner_name": "Gustavo",
+                "owner_name": "TEST_OWNER",
                 "person_dropbox_bcc": "mycompany@pipedrivemail.com",
                 "deal_dropbox_bcc": "mycompany+deal14@pipedrivemail.com",
                 "updates_story_id": 69,
