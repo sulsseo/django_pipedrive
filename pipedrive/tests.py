@@ -189,6 +189,61 @@ class TestPipedriveWebhooks(TestCase):
 
         self.assertEquals(instance.value, 1000)
 
+    def test_update_pipeline(self):
+
+        c = Client()
+
+        Pipeline.objects.create(external_id=1, name="EXAMPLE_PIPELINE")
+
+        self.assertEquals(Pipeline.objects.count(), 1)
+
+        data = {
+            "v": 1,
+            "matches_filters": None,
+            "meta": {
+                "v": 1,
+                "action": "updated",
+                "object": "pipeline",
+                "id": "1",
+                "company_id": 1689563,
+                "user_id": 2428657,
+                "host": "mycompany.pipedrive.com",
+                "timestamp": 1492704744,
+                "timestamp_milli": 1492704744018,
+                "permitted_user_ids": ["*"],
+                "trans_pending": False,
+                "is_bulk_update": False
+            },
+            "retry": 0,
+            "current": {
+                "id": 1,
+                "name": "EXAMPLE_PIPELINE_2",
+                "url_title": "ThatPipeline",
+                "order_nr": 1,
+                "active": True,
+                "add_time": "2017-04-13 16:58:30",
+                "update_time": "2017-04-20 16:12:23"
+            },
+            "previous": {
+                "id": 1,
+                "name": "EXAMPLE_PIPELINE",
+                "url_title": "default",
+                "order_nr": 1,
+                "active": True,
+                "add_time": "2017-04-13 16:58:30",
+                "update_time": None
+            },
+            "event": "updated.pipeline"
+        }
+
+        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+
+        self.assertEquals(Pipeline.objects.count(), 1)
+
+        pipeline = Pipeline.objects.get(external_id=1)
+
+        self.assertEquals(pipeline.name, "EXAMPLE_PIPELINE_2")
+
     def test_create_person(self):
 
         c = Client()
@@ -1194,5 +1249,11 @@ class TestPipedrive(TestCase):
     def test_fetch_from_pipedrive_activities(self):
 
         result = Activity.fetch_from_pipedrive()
+
+        self.assertTrue(result)
+
+    def test_fetch_from_pipedrive_pipelines(self):
+
+        result = Pipeline.fetch_from_pipedrive()
 
         self.assertTrue(result)

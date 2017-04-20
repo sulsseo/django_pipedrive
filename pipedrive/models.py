@@ -832,20 +832,40 @@ class PersonField(BaseField):
             fields_object.save()
 
 
-class Pipeline(models.Model):
+class Pipeline(PipedriveModel):
     """
     Stores a single pipe line stage entry.
     :model:`pipeline.Pipeline`.
     """
     external_id = models.IntegerField(
+        null=True,
+        blank=True,
+        db_index=True,
     )
     deleted = models.BooleanField(
         default=False
     )
     name = models.CharField(
         max_length=255,
+        null=True,
+        blank=True,
     )
-    active_flag = models.BooleanField(
+    url_title = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+    )
+    active = models.NullBooleanField(
+        null=True,
+        blank=True,
+    )
+    add_time = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+    update_time = models.DateTimeField(
+        null=True,
+        blank=True,
     )
 
     def __unicode__(self):
@@ -865,11 +885,29 @@ class Pipeline(models.Model):
             stage_object, created = cls.objects.get_or_create(
                 external_id=pipeline_stage['id'],
                 name=pipeline_stage['name'],
-                active_flag=pipeline_stage['active']
+                active=pipeline_stage['active']
             )
 
+    @classmethod
+    def get_api_call(cls, start):
+        return pipedrive_api_client.get_pipelines(start=start)
 
-class Stage(models.Model):
+    @classmethod
+    def update_or_create_entity_from_api_post(cls, el):
+        return Pipeline.objects.update_or_create(
+            external_id=el[u'id'],
+            defaults={
+                'name': el[u'name'],
+                'url_title': el[u'url_title'],
+                'active': el[u'active'],
+                'add_time': cls.datetime_from_simple_time(el, u'add_time'),
+                'update_time': cls.datetime_from_simple_time(el, u'update_time'),
+                'active': el[u'active'],
+            }
+        )
+
+
+class Stage(PipedriveModel):
     """
     Stores a single stage entry.
     :model:`pipeline.Stage`.
