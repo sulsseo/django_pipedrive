@@ -371,7 +371,7 @@ class Person(PipedriveModel):
                 'email': cls.get_primary(el, u'email'),
                 'add_time': cls.datetime_from_simple_time(el, u'add_time'),
                 'update_time': cls.datetime_from_simple_time(el, u'update_time'),
-                'external_organization_id': cls.get_internal_field(el, u'org_id', u'value'),
+                'org_id': cls.get_internal_field(el, u'org_id', u'value'),
                 'owner_id': el[u'owner_id'][u'id'],
                 'open_deals_count': el[u'open_deals_count'],
                 'visible_to': el[u'visible_to'],
@@ -515,7 +515,7 @@ class Deal(PipedriveModel):
     email_messages_count = models.IntegerField(
         null=True
     )
-    expected_close_date = models.DateTimeField(
+    expected_close_date = models.DateField(
         null=True,
         blank=True,
     )
@@ -533,6 +533,7 @@ class Deal(PipedriveModel):
 
     @classmethod
     def update_or_create_entity_from_api_post(cls, el):
+        print el
         return Deal.objects.update_or_create(
             external_id=el[u'id'],
             defaults={
@@ -540,9 +541,9 @@ class Deal(PipedriveModel):
                 'creator_user_id': cls.get_internal_field(el, 'creator_user_id', 'id'),
                 'external_user_id': cls.get_internal_field(el, 'user_id', 'id'),
                 'value': el[u'value'],
-                'external_org_id': cls.get_internal_field(el, u'org_id', u'value'),
+                'org_id': cls.get_internal_field(el, u'org_id', u'value'),
                 'external_pipeline_id': el[u'pipeline_id'],
-                'external_person_id': cls.get_internal_field(el, 'person_id', 'value'),
+                'person_id': cls.get_internal_field(el, 'person_id', 'value'),
                 'external_stage_id': el[u'stage_id'],
                 'add_time': cls.datetime_from_simple_time(el, u'add_time'),
                 'update_time': cls.datetime_from_simple_time(el, u'update_time'),
@@ -566,7 +567,7 @@ class Deal(PipedriveModel):
                 'done_activities_count': el[u'done_activities_count'],
                 'undone_activities_count': el[u'undone_activities_count'],
                 'email_messages_count': el[u'email_messages_count'],
-                'expected_close_date': cls.datetime_from_simple_time(el, u'expected_close_date'),
+                'expected_close_date': el[u'expected_close_date'],
             }
         )
 
