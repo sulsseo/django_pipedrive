@@ -456,8 +456,11 @@ class Person(PipedriveModel):
         blank=True,
         to_field="external_id",
     )
-    owner_id = models.IntegerField(
+    owner = models.ForeignKey(
+        User,
         null=True,
+        blank=True,
+        to_field="external_id",
     )
     open_deals_count = models.IntegerField(
         null=True,

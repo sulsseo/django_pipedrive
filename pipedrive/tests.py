@@ -255,6 +255,8 @@ class TestPipedriveWebhooks(TestCase):
 
         self.assertEquals(Person.objects.count(), 0)
 
+        User.objects.create(external_id=111)
+
         data = {
             "v": 1,
             "matches_filters": {
@@ -284,7 +286,7 @@ class TestPipedriveWebhooks(TestCase):
             "current": {
                 "id": 998,
                 "company_id": 1689563,
-                "owner_id": 2428657,
+                "owner_id": 111,
                 "org_id": None,
                 "name": "TEST_NAME",
                 "first_name": "TEST_LASTNAME",
@@ -350,6 +352,8 @@ class TestPipedriveWebhooks(TestCase):
         instance = Person.objects.get(external_id=998)
 
         self.assertEquals(instance.name, "TEST_NAME")
+
+        self.assertEquals(instance.owner.external_id, 111)
 
     def test_create_activity(self):
 
