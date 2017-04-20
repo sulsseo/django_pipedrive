@@ -368,7 +368,7 @@ class Person(PipedriveModel):
                 'email': cls.get_primary(el, u'email'),
                 'add_time': cls.datetime_from_simple_time(el, u'add_time'),
                 'update_time': cls.datetime_from_simple_time(el, u'update_time'),
-                'org_id': cls.get_internal_field(el, u'org_id', u'value'),
+                'external_organization_id': cls.get_internal_field(el, u'org_id', u'value'),
                 'owner_id': el[u'owner_id'][u'id'],
                 'open_deals_count': el[u'open_deals_count'],
                 'visible_to': el[u'visible_to'],
