@@ -18,6 +18,7 @@ from pipedrive.models import Stage
 from pipedrive.models import User
 from pipedrive.models import Note
 from pipedrive.models import Activity
+from pipedrive.models import PipedriveModel
 
 
 class TestPipedriveWebhooks(TestCase):
@@ -542,6 +543,54 @@ class TestPipedriveWebhooks(TestCase):
         organization = Organization.objects.get(external_id=992)
 
         self.assertEquals(organization.person_set.count(), 1)
+
+    def test_create_stage(self):
+
+        c = Client()
+
+        self.assertEquals(Stage.objects.count(), 0)
+
+        data = {
+            "v": 1,
+            "matches_filters": None,
+            "meta": {
+                "v": 1,
+                "action": "added",
+                "object": "stage",
+                "id": 6,
+                "company_id": 1689563,
+                "user_id": 2428657,
+                "host": "miempresa2.pipedrive.com",
+                "timestamp": 1492712041,
+                "timestamp_milli": 1492712041663,
+                "permitted_user_ids": ["*"],
+                "trans_pending": False,
+                "is_bulk_update": False
+            },
+            "retry": 0,
+            "current": {
+                "id": 6,
+                "order_nr": 6,
+                "name": "TEST_STAGE",
+                "active_flag": True,
+                "deal_probability": 100,
+                "pipeline_id": 1,
+                "rotten_flag": True,
+                "rotten_days": 5,
+                "add_time": "2017-04-20 18:14:01",
+                "update_time": "2017-04-20 18:14:01"
+            },
+            "previous": None,
+            "event": "added.stage"
+        }
+
+        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+
+        self.assertEquals(Stage.objects.count(), 1)
+
+        stage = Stage.objects.get(external_id=6)
+
+        self.assertEquals(stage.name, "TEST_STAGE")
 
     def test_delete_organization(self):
 
@@ -1271,5 +1320,11 @@ class TestPipedrive(TestCase):
     def test_fetch_from_pipedrive_pipelines(self):
 
         result = Pipeline.fetch_from_pipedrive()
+
+        self.assertTrue(result)
+
+    def test_sync_from_pipedrive(self):
+
+        result = PipedriveModel.sync_from_pipedrive()
 
         self.assertTrue(result)

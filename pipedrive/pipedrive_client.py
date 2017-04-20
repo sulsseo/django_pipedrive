@@ -107,7 +107,7 @@ class PipedriveAPIClient(object):
 
         return content
 
-    def get_stages(self):
+    def get_stages(self, **kwargs):
         """
         get all stages from pipedrive
         """

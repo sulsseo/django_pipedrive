@@ -114,6 +114,10 @@ class PipedriveModel(models.Model):
                 if created:
                     count_created = count_created + 1
 
+            # Break the loop when there is no pagination info
+            if 'additional_data' not in post_data:
+                break
+
             additional_data = post_data['additional_data']
 
             # Break the loop when the API replies there is no more pagination
@@ -128,6 +132,18 @@ class PipedriveModel(models.Model):
         logging.info("Entities updated: " + str(queries - count_created))
 
         return True
+
+    @classmethod
+    def sync_from_pipedrive(cls):
+        result = User.fetch_from_pipedrive()
+        result = result and Pipeline.fetch_from_pipedrive()
+        result = result and Stage.fetch_from_pipedrive()
+        result = result and Organization.fetch_from_pipedrive()
+        result = result and Person.fetch_from_pipedrive()
+        result = result and Deal.fetch_from_pipedrive()
+        result = result and Note.fetch_from_pipedrive()
+        result = result and Activity.fetch_from_pipedrive()
+        return result
 
     def upload(self):
 
@@ -595,11 +611,21 @@ class Deal(PipedriveModel):
         null=True,
         blank=True,
     )
-    creator_user_id = models.IntegerField(
-        null=True
+    user = models.ForeignKey(
+        User,
+        null=True,
+        blank=True,
+        db_index=True,
+        to_field="external_id",
+        related_name='user'
     )
-    external_user_id = models.IntegerField(
-        null=True
+    creator_user = models.ForeignKey(
+        User,
+        null=True,
+        blank=True,
+        db_index=True,
+        to_field="external_id",
+        related_name='creator'
     )
     value = models.IntegerField(
         null=True
@@ -706,7 +732,7 @@ class Deal(PipedriveModel):
             defaults={
                 'title': el[u'title'],
                 'creator_user_id': cls.get_internal_field(el, 'creator_user_id', 'id'),
-                'external_user_id': cls.get_internal_field(el, 'user_id', 'id'),
+                'user_id': cls.get_internal_field(el, 'user_id', 'id'),
                 'value': el[u'value'],
                 'org_id': cls.get_internal_field(el, u'org_id', u'value'),
                 'pipeline_id': el[u'pipeline_id'],
@@ -925,11 +951,20 @@ class Stage(PipedriveModel):
     :model:`pipeline.Stage`.
     """
     external_id = models.IntegerField(
+        null=True,
+        blank=True,
+        unique=True,
+        db_index=True,
     )
     deleted = models.BooleanField(
         default=False
     )
-    pipeline_id = models.IntegerField(
+    pipeline = models.ForeignKey(
+        Pipeline,
+        null=True,
+        blank=True,
+        db_index=True,
+        to_field="external_id",
     )
     pipeline_name = models.CharField(
         max_length=255,
@@ -938,8 +973,11 @@ class Stage(PipedriveModel):
         max_length=255,
     )
     order_nr = models.IntegerField(
+        null=True,
+        blank=True,
     )
-    active_flag = models.BooleanField(
+    active_flag = models.NullBooleanField(
+        null=True
     )
 
     def __unicode__(self):
@@ -964,6 +1002,26 @@ class Stage(PipedriveModel):
                 active_flag=stage['active_flag'],
                 order_nr=stage['order_nr'],
             )
+
+    @classmethod
+    def get_api_call(cls, start):
+        return pipedrive_api_client.get_stages(start=start)
+
+    @classmethod
+    def update_or_create_entity_from_api_post(cls, el):
+        return Stage.objects.update_or_create(
+            external_id=el[u'id'],
+            defaults={
+                'name': el[u'name'],
+                'pipeline_id': el[u'pipeline_id'],
+                'pipeline_name': el[u'pipeline_name'],
+                'name': el[u'name'],
+                'order_nr': el[u'order_nr'],
+                'active_flag': el[u'active_flag'],
+                'add_time': cls.datetime_from_simple_time(el, u'add_time'),
+                'update_time': cls.datetime_from_simple_time(el, u'update_time'),
+            }
+        )
 
 
 class Note(PipedriveModel):

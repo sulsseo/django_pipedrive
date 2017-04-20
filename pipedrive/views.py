@@ -11,6 +11,7 @@ from pipedrive.models import Organization
 from pipedrive.models import Note
 from pipedrive.models import Activity
 from pipedrive.models import Pipeline
+from pipedrive.models import Stage
 
 
 class NonImplementedVersionException(Exception):
@@ -100,6 +101,7 @@ def map_models(object_type):
         'note': Note,
         'activity': Activity,
         'pipeline': Pipeline,
+        'stage': Stage
     }[object_type]
 
 
