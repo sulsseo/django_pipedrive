@@ -527,7 +527,7 @@ class Deal(PipedriveModel):
     )
 
     def __unicode__(self):
-        return str(self.externalid) + " : " + str(self.title)
+        return str(self.external_id) + " : " + str(self.title)
 
     @classmethod
     def get_api_call(cls, start):
