@@ -1,6 +1,7 @@
 import json
 
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 
 from django.http import HttpResponse
 from django.http import HttpResponseServerError
@@ -19,6 +20,7 @@ class NonImplementedVersionException(Exception):
 
 
 # Create your views here.
+@csrf_exempt
 def index(request):
 
     if request.method == 'POST':
