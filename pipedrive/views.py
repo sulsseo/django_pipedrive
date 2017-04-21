@@ -1,10 +1,13 @@
 import json
+import logging
 
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
+from django.db import IntegrityError
 
 from django.http import HttpResponse
 from django.http import HttpResponseServerError
+
 
 from pipedrive.models import Deal
 from pipedrive.models import Person
@@ -13,6 +16,7 @@ from pipedrive.models import Note
 from pipedrive.models import Activity
 from pipedrive.models import Pipeline
 from pipedrive.models import Stage
+from pipedrive.models import PipedriveModel
 
 
 class NonImplementedVersionException(Exception):
@@ -23,19 +27,24 @@ class NonImplementedVersionException(Exception):
 @csrf_exempt
 def index(request):
 
-    if request.method == 'POST':
-        try:
-            json_data = json.loads(request.body)
-            meta = json_data[u'meta']
+    try:
+        if request.method == 'POST':
+            try:
+                json_data = json.loads(request.body)
+                meta = json_data[u'meta']
 
-            # API v1
-            if meta[u'v'] == 1:
-                return handle_v1(json_data)
-            else:
-                raise NonImplementedVersionException
+                # API v1
+                if meta[u'v'] == 1:
+                    return handle_v1(json_data)
+                else:
+                    raise NonImplementedVersionException
 
-        except KeyError:
-            HttpResponseServerError("Malformed data!")
+            except KeyError:
+                HttpResponseServerError("Malformed data!")
+    except IntegrityError as e:
+        logging.info(e.message)
+        logging("Forcing full sync from pipedrive")
+        PipedriveModel.sync_from_pipedrive()
 
     return HttpResponse("Hello, world!")
 
