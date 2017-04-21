@@ -55,7 +55,7 @@ class PipedriveModel(models.Model):
         returns a datetime aware of the timezone.
         Returns None if fields do not exist in el.
         """
-        if datetime_field not in el or el[datetime_field] is None:
+        if datetime_field not in el or el[datetime_field] is None or el[datetime_field] == '0000-00-00 00:00:00':
             return None
         else:
             return timezone.make_aware(
@@ -149,7 +149,11 @@ class PipedriveModel(models.Model):
 
         kwargs = self.build_kwargs()
 
+        print kwargs
+
         post_data = self.post_api_call(kwargs)
+
+        print post_data
 
         if not post_data[u'success']:
             logging.error(post_data)
@@ -223,6 +227,19 @@ class User(PipedriveModel):
         null=True
     )
 
+    def build_kwargs(self):
+        return {
+            'id': self.external_id,
+            'name': self.name,
+            'email': self.email,
+            'phone': self.phone,
+            'last_login': self.last_login,
+            'created': self.created,
+            'modified': self.modified,
+            'role_id': self.role_id,
+            'active_flag': self.active_flag,
+        }
+
     @classmethod
     def get_api_call(cls, start):
         return pipedrive_api_client.get_users(start=start)
@@ -232,6 +249,7 @@ class User(PipedriveModel):
 
     @classmethod
     def update_or_create_entity_from_api_post(cls, el):
+        print el
         return User.objects.update_or_create(
             external_id=el[u'id'],
             defaults={
@@ -283,6 +301,16 @@ class Pipeline(PipedriveModel):
         null=True,
         blank=True,
     )
+
+    def build_kwargs(self):
+        return {
+            'id': self.external_id,
+            'name': self.name,
+            'url_title': self.url_title,
+            'active': self.active,
+            'add_time': self.add_time,
+            'update_time': self.update_time,
+        }
 
     def __unicode__(self):
         return u'Pipe ID: {}, Name: {}.'.format(
@@ -407,6 +435,14 @@ class Organization(PipedriveModel):
         blank=True,
     )
 
+    def build_kwargs(self):
+        return {
+            'id': self.external_id,
+            'name': self.name,
+            'visible_to': self.visible_to,
+            'address': self.address,
+        }
+
     def __unicode__(self):
         return str(self.external_id) + " : " + str(self.name)
 
@@ -442,12 +478,6 @@ class Organization(PipedriveModel):
                 'address': el[u'address_formatted_address'],
             }
         )
-
-    def build_kwargs(self):
-        return {
-            'id': self.external_id,
-            'name': self.name,
-        }
 
     def post_api_call(self, kwargs):
         return pipedrive_api_client.post_organization(**kwargs)
@@ -550,6 +580,14 @@ class Person(PipedriveModel):
         blank=True,
     )
 
+    def build_kwargs(self):
+        return {
+            'id': self.external_id,
+            'name': self.name,
+            'phone': self.phone,
+            'email': self.email,
+        }
+
     def __unicode__(self):
         return str(self.external_id) + " : " + str(self.name)
 
@@ -594,12 +632,6 @@ class Person(PipedriveModel):
                     el, u'last_outgoing_mail_time')
             }
         )
-
-    def build_kwargs(self):
-        return {
-            'id': self.external_id,
-            'name': self.name,
-        }
 
 
 class Deal(PipedriveModel):
@@ -738,6 +770,15 @@ class Deal(PipedriveModel):
         blank=True,
     )
 
+    def build_kwargs(self):
+        return {
+            'id': self.external_id,
+            'title': self.title,
+            'value': self.value,
+            'pipeline': self.pipeline,
+            'visible_to': self.visible_to,
+        }
+
     def __unicode__(self):
         return str(self.external_id) + " : " + str(self.title)
 
@@ -793,12 +834,6 @@ class Deal(PipedriveModel):
             return self.additional_fields[field_name]
         else:
             return default_value
-
-    def build_kwargs(self):
-        return {
-            'id': self.external_id,
-            'title': self.title,
-        }
 
 
 class BaseField(models.Model):
@@ -1010,6 +1045,15 @@ class Stage(PipedriveModel):
         null=True
     )
 
+    def build_kwargs(self):
+        return {
+            'id': self.external_id,
+            'name': self.name,
+            'pipeline_id': self.pipeline_id,
+            'order_nr': self.order_nr,
+            'active_flag': self.active_flag,
+        }
+
     def __unicode__(self):
         return u'Stage ID: {}, Name: {}.'.format(
             self.external_id, self.name)
@@ -1055,13 +1099,6 @@ class Stage(PipedriveModel):
                 'update_time': cls.datetime_from_simple_time(el, u'update_time'),
             }
         )
-
-    def build_kwargs(self):
-        return {
-            'id': self.external_id,
-            'name': self.name,
-            'pipeline_id': self.pipeline_id
-        }
 
 
 class Note(PipedriveModel):
@@ -1114,6 +1151,16 @@ class Note(PipedriveModel):
         null=True
     )
 
+    def build_kwargs(self):
+        return {
+            'id': self.external_id,
+            'content': self.content,
+            'active_flag': self.active_flag,
+            'deal_id': self.deal_id,
+            'person_id': self.person_id,
+            'org_id': self.org_id,
+        }
+
     @classmethod
     def get_api_call(cls, start):
         return pipedrive_api_client.get_notes(start=start)
@@ -1136,12 +1183,6 @@ class Note(PipedriveModel):
                 'active_flag': el[u'active_flag'],
             }
         )
-
-    def build_kwargs(self):
-        return {
-            'id': self.external_id,
-            'content': self.content,
-        }
 
 
 class Activity(PipedriveModel):
@@ -1223,6 +1264,19 @@ class Activity(PipedriveModel):
         blank=True,
     )
 
+    def build_kwargs(self):
+        return {
+            'id': self.external_id,
+            'done': self.done,
+            'subject': self.subject,
+            'note': self.note,
+            'type': self.type,
+            'due_date': self.due_date,
+            'due_time': self.due_time,
+            'marked_as_done_time': self.marked_as_done_time,
+            'active_flag': self.active_flag,
+        }
+
     @classmethod
     def get_api_call(cls, start):
         return pipedrive_api_client.get_activities(start=start)
@@ -1252,9 +1306,3 @@ class Activity(PipedriveModel):
                 'active_flag': el[u'active_flag'],
             }
         )
-
-    def build_kwargs(self):
-        return {
-            'id': self.external_id,
-            'subject': self.subject,
-        }

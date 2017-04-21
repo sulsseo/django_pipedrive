@@ -1189,15 +1189,13 @@ class TestPipedriveCreation(TestCase):
         self.assertIsNotNone(deal.external_id)
 
     def test_create_stage(self):
-        pipeline = Pipeline.objects.create(
+
+        Pipeline.objects.create(
             name="TEST_PIPELINE",
             external_id=888,
         )
 
         stage = Stage.objects.create(name="TEST_STAGE", pipeline_id=888)
-
-        print "HOLA"
-        print stage.pipeline_id
 
         self.assertEquals(stage.pipeline_id, 888)
 
@@ -1208,7 +1206,7 @@ class TestPipedriveCreation(TestCase):
 
     def test_create_user(self):
 
-        user = User.objects.create(name="TEST_USER")
+        user = User.objects.create(name="TEST_USER", email="example@example.com")
 
         result = user.upload()
 
@@ -1226,7 +1224,13 @@ class TestPipedriveCreation(TestCase):
 
     def test_create_note(self):
 
-        note = Note.objects.create(content="TEST_NOTE")
+        organization = Organization.objects.create(name="TEST_ORGANIZATION")
+
+        result = organization.upload()
+
+        self.assertIsNotNone(organization.external_id)
+
+        note = Note.objects.create(content="TEST_NOTE", org_id=organization.external_id)
 
         result = note.upload()
 
@@ -1289,6 +1293,15 @@ class TestPipedrive(TestCase):
 
         result = Organization.datetime_from_simple_time(el, u'update_time')
         expected = datetime.datetime(2017, 4, 3, 16, 21, 12, 0, tzinfo=pytz.utc)
+
+        self.assertEquals(result, expected)
+
+    def test_datetime_from_simple_time_zero(self):
+
+        el = {u'update_time': u'0000-00-00 00:00:00'}
+
+        result = Organization.datetime_from_simple_time(el, u'update_time')
+        expected = None
 
         self.assertEquals(result, expected)
 
