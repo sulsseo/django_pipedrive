@@ -330,12 +330,11 @@ class Organization(PipedriveModel):
     """
     saves a registry of Org sent to pipedrive
     """
-    external_id = models.CharField(
-        max_length=255,
+    external_id = models.IntegerField(
         null=True,
         blank=True,
-        unique=True,
         db_index=True,
+        unique=True,
     )
     deleted = models.BooleanField(
         default=False
@@ -458,12 +457,11 @@ class Person(PipedriveModel):
     """
     saves a registry of Person sent to pipedrive
     """
-    external_id = models.CharField(
-        max_length=255,
+    external_id = models.IntegerField(
         null=True,
         blank=True,
-        unique=True,
         db_index=True,
+        unique=True,
     )
     deleted = models.BooleanField(
         default=False
@@ -624,12 +622,11 @@ class Deal(PipedriveModel):
         db_index=True,
         to_field="external_id",
     )
-    external_id = models.CharField(
-        max_length=255,
+    external_id = models.IntegerField(
         null=True,
         blank=True,
-        unique=True,
         db_index=True,
+        unique=True,
     )
     deleted = models.BooleanField(
         default=False
@@ -812,6 +809,9 @@ class BaseField(models.Model):
 
     external_id = models.IntegerField(
         null=True,
+        blank=True,
+        db_index=True,
+        unique=True,
     )
     key = models.CharField(
         max_length=255,
