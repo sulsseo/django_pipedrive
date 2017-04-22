@@ -79,7 +79,7 @@ class PipedriveModel(models.Model):
         return None
 
     @classmethod
-    def get_str_or_none(cls, el, field_name):
+    def get_value_or_none(cls, el, field_name):
         if field_name in el and el[field_name] is not None and el[field_name] != '':
             return el[field_name]
         return None
@@ -149,11 +149,7 @@ class PipedriveModel(models.Model):
 
         kwargs = self.build_kwargs()
 
-        print kwargs
-
         post_data = self.post_api_call(kwargs)
-
-        print post_data
 
         if not post_data[u'success']:
             logging.error(post_data)
@@ -249,7 +245,6 @@ class User(PipedriveModel):
 
     @classmethod
     def update_or_create_entity_from_api_post(cls, el):
-        print el
         return User.objects.update_or_create(
             external_id=el[u'id'],
             defaults={
@@ -1091,7 +1086,7 @@ class Stage(PipedriveModel):
             defaults={
                 'name': el[u'name'],
                 'pipeline_id': el[u'pipeline_id'],
-                'pipeline_name': cls.get_str_or_none(el, u'pipeline_name'),
+                'pipeline_name': cls.get_value_or_none(el, u'pipeline_name'),
                 'name': el[u'name'],
                 'order_nr': el[u'order_nr'],
                 'active_flag': el[u'active_flag'],
@@ -1297,10 +1292,10 @@ class Activity(PipedriveModel):
                 'note': el[u'note'],
                 'done': el[u'done'],
                 'type': el[u'type'],
-                'due_date': el[u'due_date'],
-                'due_time': el[u'due_time'],
-                'duration': el[u'duration'],
-                'marked_as_done_time': cls.get_str_or_none(el, u'marked_as_done_time'),
+                'due_date': cls.get_value_or_none(el, u'due_date'),
+                'due_time': cls.get_value_or_none(el, u'due_time'),
+                'duration': cls.get_value_or_none(el, u'duration'),
+                'marked_as_done_time': cls.get_value_or_none(el, u'marked_as_done_time'),
                 'add_time': cls.datetime_from_simple_time(el, u'add_time'),
                 'update_time': cls.datetime_from_simple_time(el, u'update_time'),
                 'active_flag': el[u'active_flag'],

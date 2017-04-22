@@ -1321,6 +1321,27 @@ class TestPipedrive(TestCase):
 
         self.assertIsNone(result)
 
+    def test_get_value_or_none_none(self):
+
+        el = {
+            'due_time': u''
+        }
+
+        result = Activity.get_value_or_none(el, u'due_time')
+
+        self.assertIsNone(result)
+
+    def test_get_value_or_none_value(self):
+
+        el = {
+            'due_time': u'16:00'
+        }
+
+        result = Activity.get_value_or_none(el, u'due_time')
+        expected = u'16:00'
+
+        self.assertEquals(result, expected)
+
     def test_get_primary_correct(self):
 
         el = {
@@ -1395,3 +1416,45 @@ class TestPipedrive(TestCase):
         result = PipedriveModel.sync_from_pipedrive()
 
         self.assertTrue(result)
+
+
+class TestCreateFromObject(TestCase):
+
+    def test_activity_update_or_create_entity_from_api_post(self):
+
+        obj = {
+          u'org_name': None, 
+          u'deal_id': None, 
+          u'assigned_to_user_id': 2428657, 
+          u'marked_as_done_time': u'', 
+          u'google_calendar_id': None, 
+          u'done': False, 
+          u'duration': u'', 
+          u'gcal_event_id': None, 
+          u'subject': u'TEST_ACTIVITY', 
+          u'created_by_user_id': 2428657, 
+          u'user_id': 2428657, 
+          u'reference_type': u'none', 
+          u'company_id': 1689563, 
+          u'id': 2, 
+          u'note': u'', 
+          u'due_time': u'', 
+          u'person_id': None, 
+          u'type': u'call', 
+          u'person_dropbox_bcc': None, 
+          u'active_flag': True, 
+          u'due_date': u'2017-04-21', 
+          u'update_time': u'2017-04-21 12:21:10', 
+          u'owner_name': u'TEST_OWNER', 
+          u'person_name': None, 
+          u'deal_dropbox_bcc': None, 
+          u'reference_id': None, 
+          u'add_time': u'2017-04-21 12:21:10', 
+          u'google_calendar_etag': None, 
+          u'org_id': None, 
+          u'deal_title': None
+        }
+
+        result = Activity.update_or_create_entity_from_api_post(obj)
+
+        self.assertIsNotNone(result)
