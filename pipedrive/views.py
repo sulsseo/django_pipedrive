@@ -42,8 +42,8 @@ def index(request):
             except KeyError:
                 HttpResponseServerError("Malformed data!")
     except IntegrityError as e:
-        logging.info(e.message)
-        logging("Forcing full sync from pipedrive")
+        logging.error(e.message)
+        logging.error("Forcing full sync from pipedrive")
         PipedriveModel.sync_from_pipedrive()
 
     return HttpResponse("Hello, world!")

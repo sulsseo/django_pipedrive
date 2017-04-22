@@ -1039,6 +1039,10 @@ class Stage(PipedriveModel):
     active_flag = models.NullBooleanField(
         null=True
     )
+    update_time = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
 
     def build_kwargs(self):
         return {

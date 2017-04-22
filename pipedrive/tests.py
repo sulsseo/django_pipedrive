@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # Create your tests here.
 
 import pytz
@@ -23,6 +25,107 @@ from pipedrive.models import PipedriveModel
 
 class TestPipedriveWebhooks(TestCase):
 
+    def test_create_stage(self):
+
+        c = Client()
+
+        User.objects.create(external_id=123456)
+
+        self.assertEquals(Stage.objects.count(), 0)
+
+        data = {
+            "v": 1,
+            "matches_filters": {
+                "current": [],
+                "previous": []
+            },
+            "meta": {
+                "v": 1,
+                "action": "added",
+                "object": "organization",
+                "id": 71,
+                "company_id": 1689563,
+                "user_id": 123456,
+                "host": "mycompany.pipedrive.com",
+                "timestamp": 1492893731,
+                "timestamp_milli": 1492893731834,
+                "permitted_user_ids": [123456,
+                1428742],
+                "trans_pending": False,
+                "is_bulk_update": False,
+                "matches_filters": {
+                    "current": [],
+                    "previous": []
+                }
+            },
+            "retry": 0,
+            "current": {
+                "id": 71,
+                "company_id": 666,
+                "owner_id": 123456,
+                "name": "The organization",
+                "open_deals_count": 0,
+                "related_open_deals_count": 0,
+                "closed_deals_count": 0,
+                "related_closed_deals_count": 0,
+                "email_messages_count": 0,
+                "people_count": 0,
+                "activities_count": 0,
+                "done_activities_count": 0,
+                "undone_activities_count": 0,
+                "reference_activities_count": 0,
+                "files_count": 0,
+                "notes_count": 0,
+                "followers_count": 0,
+                "won_deals_count": 0,
+                "related_won_deals_count": 0,
+                "lost_deals_count": 0,
+                "related_lost_deals_count": 0,
+                "active_flag": True,
+                "category_id": None,
+                "picture_id": None,
+                "country_code": None,
+                "first_char": "l",
+                "update_time": "2017-04-22 20:42:11",
+                "add_time": "2017-04-22 20:42:11",
+                "visible_to": "3",
+                "next_activity_date": None,
+                "next_activity_time": None,
+                "next_activity_id": None,
+                "last_activity_id": None,
+                "last_activity_date": None,
+                "address": "Avenida Los Pajaritos 1500, Santiago, Chile",
+                "address_lat": -33.5135078,
+                "address_long": -70.7574387,
+                "address_subpremise": "",
+                "address_street_number": "1500",
+                "address_route": "Avenida Los Pajaritos",
+                "address_sublocality": "",
+                "address_locality": "Maipú",
+                "address_admin_area_level_1": "Región Metropolitana",
+                "address_admin_area_level_2": "Santiago",
+                "address_country": "Chile",
+                "address_postal_code": "",
+                "address_formatted_address": "Av. Los Pajaritos 1500, Maipú, Región Metropolitana, Chile",
+                "cc_email": "mycompany@pipedrivemail.com",
+                "owner_name": "TEST_OWNER",
+                "edit_name": True
+            },
+            "previous": None,
+            "indexable_fields": [],
+            "event": "added.organization"
+        }
+
+        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+
+        self.assertEquals(Stage.objects.count(), 1)
+
+        stage = Stage.objects.get(external_id=71)
+
+        self.assertEquals(stage.name, "The organization")
+
+
+ 
     def test_update_deal(self):
         c = Client()
 
@@ -560,7 +663,7 @@ class TestPipedriveWebhooks(TestCase):
                 "id": 6,
                 "company_id": 1689563,
                 "user_id": 2428657,
-                "host": "miempresa2.pipedrive.com",
+                "host": "mycompany.pipedrive.com",
                 "timestamp": 1492712041,
                 "timestamp_milli": 1492712041663,
                 "permitted_user_ids": ["*"],
