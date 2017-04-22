@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('due_date', models.DateField(null=True, blank=True)),
                 ('due_time', models.TimeField(null=True, blank=True)),
                 ('duration', models.TimeField(null=True, blank=True)),
-                ('marked_as_done_time', models.TimeField(null=True, blank=True)),
+                ('marked_as_done_time', models.DateTimeField(null=True, blank=True)),
                 ('active_flag', models.NullBooleanField()),
                 ('update_time', models.DateTimeField(null=True, blank=True)),
                 ('add_time', models.DateTimeField(null=True, blank=True)),
@@ -221,6 +221,8 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=255)),
                 ('order_nr', models.IntegerField(null=True, blank=True)),
                 ('active_flag', models.NullBooleanField()),
+                ('update_time', models.DateTimeField(null=True, blank=True)),
+                ('add_time', models.DateTimeField(null=True, blank=True)),
                 ('pipeline', models.ForeignKey(to_field=b'external_id', blank=True, to='pipedrive.Pipeline', null=True)),
             ],
             options={

@@ -1043,6 +1043,10 @@ class Stage(PipedriveModel):
         null=True,
         blank=True,
     )
+    add_time = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
 
     def build_kwargs(self):
         return {
@@ -1247,7 +1251,7 @@ class Activity(PipedriveModel):
         null=True,
         blank=True,
     )
-    marked_as_done_time = models.TimeField(
+    marked_as_done_time = models.DateTimeField(
         null=True,
         blank=True,
     )
@@ -1299,7 +1303,7 @@ class Activity(PipedriveModel):
                 'due_date': cls.get_value_or_none(el, u'due_date'),
                 'due_time': cls.get_value_or_none(el, u'due_time'),
                 'duration': cls.get_value_or_none(el, u'duration'),
-                'marked_as_done_time': cls.get_value_or_none(el, u'marked_as_done_time'),
+                'marked_as_done_time': cls.datetime_from_simple_time(el, u'marked_as_done_time'),
                 'add_time': cls.datetime_from_simple_time(el, u'add_time'),
                 'update_time': cls.datetime_from_simple_time(el, u'update_time'),
                 'active_flag': el[u'active_flag'],
