@@ -122,8 +122,8 @@ def handle_v1(json_data):
 
 def handle_does_not_exist(e, external_id, json_data):
     logging.error(e.message)
-    logging.error("Forcing single sync from pipedrive")
-    model.sync_one(external_id)
+    logging.error("Forcing full sync from pipedrive")
+    PipedriveModel.sync_from_pipedrive()
     handle_v1(json_data)
 
 
