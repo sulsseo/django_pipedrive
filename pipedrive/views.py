@@ -29,18 +29,16 @@ def index(request):
 
     try:
         if request.method == 'POST':
-            try:
-                json_data = json.loads(request.body)
-                meta = json_data[u'meta']
 
-                # API v1
-                if meta[u'v'] == 1:
-                    return handle_v1(json_data)
-                else:
-                    raise NonImplementedVersionException
+            json_data = json.loads(request.body)
+            meta = json_data[u'meta']
 
-            except KeyError:
-                HttpResponseServerError("Malformed data!")
+            # API v1
+            if meta[u'v'] == 1:
+                return handle_v1(json_data)
+            else:
+                raise NonImplementedVersionException()
+
     except IntegrityError as e:
         logging.error(e.message)
         logging.error("Forcing full sync from pipedrive")
@@ -62,46 +60,71 @@ def handle_v1(json_data):
     previous = json_data[u'previous']
     current = json_data[u'current']
 
-    if action == 'updated':
+    try:
 
-        # The corresponding instance is found for update
-        instance = model.objects.get(external_id=external_id)
+        if action == 'updated':
 
-        # Compute difference between previous and current
-        diffkeys = [k for k in previous if previous[k] != current[k]]
+            # The corresponding instance is found for update
+            instance = model.objects.get(external_id=external_id)
 
-        for key in diffkeys:
-            value = current[key]
-            setattr(instance, key, value)
+            # Compute difference between previous and current
+            diffkeys = [k for k in previous if previous[k] != current[k]]
 
-        instance.save()
+            for key in diffkeys:
+                value = current[key]
+                setattr(instance, key, value)
 
-    if action == 'added':
+            instance.save()
 
-        # Object's key name is changed
-        current['external_id'] = current.pop('id')
+        if action == 'added':
 
-        # Fields from the API that are not localy recognized
-        # by the model are filtered
-        current = filter_fields(current, model)
-        current = fix_fields(current)
+            # Object's key name is changed
+            current['external_id'] = current.pop('id')
 
-        model.objects.create(**current)
+            # Fields from the API that are not localy recognized
+            # by the model are filtered
+            current = filter_fields(current, model)
+            current = fix_fields(current)
 
-    if action == 'deleted':
+            model.objects.create(**current)
 
-        # The corresponding instance is found for delete
-        instance = model.objects.get(external_id=external_id)
+        if action == 'deleted':
 
-        instance.deleted = True
-        instance.save()
+            # The corresponding instance is found for delete
+            instance = model.objects.get(external_id=external_id)
 
-    if action == 'merged':
+            # The instance is not actually deleted, but marked as deleted
+            instance.deleted = True
+            instance.save()
 
-        # The corresponding instance is found for update
-        instance = model.objects.get(external_id=external_id)
+        if action == 'merged':
+
+            # The corresponding instance is found for update
+            instance = model.objects.get(external_id=external_id)
+
+    except Activity.DoesNotExist as e:
+        handle_does_not_exist(e, external_id, json_data)
+    except Deal.DoesNotExist as e:
+        handle_does_not_exist(e, external_id, json_data)
+    except Person.DoesNotExist as e:
+        handle_does_not_exist(e, external_id, json_data)
+    except Organization.DoesNotExist as e:
+        handle_does_not_exist(e, external_id, json_data)
+    except Note.DoesNotExist as e:
+        handle_does_not_exist(e, external_id, json_data)
+    except Pipeline.DoesNotExist as e:
+        handle_does_not_exist(e, external_id, json_data)
+    except Stage.DoesNotExist as e:
+        handle_does_not_exist(e, external_id, json_data)
+
 
     return HttpResponse("OK!")
+
+def handle_does_not_exist(e, external_id, json_data):
+    logging.error(e.message)
+    logging.error("Forcing single sync from pipedrive")
+    model.sync_one(external_id)
+    handle_v1(json_data)
 
 
 def map_models(object_type):

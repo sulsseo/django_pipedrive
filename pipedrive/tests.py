@@ -129,6 +129,110 @@ class TestPipedriveWebhooks(TestCase):
 
         self.assertEquals(activity.marked_as_done_time, datetime.datetime(2017, 4, 22, 21, 56, 17, tzinfo=pytz.utc))
 
+    def test_activity_not_marked_as_done(self):
+
+        c = Client()
+
+        Activity.objects.create(external_id=2)
+
+        self.assertEquals(Activity.objects.count(), 1)
+
+        data = {
+          "v": 1,
+          "matches_filters": 
+            {"current": [],
+            "previous": []},
+          "meta": {
+            "v": 1,
+            "action": "updated",
+            "object": "activity",
+            "id": 2,
+            "company_id": 1689563,
+            "user_id": 2428657,
+            "host": "miempresa2.pipedrive.com",
+            "timestamp": 1492898177,
+            "timestamp_milli": 1492898177841,
+            "permitted_user_ids": ["*"],
+            "trans_pending": False,
+            "is_bulk_update": False,
+            "matches_filters": {"current": [],
+            "previous": []}
+          },
+          "retry": 0,
+          "current": {
+            "id": 2,
+            "company_id": 1689563,
+            "user_id": 2428657,
+            "done": True,
+            "type": "call",
+            "reference_type": "none",
+            "reference_id": None,
+            "due_date": "2017-04-21",
+            "due_time": "",
+            "duration": "",
+            "add_time": "2017-04-21 12:21:10",
+            "marked_as_done_time": "",
+            "subject": "TEST_ACTIVITY",
+            "deal_id": None,
+            "org_id": None,
+            "person_id": None,
+            "active_flag": True,
+            "update_time": "2017-04-22 21:56:17",
+            "gcal_event_id": None,
+            "google_calendar_id": None,
+            "google_calendar_etag": None,
+            "note": "",
+            "person_name": None,
+            "org_name": None,
+            "deal_title": None,
+            "assigned_to_user_id": 2428657,
+            "created_by_user_id": 2428657,
+            "owner_name": "Gustavo",
+            "person_dropbox_bcc": None,
+            "deal_dropbox_bcc": None,
+            "no_gcal": False
+          },
+          "previous": {
+            "id": 2,
+            "company_id": 1689563,
+            "user_id": 2428657,
+            "done": False,
+            "type": "call",
+            "reference_type": "none",
+            "reference_id": None,
+            "due_date": "2017-04-21",
+            "due_time": "",
+            "duration": "",
+            "add_time": "2017-04-21 12:21:10",
+            "marked_as_done_time": "",
+            "subject": "TEST_ACTIVITY",
+            "deal_id": None,
+            "org_id": None,
+            "person_id": None,
+            "active_flag": True,
+            "update_time": "2017-04-22 21:56:15",
+            "gcal_event_id": None,
+            "google_calendar_id": None,
+            "google_calendar_etag": None,
+            "note": "",
+            "person_name": None,
+            "org_name": None,
+            "deal_title": None,
+            "assigned_to_user_id": 2428657,
+            "created_by_user_id": 2428657,
+            "owner_name": "Gustavo",
+            "person_dropbox_bcc": None,
+            "deal_dropbox_bcc": None
+          },
+          "event": "updated.activity"
+        }
+
+        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+
+        activity = Activity.objects.get(external_id=2)
+
+        self.assertIsNone(activity.marked_as_done_time)
+
 
     def test_create_stage(self):
 
@@ -1509,11 +1613,10 @@ class TestPipedrive(TestCase):
         el = {u'update_time': u'0000-00-00 00:00:00'}
 
         result = Organization.datetime_from_simple_time(el, u'update_time')
-        expected = None
 
-        self.assertEquals(result, expected)
+        self.assertIsNone(result)
 
-    def test_datetime_from_simple_time_empty_el(self):
+    def test_datetime_from_simple_time_no_field(self):
 
         el = {}
 
@@ -1521,7 +1624,15 @@ class TestPipedrive(TestCase):
 
         self.assertIsNone(result)
 
-    def test_datetime_from_simple_time_none_field(self):
+    def test_datetime_from_simple_time_blank_field(self):
+
+        el = {u'update_time': ''}
+
+        result = Organization.datetime_from_simple_time(el, u'update_time')
+
+        self.assertIsNone(result)
+
+    def test_datetime_from_simple_time__field(self):
 
         el = {u'update_time': None}
 

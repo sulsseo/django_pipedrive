@@ -117,15 +117,37 @@ class PipedriveAPIClient(object):
 
         return content
 
-    def get_deal(self, deal):
+    def get_deal(self, external_id):
         """
         Obtain the detail of a deal from the api
         """
-        deal_id = deal.external_id
-
         endpoint = 'deals'
 
-        restpoint = self.get_restify(endpoint, deal_id)
+        restpoint = self.get_restify(endpoint, external_id)
+
+        content = self.get(restpoint)
+
+        return content
+
+    def get_activity(self, external_id):
+        """
+        Obtain the detail of an activity from the api
+        """
+        endpoint = 'activities'
+
+        restpoint = self.get_restify(endpoint, external_id)
+
+        content = self.get(restpoint)
+
+        return content
+
+    def get_pipeline(self, external_id):
+        """
+        Obtain the detail of an activity from the api
+        """
+        endpoint = 'pipelines'
+
+        restpoint = self.get_restify(endpoint, external_id)
 
         content = self.get(restpoint)
 
@@ -165,6 +187,18 @@ class PipedriveAPIClient(object):
 
         return content
 
+    def get_stage(self, external_id):
+        """
+        Obtain the detail of an stage from the api
+        """
+        endpoint = 'stage'
+
+        restpoint = self.get_restify(endpoint, external_id)
+
+        content = self.get(restpoint)
+
+        return content
+
     def get_persons(self, **kwargs):
         """
         Obtain a list of persons from the api
@@ -185,15 +219,37 @@ class PipedriveAPIClient(object):
 
         return content
 
-    def get_organization(self, organization):
+    def get_organization(self, external_id):
         """
         Obtain details of a single person
         """
-        organization_id = organization.external_id
-
         endpoint = 'organizations'
 
-        restpoint = self.get_restify(endpoint, organization_id)
+        restpoint = self.get_restify(endpoint, external_id)
+
+        content = self.get(restpoint)
+
+        return content
+
+    def get_user(self, external_id):
+        """
+        Obtain details of a single person
+        """
+        endpoint = 'users'
+
+        restpoint = self.get_restify(endpoint, external_id)
+
+        content = self.get(restpoint)
+
+        return content
+
+    def get_note(self, external_id):
+        """
+        Obtain details of a single person
+        """
+        endpoint = 'notes'
+
+        restpoint = self.get_restify(endpoint, external_id)
 
         content = self.get(restpoint)
 

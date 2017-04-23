@@ -24,6 +24,12 @@ VISIBILITY = (
 )
 
 
+class UnableToSyncException(Exception):
+    def __init__(self, model, external_id):
+       self.external_id = external_id
+       self.model = model
+
+
 class PipedriveModel(models.Model):
     """
     Abstract class to include utility functions for extending classes.
@@ -55,7 +61,7 @@ class PipedriveModel(models.Model):
         returns a datetime aware of the timezone.
         Returns None if fields do not exist in el.
         """
-        if datetime_field not in el or el[datetime_field] is None or el[datetime_field] == '0000-00-00 00:00:00':
+        if datetime_field not in el or el[datetime_field] is None or el[datetime_field] == '0000-00-00 00:00:00' or el[datetime_field] == '':
             return None
         else:
             return timezone.make_aware(
@@ -83,6 +89,17 @@ class PipedriveModel(models.Model):
         if field_name in el and el[field_name] is not None and el[field_name] != '':
             return el[field_name]
         return None
+
+    @classmethod
+    def sync_one(cls, external_id):
+        post_data = cls.get_one_api_call(external_id)
+
+        # Error code from the API
+        if not post_data['success']:
+            logging.error(post_data[u'error'])
+            raise UnableToSyncException(cls, external_id)
+
+        return cls.update_or_create_entity_from_api_post(post_data[u'data'])
 
     @classmethod
     def fetch_from_pipedrive(cls):
@@ -161,22 +178,6 @@ class PipedriveModel(models.Model):
         self.__class__.update_or_create_entity_from_api_post(post_data[u'data'])
         return True
 
-    # def build_kwargs(self):
-
-    #     model = type(self)
-
-    #     kwargs = {}
-    #     import pdb; pdb.set_trace()
-    #     for k in model._meta.concrete_fields:
-    #         attrname = k.attname
-    #         kwargs[str(attrname)] = getattr(self, attrname)
-
-    #     # Handle external_id to id conversion
-    #     kwargs[u'id'] = kwargs[u'external_id']
-    #     kwargs.pop(u'external_id')
-
-    #     return kwargs
-
 
 class User(PipedriveModel):
     external_id = models.IntegerField(
@@ -239,6 +240,10 @@ class User(PipedriveModel):
     @classmethod
     def get_api_call(cls, start):
         return pipedrive_api_client.get_users(start=start)
+
+    @classmethod
+    def get_one_api_call(cls, external_id):
+        return pipedrive_api_client.get_user(external_id)
 
     def post_api_call(self, kwargs):
         return pipedrive_api_client.post_user(**kwargs)
@@ -330,6 +335,10 @@ class Pipeline(PipedriveModel):
     @classmethod
     def get_api_call(cls, start):
         return pipedrive_api_client.get_pipelines(start=start)
+
+    @classmethod
+    def get_one_api_call(cls, external_id):
+        return pipedrive_api_client.get_pipeline(external_id)
 
     def post_api_call(self, kwargs):
         return pipedrive_api_client.post_pipeline(**kwargs)
@@ -444,6 +453,10 @@ class Organization(PipedriveModel):
     @classmethod
     def get_api_call(cls, start):
         return pipedrive_api_client.get_organizations(start=start)
+
+    @classmethod
+    def get_one_api_call(cls, external_id):
+        return pipedrive_api_client.get_organization(external_id)
 
     @classmethod
     def update_or_create_entity_from_api_post(cls, el):
@@ -589,6 +602,10 @@ class Person(PipedriveModel):
     @classmethod
     def get_api_call(cls, start):
         return pipedrive_api_client.get_persons(start=start)
+
+    @classmethod
+    def get_one_api_call(cls, external_id):
+        return pipedrive_api_client.get_person(external_id)
 
     @classmethod
     def post_api_call(cls, kwargs):
@@ -780,6 +797,10 @@ class Deal(PipedriveModel):
     @classmethod
     def get_api_call(cls, start):
         return pipedrive_api_client.get_deals(start=start)
+
+    @classmethod
+    def get_one_api_call(cls, external_id):
+        return pipedrive_api_client.get_deal(external_id)
 
     @classmethod
     def post_api_call(cls, kwargs):
@@ -1084,6 +1105,10 @@ class Stage(PipedriveModel):
     def get_api_call(cls, start):
         return pipedrive_api_client.get_stages(start=start)
 
+    @classmethod
+    def get_one_api_call(cls, external_id):
+        return pipedrive_api_client.get_stage(external_id)
+
     def post_api_call(self, kwargs):
         return pipedrive_api_client.post_stage(**kwargs)
 
@@ -1167,6 +1192,10 @@ class Note(PipedriveModel):
     @classmethod
     def get_api_call(cls, start):
         return pipedrive_api_client.get_notes(start=start)
+
+    @classmethod
+    def get_one_api_call(cls, external_id):
+        return pipedrive_api_client.get_note(external_id)
 
     def post_api_call(self, kwargs):
         return pipedrive_api_client.post_note(**kwargs)
@@ -1286,6 +1315,10 @@ class Activity(PipedriveModel):
 
     def post_api_call(self, kwargs):
         return pipedrive_api_client.post_activity(**kwargs)
+
+    @classmethod
+    def get_one_api_call(cls, external_id):
+        return pipedrive_api_client.get_activity(external_id)
 
     @classmethod
     def update_or_create_entity_from_api_post(cls, el):
