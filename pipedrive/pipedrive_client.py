@@ -17,8 +17,11 @@ class PipedriveAPIClient(object):
         api_key=None,
         email=None,
         password=None,
-        api_base_url=None
+        api_base_url=None,
+        endpoint=None,
     ):
+
+        self.endpoint = endpoint
 
         if api_base_url is None:
             api_base_url = 'https://api.pipedrive.com/v1/'
@@ -82,336 +85,31 @@ class PipedriveAPIClient(object):
 
         return content
 
-    def update_deal(self, deal, **kwargs):
+    def get_instance(self, external_id):
         """
-        updates a deal on pipedrive
+        Obtain the detail of an instance from the api
         """
-        updatepoint = 'deals'
 
-        endpoint = str(updatepoint) + '/:' + str(deal.id)
-
-        restpoint = self.post_put_restify(endpoint)
-
-        content = self.put(restpoint, kwargs)
-
-        return content
-
-    # get methods
-    def get_pipeline_stages(self):
-        """
-        get all pipelines from pipedrive
-        """
-        endpoint = 'pipelines'
-
-        content = self.get(endpoint)
-
-        return content
-
-    def get_stages(self, **kwargs):
-        """
-        get all stages from pipedrive
-        """
-        endpoint = 'stages'
-
-        content = self.get(endpoint)
-
-        return content
-
-    def get_deal(self, external_id):
-        """
-        Obtain the detail of a deal from the api
-        """
-        endpoint = 'deals'
-
-        restpoint = self.get_restify(endpoint, external_id)
+        restpoint = self.get_restify(self.endpoint, external_id)
 
         content = self.get(restpoint)
 
         return content
 
-    def get_activity(self, external_id):
+    def get_instances(self, **kwargs):
         """
-        Obtain the detail of an activity from the api
+        Obtain a list of instances from the api
         """
-        endpoint = 'activities'
 
-        restpoint = self.get_restify(endpoint, external_id)
-
-        content = self.get(restpoint)
+        content = self.get(self.endpoint, kwargs)
 
         return content
 
-    def get_pipeline(self, external_id):
+    def post_instance(self, **kwargs):
         """
-        Obtain the detail of an activity from the api
+        Add an instance to Pipedrive
         """
-        endpoint = 'pipelines'
-
-        restpoint = self.get_restify(endpoint, external_id)
-
-        content = self.get(restpoint)
-
-        return content
-
-    def get_deals(self, **kwargs):
-        """
-        Obtain a list of deals from the api
-        """
-        endpoint = 'deals'
-
-        content = self.get(endpoint, kwargs)
-
-        return content
-
-    def get_deal_fields(self, **kwargs):
-        """
-        Obtain a list of deals from the api
-        """
-        endpoint = 'dealFields'
-
-        content = self.get(endpoint, kwargs)
-
-        return content
-
-    def get_person(self, person):
-        """
-        Obtain details of a single person
-        """
-        person_id = person.external_id
-
-        endpoint = 'persons'
-
-        restpoint = self.get_restify(endpoint, person_id)
-
-        content = self.get(restpoint)
-
-        return content
-
-    def get_stage(self, external_id):
-        """
-        Obtain the detail of an stage from the api
-        """
-        endpoint = 'stage'
-
-        restpoint = self.get_restify(endpoint, external_id)
-
-        content = self.get(restpoint)
-
-        return content
-
-    def get_persons(self, **kwargs):
-        """
-        Obtain a list of persons from the api
-        """
-        endpoint = 'persons'
-
-        content = self.get(endpoint, kwargs)
-
-        return content
-
-    def get_person_fields(self, **kwargs):
-        """
-        Get persons base and custom fields
-        """
-        endpoint = 'personFields'
-
-        content = self.get(endpoint, kwargs)
-
-        return content
-
-    def get_organization(self, external_id):
-        """
-        Obtain details of a single person
-        """
-        endpoint = 'organizations'
-
-        restpoint = self.get_restify(endpoint, external_id)
-
-        content = self.get(restpoint)
-
-        return content
-
-    def get_user(self, external_id):
-        """
-        Obtain details of a single person
-        """
-        endpoint = 'users'
-
-        restpoint = self.get_restify(endpoint, external_id)
-
-        content = self.get(restpoint)
-
-        return content
-
-    def get_note(self, external_id):
-        """
-        Obtain details of a single person
-        """
-        endpoint = 'notes'
-
-        restpoint = self.get_restify(endpoint, external_id)
-
-        content = self.get(restpoint)
-
-        return content
-
-    def get_organizations(self, **kwargs):
-        """
-        Obtain a list of organization from the api
-        """
-        endpoint = 'organizations'
-
-        content = self.get(endpoint, kwargs)
-
-        return content
-
-    def get_users(self, **kwargs):
-        """
-        Obtain a list of users from the api
-        """
-        endpoint = 'users'
-
-        content = self.get(endpoint, kwargs)
-
-        return content
-
-    def get_notes(self, **kwargs):
-        """
-        Obtain a list of notes from the api
-        """
-        endpoint = 'notes'
-
-        content = self.get(endpoint, kwargs)
-
-        return content
-
-    def get_pipelines(self, **kwargs):
-        """
-        Obtain a list of notes from the api
-        """
-        endpoint = 'pipelines'
-
-        content = self.get(endpoint, kwargs)
-
-        return content
-
-    def get_activities(self, **kwargs):
-        """
-        Obtain a list of activities from the api
-        """
-        endpoint = 'activities'
-
-        content = self.get(endpoint, kwargs)
-
-        return content
-
-    def get_organization_fields(self, **kwargs):
-        """
-        Get organization fields & custom fields
-        """
-        endpoint = 'organizationFields'
-
-        content = self.get(endpoint, kwargs)
-
-        return content
-
-    # post methods
-    def post_deal(self, **kwargs):
-        """
-        Add a deal to Pipedrive
-        'title' is required
-        """
-        endpoint = 'deals'
-
-        restpoint = self.post_put_restify(endpoint)
-
-        content = self.post(restpoint, kwargs)
-
-        return content
-
-    def post_person(self, **kwargs):
-        """
-        Add a person to Pipedrive and saves
-        the person's external id to model.Person
-        'name' is required
-        """
-        endpoint = 'persons'
-
-        restpoint = self.post_put_restify(endpoint)
-
-        content = self.post(restpoint, kwargs)
-
-        return content
-
-    def post_organization(self, **kwargs):
-        """
-        Add a organization to Pipedrive
-        'name' is required
-        """
-        endpoint = 'organizations'
-
-        restpoint = self.post_put_restify(endpoint)
-
-        content = self.post(restpoint, kwargs)
-
-        return content
-
-    def post_activity(self, **kwargs):
-        """
-        Add a activity to Pipedrive
-        """
-        endpoint = 'activities'
-
-        restpoint = self.post_put_restify(endpoint)
-
-        content = self.post(restpoint, kwargs)
-
-        return content
-
-    def post_note(self, **kwargs):
-        """
-        Add a note to Pipedrive
-        """
-        endpoint = 'notes'
-
-        restpoint = self.post_put_restify(endpoint)
-
-        content = self.post(restpoint, kwargs)
-
-        return content
-
-    def post_pipeline(self, **kwargs):
-        """
-        Add a organization to Pipedrive
-        'name' is required
-        """
-        endpoint = 'pipelines'
-
-        restpoint = self.post_put_restify(endpoint)
-
-        content = self.post(restpoint, kwargs)
-
-        return content
-
-    def post_stage(self, **kwargs):
-        """
-        Add a stage to Pipedrive
-        """
-        endpoint = 'stages'
-
-        restpoint = self.post_put_restify(endpoint)
-
-        content = self.post(restpoint, kwargs)
-
-        return content
-
-    def post_user(self, **kwargs):
-        """
-        Add a user to Pipedrive
-        """
-        endpoint = 'users'
-
-        restpoint = self.post_put_restify(endpoint)
+        restpoint = self.post_put_restify(self.endpoint)
 
         content = self.post(restpoint, kwargs)
 
