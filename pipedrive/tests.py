@@ -1562,9 +1562,9 @@ class TestPipedriveCreation(TestCase):
 class TestPipedrive(TestCase):
 
     def setUp(self):
-        DealField.get_fields()
-        OrganizationField.get_fields()
-        PersonField.get_fields()
+        DealField.fetch_from_pipedrive()
+        OrganizationField.fetch_from_pipedrive()
+        PersonField.fetch_from_pipedrive()
 
     def test_datetime_from_fields_none_fields(self):
 
@@ -1686,6 +1686,8 @@ class TestPipedrive(TestCase):
 
         self.assertIsNone(result)
 
+class TestFetchModels(TestCase):
+
     def test_fetch_from_pipedrive_organizations(self):
 
         result = Organization.fetch_from_pipedrive()
@@ -1725,6 +1727,24 @@ class TestPipedrive(TestCase):
     def test_fetch_from_pipedrive_pipelines(self):
 
         result = Pipeline.fetch_from_pipedrive()
+
+        self.assertTrue(result)
+
+    def test_fetch_from_pipedrive_person_fields(self):
+
+        result = PersonField.fetch_from_pipedrive()
+
+        self.assertTrue(result)
+
+    def test_fetch_from_pipedrive_organization_fields(self):
+
+        result = OrganizationField.fetch_from_pipedrive()
+
+        self.assertTrue(result)
+
+    def test_fetch_from_pipedrive_deal_fields(self):
+
+        result = DealField.fetch_from_pipedrive()
 
         self.assertTrue(result)
 
