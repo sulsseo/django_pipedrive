@@ -404,11 +404,19 @@ class Organization(PipedriveModel):
         default=0,
         choices=VISIBILITY
     )
-    next_activity_datetime = models.DateTimeField(
+    next_activity_date = models.DateField(
         null=True,
         blank=True,
     )
-    last_activity_datetime = models.DateTimeField(
+    next_activity_time = models.TimeField(
+        null=True,
+        blank=True,
+    )
+    last_activity_date = models.DateField(
+        null=True,
+        blank=True,
+    )
+    last_activity_time = models.TimeField(
         null=True,
         blank=True,
     )
@@ -470,12 +478,10 @@ class Organization(PipedriveModel):
                 'add_time': cls.datetime_from_simple_time(el, u'add_time'),
                 'update_time': cls.datetime_from_simple_time(el, u'update_time'),
                 'visible_to': el[u'visible_to'],
-                'next_activity_datetime':
-                    cls.datetime_from_fields(
-                        el, u'next_activity_date', u'next_activity_time'),
-                'last_activity_datetime':
-                    cls.datetime_from_fields(
-                        el, u'last_activity_date', u'last_activity_time'),
+                'next_activity_date': cls.get_value_or_none(el, u'next_activity_date'),
+                'next_activity_time': cls.get_value_or_none(el, u'next_activity_time'),
+                'last_activity_date': cls.get_value_or_none(el, u'last_activity_date'),
+                'last_activity_time': cls.get_value_or_none(el, u'last_activity_time'),
                 'won_deals_count': el[u'won_deals_count'],
                 'lost_deals_count': el[u'lost_deals_count'],
                 'closed_deals_count': el[u'closed_deals_count'],
@@ -550,11 +556,19 @@ class Person(PipedriveModel):
         default=0,
         choices=VISIBILITY
     )
-    next_activity_datetime = models.DateTimeField(
+    next_activity_date = models.DateField(
         null=True,
         blank=True,
     )
-    last_activity_datetime = models.DateTimeField(
+    next_activity_time = models.TimeField(
+        null=True,
+        blank=True,
+    )
+    last_activity_date = models.DateField(
+        null=True,
+        blank=True,
+    )
+    last_activity_time = models.TimeField(
         null=True,
         blank=True,
     )
@@ -625,12 +639,10 @@ class Person(PipedriveModel):
                 'owner_id': el[u'owner_id'][u'id'],
                 'open_deals_count': el[u'open_deals_count'],
                 'visible_to': el[u'visible_to'],
-                'next_activity_datetime':
-                    cls.datetime_from_fields(
-                        el, u'next_activity_date', u'next_activity_time'),
-                'last_activity_datetime':
-                    cls.datetime_from_fields(
-                        el, u'last_activity_date', u'last_activity_time'),
+                'next_activity_date': cls.get_value_or_none(el, u'next_activity_date'),
+                'next_activity_time': cls.get_value_or_none(el, u'next_activity_time'),
+                'last_activity_date': cls.get_value_or_none(el, u'last_activity_date'),
+                'last_activity_time': cls.get_value_or_none(el, u'last_activity_time'),
                 'won_deals_count': el[u'won_deals_count'],
                 'lost_deals_count': el[u'lost_deals_count'],
                 'closed_deals_count': el[u'closed_deals_count'],
@@ -728,11 +740,19 @@ class Deal(PipedriveModel):
         null=True,
         blank=True,
     )
-    next_activity_datetime = models.DateTimeField(
+    next_activity_date = models.DateField(
         null=True,
         blank=True,
     )
-    last_activity_datetime = models.DateTimeField(
+    next_activity_time = models.TimeField(
+        null=True,
+        blank=True,
+    )
+    last_activity_date = models.DateField(
+        null=True,
+        blank=True,
+    )
+    last_activity_time = models.TimeField(
         null=True,
         blank=True,
     )
@@ -822,12 +842,10 @@ class Deal(PipedriveModel):
                 'add_time': cls.datetime_from_simple_time(el, u'add_time'),
                 'update_time': cls.datetime_from_simple_time(el, u'update_time'),
                 'stage_change_time': cls.datetime_from_simple_time(el, u'stage_change_time'),
-                'next_activity_datetime':
-                    cls.datetime_from_fields(
-                        el, u'next_activity_date', u'next_activity_time'),
-                'last_activity_datetime':
-                    cls.datetime_from_fields(
-                        el, u'last_activity_date', u'last_activity_time'),
+                'next_activity_date': cls.get_value_or_none(el, u'next_activity_date'),
+                'next_activity_time': cls.get_value_or_none(el, u'next_activity_time'),
+                'last_activity_date': cls.get_value_or_none(el, u'last_activity_date'),
+                'last_activity_time': cls.get_value_or_none(el, u'last_activity_time'),
                 'won_time': cls.datetime_from_simple_time(el, u'won_time'),
                 'last_incoming_mail_time':
                     cls.datetime_from_simple_time(el, u'last_incoming_mail_time'),
