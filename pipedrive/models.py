@@ -307,22 +307,6 @@ class Pipeline(PipedriveModel):
             self.external_id, self.name)
 
     @classmethod
-    def get_fields(cls):
-        """
-        Gets and stores all Org Fields from the api
-        """
-        raw_stages = Pipeline.pipedrive_api_client.get_pipeline_stages()
-        pipeline_stages = Pipeline.pipedrive_api_client.get_data_list(raw_stages)
-
-        for pipeline_stage in pipeline_stages:
-
-            stage_object, created = cls.objects.get_or_create(
-                external_id=pipeline_stage['id'],
-                name=pipeline_stage['name'],
-                active=pipeline_stage['active']
-            )
-
-    @classmethod
     def update_or_create_entity_from_api_post(cls, el):
         return Pipeline.objects.update_or_create(
             external_id=el[u'id'],
@@ -878,7 +862,7 @@ class OrganizationField(BaseField):
         """
         Gets and stores all Org Fields from the api
         """
-        raw_organizations = OrganizationField.pipedrive_api_client.get_organization_fields()
+        raw_organizations = OrganizationField.pipedrive_api_client.get_instances()
         organization_fields = OrganizationField.pipedrive_api_client.get_data_list(
             raw_organizations)
 
@@ -925,7 +909,7 @@ class DealField(BaseField):
         """
         Gets and stores all Org Fields from the api
         """
-        raw_deals = DealField.pipedrive_api_client.get_deal_fields()
+        raw_deals = DealField.pipedrive_api_client.get_instances()
         deal_fields = DealField.pipedrive_api_client.get_data_list(raw_deals)
 
         for deal_field in deal_fields:
@@ -970,7 +954,7 @@ class PersonField(BaseField):
         """
         Gets and stores all Org Fields from the api
         """
-        raw_persons = PersonField.pipedrive_api_client.get_person_fields()
+        raw_persons = PersonField.pipedrive_api_client.get_instances()
         person_fields = PersonField.pipedrive_api_client.get_data_list(raw_persons)
 
         for person_field in person_fields:
@@ -1057,25 +1041,6 @@ class Stage(PipedriveModel):
     def __unicode__(self):
         return u'Stage ID: {}, Name: {}.'.format(
             self.external_id, self.name)
-
-    @classmethod
-    def get_fields(cls):
-        """
-        Gets and stores all Org Fields from the api
-        """
-        raw_stages = Stage.pipedrive_api_client.get_instances()
-        stages = Stage.pipedrive_api_client.get_data_list(raw_stages)
-
-        for stage in stages:
-
-            stage_object, created = cls.objects.get_or_create(
-                external_id=stage['id'],
-                pipeline_id=stage['pipeline_id'],
-                pipeline_name=stage['pipeline_name'],
-                name=stage['name'],
-                active_flag=stage['active_flag'],
-                order_nr=stage['order_nr'],
-            )
 
     @classmethod
     def update_or_create_entity_from_api_post(cls, el):

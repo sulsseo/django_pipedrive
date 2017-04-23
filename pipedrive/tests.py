@@ -1565,8 +1565,6 @@ class TestPipedrive(TestCase):
         DealField.get_fields()
         OrganizationField.get_fields()
         PersonField.get_fields()
-        Pipeline.get_fields()
-        Stage.get_fields()
 
     def test_datetime_from_fields_none_fields(self):
 
