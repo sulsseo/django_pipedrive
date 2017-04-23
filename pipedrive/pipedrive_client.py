@@ -17,8 +17,11 @@ class PipedriveAPIClient(object):
         api_key=None,
         email=None,
         password=None,
-        api_base_url=None
+        api_base_url=None,
+        endpoint=None,
     ):
+
+        self.endpoint = endpoint
 
         if api_base_url is None:
             api_base_url = 'https://api.pipedrive.com/v1/'
@@ -117,6 +120,37 @@ class PipedriveAPIClient(object):
 
         return content
 
+    def get_instance(self, external_id):
+        """
+        Obtain the detail of an instance from the api
+        """
+
+        restpoint = self.get_restify(self.endpoint, external_id)
+
+        content = self.get(restpoint)
+
+        return content
+
+    def get_instances(self, **kwargs):
+        """
+        Obtain a list of instances from the api
+        """
+
+        content = self.get(self.endpoint, kwargs)
+
+        return content
+
+    def post_instance(self, **kwargs):
+        """
+        Add an instance to Pipedrive
+        """
+        restpoint = self.post_put_restify(self.endpoint)
+
+        content = self.post(restpoint, kwargs)
+
+        return content
+
+
     def get_deal(self, external_id):
         """
         Obtain the detail of a deal from the api
@@ -126,6 +160,16 @@ class PipedriveAPIClient(object):
         restpoint = self.get_restify(endpoint, external_id)
 
         content = self.get(restpoint)
+
+        return content
+
+    def get_deals(self, **kwargs):
+        """
+        Obtain a list of deals from the api
+        """
+        endpoint = 'deals'
+
+        content = self.get(endpoint, kwargs)
 
         return content
 
@@ -153,15 +197,6 @@ class PipedriveAPIClient(object):
 
         return content
 
-    def get_deals(self, **kwargs):
-        """
-        Obtain a list of deals from the api
-        """
-        endpoint = 'deals'
-
-        content = self.get(endpoint, kwargs)
-
-        return content
 
     def get_deal_fields(self, **kwargs):
         """

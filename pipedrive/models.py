@@ -12,9 +12,6 @@ from django.utils import timezone
 # api
 from pipedrive.pipedrive_client import PipedriveAPIClient
 
-# utils
-pipedrive_api_client = PipedriveAPIClient()
-
 CREATOR_USER_ID = 2428657   # TestUser
 PRIVATE = 0
 SHARED = 3
@@ -92,7 +89,7 @@ class PipedriveModel(models.Model):
 
     @classmethod
     def sync_one(cls, external_id):
-        post_data = cls.get_one_api_call(external_id)
+        post_data = cls.pipedrive_api_client.get_instance(external_id)
 
         # Error code from the API
         if not post_data['success']:
@@ -113,7 +110,7 @@ class PipedriveModel(models.Model):
 
         while True:
 
-            post_data = cls.get_api_call(start=start)
+            post_data = cls.pipedrive_api_client.get_instances(start=start)
 
             # Error code from the API
             if not post_data['success']:
@@ -166,7 +163,7 @@ class PipedriveModel(models.Model):
 
         kwargs = self.build_kwargs()
 
-        post_data = self.post_api_call(kwargs)
+        post_data = self.pipedrive_api_client.post_instance(**kwargs)
 
         if not post_data[u'success']:
             logging.error(post_data)
@@ -224,6 +221,8 @@ class User(PipedriveModel):
         null=True
     )
 
+    pipedrive_api_client = PipedriveAPIClient(endpoint='users')
+
     def build_kwargs(self):
         return {
             'id': self.external_id,
@@ -236,17 +235,6 @@ class User(PipedriveModel):
             'role_id': self.role_id,
             'active_flag': self.active_flag,
         }
-
-    @classmethod
-    def get_api_call(cls, start):
-        return pipedrive_api_client.get_users(start=start)
-
-    @classmethod
-    def get_one_api_call(cls, external_id):
-        return pipedrive_api_client.get_user(external_id)
-
-    def post_api_call(self, kwargs):
-        return pipedrive_api_client.post_user(**kwargs)
 
     @classmethod
     def update_or_create_entity_from_api_post(cls, el):
@@ -302,6 +290,8 @@ class Pipeline(PipedriveModel):
         blank=True,
     )
 
+    pipedrive_api_client = PipedriveAPIClient(endpoint='pipelines')
+
     def build_kwargs(self):
         return {
             'id': self.external_id,
@@ -321,8 +311,8 @@ class Pipeline(PipedriveModel):
         """
         Gets and stores all Org Fields from the api
         """
-        raw_stages = pipedrive_api_client.get_pipeline_stages()
-        pipeline_stages = pipedrive_api_client.get_data_list(raw_stages)
+        raw_stages = Pipeline.pipedrive_api_client.get_pipeline_stages()
+        pipeline_stages = Pipeline.pipedrive_api_client.get_data_list(raw_stages)
 
         for pipeline_stage in pipeline_stages:
 
@@ -331,17 +321,6 @@ class Pipeline(PipedriveModel):
                 name=pipeline_stage['name'],
                 active=pipeline_stage['active']
             )
-
-    @classmethod
-    def get_api_call(cls, start):
-        return pipedrive_api_client.get_pipelines(start=start)
-
-    @classmethod
-    def get_one_api_call(cls, external_id):
-        return pipedrive_api_client.get_pipeline(external_id)
-
-    def post_api_call(self, kwargs):
-        return pipedrive_api_client.post_pipeline(**kwargs)
 
     @classmethod
     def update_or_create_entity_from_api_post(cls, el):
@@ -447,6 +426,8 @@ class Organization(PipedriveModel):
         blank=True,
     )
 
+    pipedrive_api_client = PipedriveAPIClient(endpoint='organizations')
+
     def build_kwargs(self):
         return {
             'id': self.external_id,
@@ -457,14 +438,6 @@ class Organization(PipedriveModel):
 
     def __unicode__(self):
         return str(self.external_id) + " : " + str(self.name)
-
-    @classmethod
-    def get_api_call(cls, start):
-        return pipedrive_api_client.get_organizations(start=start)
-
-    @classmethod
-    def get_one_api_call(cls, external_id):
-        return pipedrive_api_client.get_organization(external_id)
 
     @classmethod
     def update_or_create_entity_from_api_post(cls, el):
@@ -492,9 +465,6 @@ class Organization(PipedriveModel):
                 'address': el[u'address_formatted_address'],
             }
         )
-
-    def post_api_call(self, kwargs):
-        return pipedrive_api_client.post_organization(**kwargs)
 
 
 class Person(PipedriveModel):
@@ -602,6 +572,8 @@ class Person(PipedriveModel):
         blank=True,
     )
 
+    pipedrive_api_client = PipedriveAPIClient(endpoint='persons')
+
     def build_kwargs(self):
         return {
             'id': self.external_id,
@@ -612,18 +584,6 @@ class Person(PipedriveModel):
 
     def __unicode__(self):
         return str(self.external_id) + " : " + str(self.name)
-
-    @classmethod
-    def get_api_call(cls, start):
-        return pipedrive_api_client.get_persons(start=start)
-
-    @classmethod
-    def get_one_api_call(cls, external_id):
-        return pipedrive_api_client.get_person(external_id)
-
-    @classmethod
-    def post_api_call(cls, kwargs):
-        return pipedrive_api_client.post_person(**kwargs)
 
     @classmethod
     def update_or_create_entity_from_api_post(cls, el):
@@ -802,6 +762,8 @@ class Deal(PipedriveModel):
         blank=True,
     )
 
+    pipedrive_api_client = PipedriveAPIClient(endpoint='deals')
+
     def build_kwargs(self):
         return {
             'id': self.external_id,
@@ -813,18 +775,6 @@ class Deal(PipedriveModel):
 
     def __unicode__(self):
         return str(self.external_id) + " : " + str(self.title)
-
-    @classmethod
-    def get_api_call(cls, start):
-        return pipedrive_api_client.get_deals(start=start)
-
-    @classmethod
-    def get_one_api_call(cls, external_id):
-        return pipedrive_api_client.get_deal(external_id)
-
-    @classmethod
-    def post_api_call(cls, kwargs):
-        return pipedrive_api_client.post_deal(**kwargs)
 
     @classmethod
     def update_or_create_entity_from_api_post(cls, el):
@@ -917,6 +867,8 @@ class OrganizationField(BaseField):
     :model:`pipeline.OrganizationField`.
     """
 
+    pipedrive_api_client = PipedriveAPIClient(endpoint='organizationFields')
+
     def __unicode__(self):
         return u'External ID: {}, Name: {}, Key: {}.'.format(
             self.external_id, self.name, self.key)
@@ -926,8 +878,8 @@ class OrganizationField(BaseField):
         """
         Gets and stores all Org Fields from the api
         """
-        raw_organizations = pipedrive_api_client.get_organization_fields()
-        organization_fields = pipedrive_api_client.get_data_list(
+        raw_organizations = OrganizationField.pipedrive_api_client.get_organization_fields()
+        organization_fields = OrganizationField.pipedrive_api_client.get_data_list(
             raw_organizations)
 
         for organization_field in organization_fields:
@@ -962,6 +914,8 @@ class DealField(BaseField):
     :model:`pipeline.DealField`.
     """
 
+    pipedrive_api_client = PipedriveAPIClient(endpoint='dealFields')
+
     def __unicode__(self):
         return u'External ID: {}, Name: {}, Key: {}.'.format(
             self.external_id, self.name, self.key)
@@ -971,8 +925,8 @@ class DealField(BaseField):
         """
         Gets and stores all Org Fields from the api
         """
-        raw_deals = pipedrive_api_client.get_deal_fields()
-        deal_fields = pipedrive_api_client.get_data_list(raw_deals)
+        raw_deals = DealField.pipedrive_api_client.get_deal_fields()
+        deal_fields = DealField.pipedrive_api_client.get_data_list(raw_deals)
 
         for deal_field in deal_fields:
 
@@ -1005,6 +959,8 @@ class PersonField(BaseField):
     :model:`pipeline.PersonField`.
     """
 
+    pipedrive_api_client = PipedriveAPIClient(endpoint='personFields')
+
     def __unicode__(self):
         return u'External ID: {}, Name: {}, Key: {}.'.format(
             self.external_id, self.name, self.key)
@@ -1014,8 +970,8 @@ class PersonField(BaseField):
         """
         Gets and stores all Org Fields from the api
         """
-        raw_persons = pipedrive_api_client.get_person_fields()
-        person_fields = pipedrive_api_client.get_data_list(raw_persons)
+        raw_persons = PersonField.pipedrive_api_client.get_person_fields()
+        person_fields = PersonField.pipedrive_api_client.get_data_list(raw_persons)
 
         for person_field in person_fields:
 
@@ -1087,6 +1043,8 @@ class Stage(PipedriveModel):
         blank=True,
     )
 
+    pipedrive_api_client = PipedriveAPIClient(endpoint='stages')
+
     def build_kwargs(self):
         return {
             'id': self.external_id,
@@ -1105,8 +1063,8 @@ class Stage(PipedriveModel):
         """
         Gets and stores all Org Fields from the api
         """
-        raw_stages = pipedrive_api_client.get_stages()
-        stages = pipedrive_api_client.get_data_list(raw_stages)
+        raw_stages = Stage.pipedrive_api_client.get_instances()
+        stages = Stage.pipedrive_api_client.get_data_list(raw_stages)
 
         for stage in stages:
 
@@ -1118,17 +1076,6 @@ class Stage(PipedriveModel):
                 active_flag=stage['active_flag'],
                 order_nr=stage['order_nr'],
             )
-
-    @classmethod
-    def get_api_call(cls, start):
-        return pipedrive_api_client.get_stages(start=start)
-
-    @classmethod
-    def get_one_api_call(cls, external_id):
-        return pipedrive_api_client.get_stage(external_id)
-
-    def post_api_call(self, kwargs):
-        return pipedrive_api_client.post_stage(**kwargs)
 
     @classmethod
     def update_or_create_entity_from_api_post(cls, el):
@@ -1197,6 +1144,8 @@ class Note(PipedriveModel):
         null=True
     )
 
+    pipedrive_api_client = PipedriveAPIClient(endpoint='notes')
+
     def build_kwargs(self):
         return {
             'id': self.external_id,
@@ -1206,17 +1155,6 @@ class Note(PipedriveModel):
             'person_id': self.person_id,
             'org_id': self.org_id,
         }
-
-    @classmethod
-    def get_api_call(cls, start):
-        return pipedrive_api_client.get_notes(start=start)
-
-    @classmethod
-    def get_one_api_call(cls, external_id):
-        return pipedrive_api_client.get_note(external_id)
-
-    def post_api_call(self, kwargs):
-        return pipedrive_api_client.post_note(**kwargs)
 
     @classmethod
     def update_or_create_entity_from_api_post(cls, el):
@@ -1314,6 +1252,8 @@ class Activity(PipedriveModel):
         blank=True,
     )
 
+    pipedrive_api_client = PipedriveAPIClient(endpoint='activities')
+
     def build_kwargs(self):
         return {
             'id': self.external_id,
@@ -1326,17 +1266,6 @@ class Activity(PipedriveModel):
             'marked_as_done_time': self.marked_as_done_time,
             'active_flag': self.active_flag,
         }
-
-    @classmethod
-    def get_api_call(cls, start):
-        return pipedrive_api_client.get_activities(start=start)
-
-    def post_api_call(self, kwargs):
-        return pipedrive_api_client.post_activity(**kwargs)
-
-    @classmethod
-    def get_one_api_call(cls, external_id):
-        return pipedrive_api_client.get_activity(external_id)
 
     @classmethod
     def update_or_create_entity_from_api_post(cls, el):
