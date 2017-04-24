@@ -61,30 +61,13 @@ def handle_v1(json_data):
 
         if action == 'updated':
 
-            # The corresponding instance is found for update
-            instance = model.objects.get(external_id=external_id)
-
             # Compute difference between previous and current
             diffkeys = [k for k in previous if previous[k] != current[k]]
-
-            for key in diffkeys:
-                value = current[key]
-                setattr(instance, key, value)
 
             model.update_or_create_entity_from_api_post(current)
 
         if action == 'added':
 
-            # Object's key name is changed
-            # current['external_id'] = current.pop('id')
-
-            # Fields from the API that are not localy recognized
-            # by the model are filtered
-            # current = filter_fields(current, model)
-            # current = fix_fields(current)
-
-            # model.objects.create(**current)
-            # import pdb; pdb.set_trace()
             model.update_or_create_entity_from_api_post(current)
 
         if action == 'deleted':
@@ -136,27 +119,3 @@ def map_models(object_type):
         'pipeline': Pipeline,
         'stage': Stage
     }[object_type]
-
-
-def filter_fields(data, model):
-
-    keylist = [k.attname for k in model._meta.concrete_fields]
-
-    for k in data.keys():
-        if k not in keylist:
-            data.pop(k)
-
-    return data
-
-
-def fix_fields(data):
-    """
-    fix_fields fixes type issues with some fields
-    for example marked_as_done_time datetime field appears
-    as '' instead of None
-    """
-    for k in data.keys():
-        if k == u'marked_as_done_time' and data[k] == u'':
-            data[k] = None
-
-    return data
