@@ -1,13 +1,10 @@
 import json
 import logging
 
-from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.db import IntegrityError
 
 from django.http import HttpResponse
-from django.http import HttpResponseServerError
-
 
 from pipedrive.models import Deal
 from pipedrive.models import Person
@@ -74,19 +71,21 @@ def handle_v1(json_data):
                 value = current[key]
                 setattr(instance, key, value)
 
-            instance.save()
+            model.update_or_create_entity_from_api_post(current)
 
         if action == 'added':
 
             # Object's key name is changed
-            current['external_id'] = current.pop('id')
+            # current['external_id'] = current.pop('id')
 
             # Fields from the API that are not localy recognized
             # by the model are filtered
-            current = filter_fields(current, model)
-            current = fix_fields(current)
+            # current = filter_fields(current, model)
+            # current = fix_fields(current)
 
-            model.objects.create(**current)
+            # model.objects.create(**current)
+            # import pdb; pdb.set_trace()
+            model.update_or_create_entity_from_api_post(current)
 
         if action == 'deleted':
 
@@ -117,8 +116,8 @@ def handle_v1(json_data):
     except Stage.DoesNotExist as e:
         handle_does_not_exist(e, external_id, json_data)
 
-
     return HttpResponse("OK!")
+
 
 def handle_does_not_exist(e, external_id, json_data):
     logging.error(e.message)

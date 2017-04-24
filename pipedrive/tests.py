@@ -25,6 +25,11 @@ from pipedrive.models import PipedriveModel
 
 class TestPipedriveWebhooks(TestCase):
 
+    def setUp(self):
+        DealField.fetch_from_pipedrive()
+        OrganizationField.fetch_from_pipedrive()
+        PersonField.fetch_from_pipedrive()
+
     def test_activity_marked_as_done(self):
 
         c = Client()
@@ -34,100 +39,103 @@ class TestPipedriveWebhooks(TestCase):
         self.assertEquals(Activity.objects.count(), 1)
 
         data = {
-          "v": 1,
-          "matches_filters": 
-            {"current": [],
-            "previous": []},
-          "meta": {
             "v": 1,
-            "action": "updated",
-            "object": "activity",
-            "id": 2,
-            "company_id": 1689563,
-            "user_id": 2428657,
-            "host": "miempresa2.pipedrive.com",
-            "timestamp": 1492898177,
-            "timestamp_milli": 1492898177841,
-            "permitted_user_ids": ["*"],
-            "trans_pending": False,
-            "is_bulk_update": False,
-            "matches_filters": {"current": [],
-            "previous": []}
-          },
-          "retry": 0,
-          "current": {
-            "id": 2,
-            "company_id": 1689563,
-            "user_id": 2428657,
-            "done": True,
-            "type": "call",
-            "reference_type": "none",
-            "reference_id": None,
-            "due_date": "2017-04-21",
-            "due_time": "",
-            "duration": "",
-            "add_time": "2017-04-21 12:21:10",
-            "marked_as_done_time": "2017-04-22 21:56:17",
-            "subject": "TEST_ACTIVITY",
-            "deal_id": None,
-            "org_id": None,
-            "person_id": None,
-            "active_flag": True,
-            "update_time": "2017-04-22 21:56:17",
-            "gcal_event_id": None,
-            "google_calendar_id": None,
-            "google_calendar_etag": None,
-            "note": "",
-            "person_name": None,
-            "org_name": None,
-            "deal_title": None,
-            "assigned_to_user_id": 2428657,
-            "created_by_user_id": 2428657,
-            "owner_name": "Gustavo",
-            "person_dropbox_bcc": None,
-            "deal_dropbox_bcc": None,
-            "no_gcal": False
-          },
-          "previous": {
-            "id": 2,
-            "company_id": 1689563,
-            "user_id": 2428657,
-            "done": False,
-            "type": "call",
-            "reference_type": "none",
-            "reference_id": None,
-            "due_date": "2017-04-21",
-            "due_time": "",
-            "duration": "",
-            "add_time": "2017-04-21 12:21:10",
-            "marked_as_done_time": "",
-            "subject": "TEST_ACTIVITY",
-            "deal_id": None,
-            "org_id": None,
-            "person_id": None,
-            "active_flag": True,
-            "update_time": "2017-04-22 21:56:15",
-            "gcal_event_id": None,
-            "google_calendar_id": None,
-            "google_calendar_etag": None,
-            "note": "",
-            "person_name": None,
-            "org_name": None,
-            "deal_title": None,
-            "assigned_to_user_id": 2428657,
-            "created_by_user_id": 2428657,
-            "owner_name": "Gustavo",
-            "person_dropbox_bcc": None,
-            "deal_dropbox_bcc": None
-          },
-          "event": "updated.activity"
+            "matches_filters": {
+                "current": [],
+                "previous": []},
+            "meta": {
+                "v": 1,
+                "action": "updated",
+                "object": "activity",
+                "id": 2,
+                "company_id": 1689563,
+                "user_id": 2428657,
+                "host": "miempresa2.pipedrive.com",
+                "timestamp": 1492898177,
+                "timestamp_milli": 1492898177841,
+                "permitted_user_ids": ["*"],
+                "trans_pending": False,
+                "is_bulk_update": False,
+                "matches_filters": {
+                    "current": [],
+                    "previous": []
+                }
+            },
+            "retry": 0,
+            "current": {
+                "id": 2,
+                "company_id": 1689563,
+                "user_id": 2428657,
+                "done": True,
+                "type": "call",
+                "reference_type": "none",
+                "reference_id": None,
+                "due_date": "2017-04-21",
+                "due_time": "",
+                "duration": "",
+                "add_time": "2017-04-21 12:21:10",
+                "marked_as_done_time": "2017-04-22 21:56:17",
+                "subject": "TEST_ACTIVITY",
+                "deal_id": None,
+                "org_id": None,
+                "person_id": None,
+                "active_flag": True,
+                "update_time": "2017-04-22 21:56:17",
+                "gcal_event_id": None,
+                "google_calendar_id": None,
+                "google_calendar_etag": None,
+                "note": "",
+                "person_name": None,
+                "org_name": None,
+                "deal_title": None,
+                "assigned_to_user_id": 2428657,
+                "created_by_user_id": 2428657,
+                "owner_name": "Gustavo",
+                "person_dropbox_bcc": None,
+                "deal_dropbox_bcc": None,
+                "no_gcal": False
+            },
+            "previous": {
+                "id": 2,
+                "company_id": 1689563,
+                "user_id": 2428657,
+                "done": False,
+                "type": "call",
+                "reference_type": "none",
+                "reference_id": None,
+                "due_date": "2017-04-21",
+                "due_time": "",
+                "duration": "",
+                "add_time": "2017-04-21 12:21:10",
+                "marked_as_done_time": "",
+                "subject": "TEST_ACTIVITY",
+                "deal_id": None,
+                "org_id": None,
+                "person_id": None,
+                "active_flag": True,
+                "update_time": "2017-04-22 21:56:15",
+                "gcal_event_id": None,
+                "google_calendar_id": None,
+                "google_calendar_etag": None,
+                "note": "",
+                "person_name": None,
+                "org_name": None,
+                "deal_title": None,
+                "assigned_to_user_id": 2428657,
+                "created_by_user_id": 2428657,
+                "owner_name": "Gustavo",
+                "person_dropbox_bcc": None,
+                "deal_dropbox_bcc": None
+            },
+            "event": "updated.activity"
         }
 
         c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
 
         activity = Activity.objects.get(external_id=2)
+        expected = datetime.datetime(2017, 4, 22, 21, 56, 17, tzinfo=pytz.utc)
 
-        self.assertEquals(activity.marked_as_done_time, datetime.datetime(2017, 4, 22, 21, 56, 17, tzinfo=pytz.utc))
+        self.assertEquals(activity.marked_as_done_time, expected)
 
     def test_activity_not_marked_as_done(self):
 
@@ -138,93 +146,96 @@ class TestPipedriveWebhooks(TestCase):
         self.assertEquals(Activity.objects.count(), 1)
 
         data = {
-          "v": 1,
-          "matches_filters": 
-            {"current": [],
-            "previous": []},
-          "meta": {
             "v": 1,
-            "action": "updated",
-            "object": "activity",
-            "id": 2,
-            "company_id": 1689563,
-            "user_id": 2428657,
-            "host": "miempresa2.pipedrive.com",
-            "timestamp": 1492898177,
-            "timestamp_milli": 1492898177841,
-            "permitted_user_ids": ["*"],
-            "trans_pending": False,
-            "is_bulk_update": False,
-            "matches_filters": {"current": [],
-            "previous": []}
-          },
-          "retry": 0,
-          "current": {
-            "id": 2,
-            "company_id": 1689563,
-            "user_id": 2428657,
-            "done": True,
-            "type": "call",
-            "reference_type": "none",
-            "reference_id": None,
-            "due_date": "2017-04-21",
-            "due_time": "",
-            "duration": "",
-            "add_time": "2017-04-21 12:21:10",
-            "marked_as_done_time": "",
-            "subject": "TEST_ACTIVITY",
-            "deal_id": None,
-            "org_id": None,
-            "person_id": None,
-            "active_flag": True,
-            "update_time": "2017-04-22 21:56:17",
-            "gcal_event_id": None,
-            "google_calendar_id": None,
-            "google_calendar_etag": None,
-            "note": "",
-            "person_name": None,
-            "org_name": None,
-            "deal_title": None,
-            "assigned_to_user_id": 2428657,
-            "created_by_user_id": 2428657,
-            "owner_name": "Gustavo",
-            "person_dropbox_bcc": None,
-            "deal_dropbox_bcc": None,
-            "no_gcal": False
-          },
-          "previous": {
-            "id": 2,
-            "company_id": 1689563,
-            "user_id": 2428657,
-            "done": False,
-            "type": "call",
-            "reference_type": "none",
-            "reference_id": None,
-            "due_date": "2017-04-21",
-            "due_time": "",
-            "duration": "",
-            "add_time": "2017-04-21 12:21:10",
-            "marked_as_done_time": "",
-            "subject": "TEST_ACTIVITY",
-            "deal_id": None,
-            "org_id": None,
-            "person_id": None,
-            "active_flag": True,
-            "update_time": "2017-04-22 21:56:15",
-            "gcal_event_id": None,
-            "google_calendar_id": None,
-            "google_calendar_etag": None,
-            "note": "",
-            "person_name": None,
-            "org_name": None,
-            "deal_title": None,
-            "assigned_to_user_id": 2428657,
-            "created_by_user_id": 2428657,
-            "owner_name": "Gustavo",
-            "person_dropbox_bcc": None,
-            "deal_dropbox_bcc": None
-          },
-          "event": "updated.activity"
+            "matches_filters": {
+                "current": [],
+                "previous": []
+            },
+            "meta": {
+                "v": 1,
+                "action": "updated",
+                "object": "activity",
+                "id": 2,
+                "company_id": 1689563,
+                "user_id": 2428657,
+                "host": "miempresa2.pipedrive.com",
+                "timestamp": 1492898177,
+                "timestamp_milli": 1492898177841,
+                "permitted_user_ids": ["*"],
+                "trans_pending": False,
+                "is_bulk_update": False,
+                "matches_filters": {
+                    "current": [],
+                    "previous": []
+                }
+            },
+            "retry": 0,
+            "current": {
+                "id": 2,
+                "company_id": 1689563,
+                "user_id": 2428657,
+                "done": True,
+                "type": "call",
+                "reference_type": "none",
+                "reference_id": None,
+                "due_date": "2017-04-21",
+                "due_time": "",
+                "duration": "",
+                "add_time": "2017-04-21 12:21:10",
+                "marked_as_done_time": "",
+                "subject": "TEST_ACTIVITY",
+                "deal_id": None,
+                "org_id": None,
+                "person_id": None,
+                "active_flag": True,
+                "update_time": "2017-04-22 21:56:17",
+                "gcal_event_id": None,
+                "google_calendar_id": None,
+                "google_calendar_etag": None,
+                "note": "",
+                "person_name": None,
+                "org_name": None,
+                "deal_title": None,
+                "assigned_to_user_id": 2428657,
+                "created_by_user_id": 2428657,
+                "owner_name": "Gustavo",
+                "person_dropbox_bcc": None,
+                "deal_dropbox_bcc": None,
+                "no_gcal": False
+            },
+            "previous": {
+                "id": 2,
+                "company_id": 1689563,
+                "user_id": 2428657,
+                "done": False,
+                "type": "call",
+                "reference_type": "none",
+                "reference_id": None,
+                "due_date": "2017-04-21",
+                "due_time": "",
+                "duration": "",
+                "add_time": "2017-04-21 12:21:10",
+                "marked_as_done_time": "",
+                "subject": "TEST_ACTIVITY",
+                "deal_id": None,
+                "org_id": None,
+                "person_id": None,
+                "active_flag": True,
+                "update_time": "2017-04-22 21:56:15",
+                "gcal_event_id": None,
+                "google_calendar_id": None,
+                "google_calendar_etag": None,
+                "note": "",
+                "person_name": None,
+                "org_name": None,
+                "deal_title": None,
+                "assigned_to_user_id": 2428657,
+                "created_by_user_id": 2428657,
+                "owner_name": "Gustavo",
+                "person_dropbox_bcc": None,
+                "deal_dropbox_bcc": None
+            },
+            "event": "updated.activity"
         }
 
         c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
@@ -233,8 +244,7 @@ class TestPipedriveWebhooks(TestCase):
 
         self.assertIsNone(activity.marked_as_done_time)
 
-
-    def test_create_stage(self):
+    def test_create_organization(self):
 
         c = Client()
 
@@ -258,8 +268,7 @@ class TestPipedriveWebhooks(TestCase):
                 "host": "mycompany.pipedrive.com",
                 "timestamp": 1492893731,
                 "timestamp_milli": 1492893731834,
-                "permitted_user_ids": [123456,
-                1428742],
+                "permitted_user_ids": [123456, 1428742],
                 "trans_pending": False,
                 "is_bulk_update": False,
                 "matches_filters": {
@@ -315,7 +324,7 @@ class TestPipedriveWebhooks(TestCase):
                 "address_admin_area_level_2": "Santiago",
                 "address_country": "Chile",
                 "address_postal_code": "",
-                "address_formatted_address": "Av. Los Pajaritos 1500, Maipú, Región Metropolitana, Chile",
+                "address_formatted_address": "Some address",
                 "cc_email": "mycompany@pipedrivemail.com",
                 "owner_name": "TEST_OWNER",
                 "edit_name": True
@@ -327,14 +336,12 @@ class TestPipedriveWebhooks(TestCase):
 
         c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
 
-        self.assertEquals(Stage.objects.count(), 1)
+        self.assertEquals(Organization.objects.count(), 1)
 
-        stage = Stage.objects.get(external_id=71)
+        organization = Organization.objects.get(external_id=71)
 
-        self.assertEquals(stage.name, "The organization")
+        self.assertEquals(organization.name, "The organization")
 
-
- 
     def test_update_deal(self):
         c = Client()
 
@@ -1100,7 +1107,7 @@ class TestPipedriveWebhooks(TestCase):
                 "address_admin_area_level_2": "Derby",
                 "address_country": "Reino Unido",
                 "address_postal_code": "DE24 3DS",
-                "address_formatted_address": "Sinfin Shopping Centre-, Sinfin Health Centre, Arleston Ln, Sinfin District Centre, Sinfin DE24 3DS, Reino Unido",
+                "address_formatted_address": "Sinfin Shopping Centre-, Reino Unido",
                 "cc_email": "mycompany@pipedrivemail.com",
                 "owner_name": "OWNER",
                 "edit_name": True,
@@ -1154,7 +1161,7 @@ class TestPipedriveWebhooks(TestCase):
                 "address_admin_area_level_2": "Derby",
                 "address_country": "Reino Unido",
                 "address_postal_code": "DE24 3DS",
-                "address_formatted_address": "Sinfin Shopping Centre - Sinfin Health Centre, Arleston Ln, Sinfin District Centre, Sinfin DE24 3DS, Reino Unido",
+                "address_formatted_address": "Sinfin Shopping Centre, Reino Unido",
                 "cc_email": "mycompany@pipedrivemail.com",
                 "owner_name": "OWNER",
                 "edit_name": True
@@ -1367,7 +1374,7 @@ class TestPipedriveWebhooks(TestCase):
 
         self.assertEquals(deal.note_set.count(), 1)
 
-    def create_deal_with_organization(self):
+    def test_create_deal_with_organization(self):
 
         c = Client()
 
@@ -1379,9 +1386,10 @@ class TestPipedriveWebhooks(TestCase):
 
         data = {
             "v": 1,
-            "matches_filters":
-                {"current": [],
-                 "previous": []},
+            "matches_filters": {
+                "current": [],
+                "previous": []
+            },
             "meta": {
                 "v": 1,
                 "action": "added",
@@ -1467,8 +1475,257 @@ class TestPipedriveWebhooks(TestCase):
 
         deal = Deal.objects.get(external_id=9)
 
-        self.assertEquals(deal.person.external_id, u'5')
-        self.assertEquals(deal.org.external_id, u'18')
+        self.assertEquals(deal.person.external_id, 5)
+        self.assertEquals(deal.org.external_id, 18)
+
+    def test_create_person_with_additional_fields(self):
+
+        c = Client()
+
+        Person.objects.create(external_id=84)
+
+        self.assertEquals(Person.objects.count(), 1)
+
+        data = {
+            "v": 1,
+            "matches_filters": {
+                "current": [],
+                "previous": []
+            },
+            "meta": {
+                "v": 1,
+                "action": "added",
+                "object": "person",
+                "id": 84,
+                "company_id": 1689563,
+                "user_id": 2428657,
+                "host": "mycompany.pipedrive.com",
+                "timestamp": 1492990137,
+                "timestamp_milli": 1492990137771,
+                "permitted_user_ids": [2428657, 1428742],
+                "trans_pending": False,
+                "is_bulk_update": False,
+                "matches_filters": {
+                    "current": [],
+                    "previous": []
+                }
+            },
+            "retry": 0,
+            "current": {
+                "id": 84,
+                "company_id": 1689563,
+                "owner_id": 2428657,
+                "org_id": None,
+                "name": "NEW PERSON",
+                "first_name": "NEW",
+                "last_name": "PERSON",
+                "open_deals_count": 0,
+                "related_open_deals_count": 0,
+                "closed_deals_count": 0,
+                "related_closed_deals_count": 0,
+                "participant_open_deals_count": 0,
+                "participant_closed_deals_count": 0,
+                "email_messages_count": 0,
+                "activities_count": 0,
+                "done_activities_count": 0,
+                "undone_activities_count": 0,
+                "reference_activities_count": 0,
+                "files_count": 0,
+                "notes_count": 0,
+                "followers_count": 0,
+                "won_deals_count": 0,
+                "related_won_deals_count": 0,
+                "lost_deals_count": 0,
+                "related_lost_deals_count": 0,
+                "active_flag": True,
+                "phone": [{
+                    "label": "work",
+                    "value": "3232635+6",
+                    "primary": True
+                }],
+                "email": [{
+                    "label": "work",
+                    "value": "address@example.com",
+                    "primary": True
+                }],
+                "first_char": "n",
+                "update_time": "2017-04-23 23:28:57",
+                "add_time": "2017-04-23 23:28:57",
+                "visible_to": "3",
+                "picture_id": None,
+                "next_activity_date": None,
+                "next_activity_time": None,
+                "next_activity_id": None,
+                "last_activity_id": None,
+                "last_activity_date": None,
+                "last_incoming_mail_time": None,
+                "last_outgoing_mail_time": None,
+                "66fb3447cad79ece76413df362fea1122856bcb3": 45,
+                "org_name": None,
+                "cc_email": "mycompany@pipedrivemail.com",
+                "owner_name": "OWNER"
+            },
+            "previous": None,
+            "indexable_fields": ["66fb3447cad79ece76413df362fea1122856bcb3"],
+            "event": "added.person"
+        }
+
+        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+
+        person = Person.objects.get(external_id=84)
+
+        additional_field = '66fb3447cad79ece76413df362fea1122856bcb3'
+
+        self.assertEquals(person.additional_fields[additional_field], u'45')
+
+    def test_update_person_with_additional_fields(self):
+
+        c = Client()
+
+        Person.objects.create(external_id=15)
+
+        self.assertEquals(Person.objects.count(), 1)
+
+        data = {
+            "v": 1,
+            "matches_filters": {
+                "current": [],
+                "previous": []
+            },
+            "meta": {
+                "v": 1,
+                "action": "updated",
+                "object": "person",
+                "id": 15,
+                "company_id": 1689563,
+                "user_id": 2428657,
+                "host": "miempresa2.pipedrive.com",
+                "timestamp": 1492987381,
+                "timestamp_milli": 1492987381773,
+                "permitted_user_ids": [2428657, 1428742],
+                "trans_pending": False,
+                "is_bulk_update": False,
+                "matches_filters": {
+                    "current": [],
+                    "previous": []
+                }
+            },
+            "retry": 0,
+            "current": {
+                "id": 15,
+                "company_id": 1689563,
+                "owner_id": 2428657,
+                "org_id": None,
+                "name": "TEST_PERSON",
+                "first_name": "TEST_PERSON",
+                "last_name": None,
+                "open_deals_count": 0,
+                "related_open_deals_count": 0,
+                "closed_deals_count": 0,
+                "related_closed_deals_count": 0,
+                "participant_open_deals_count": 0,
+                "participant_closed_deals_count": 0,
+                "email_messages_count": 0,
+                "activities_count": 0,
+                "done_activities_count": 0,
+                "undone_activities_count": 0,
+                "reference_activities_count": 0,
+                "files_count": 0,
+                "notes_count": 0,
+                "followers_count": 1,
+                "won_deals_count": 0,
+                "related_won_deals_count": 0,
+                "lost_deals_count": 0,
+                "related_lost_deals_count": 0,
+                "active_flag": True,
+                "phone": [{
+                    "label": "work",
+                    "value": "3242342",
+                    "primary": True
+                }],
+                "email": [{
+                    "label": "work",
+                    "value": "234234",
+                    "primary": True
+                }],
+                "first_char": "t",
+                "update_time": "2017-04-23 22:43:01",
+                "add_time": "2017-04-20 14:42:48",
+                "visible_to": "3",
+                "picture_id": None,
+                "next_activity_date": None,
+                "next_activity_time": None,
+                "next_activity_id": None,
+                "last_activity_id": None,
+                "last_activity_date": None,
+                "last_incoming_mail_time": None,
+                "last_outgoing_mail_time": None,
+                "66fb3447cad79ece76413df362fea1122856bcb3": 123,
+                "org_name": None,
+                "cc_email": "miempresa2@pipedrivemail.com"
+            },
+            "previous": {
+                "id": 15,
+                "company_id": 1689563,
+                "owner_id": 2428657,
+                "org_id": None,
+                "name": "TEST_PERSON",
+                "first_name": "TEST_PERSON",
+                "last_name": None,
+                "open_deals_count": 0,
+                "related_open_deals_count": 0,
+                "closed_deals_count": 0,
+                "related_closed_deals_count": 0,
+                "participant_open_deals_count": 0,
+                "participant_closed_deals_count": 0,
+                "email_messages_count": 0,
+                "activities_count": 0,
+                "done_activities_count": 0,
+                "undone_activities_count": 0,
+                "reference_activities_count": 0,
+                "files_count": 0,
+                "notes_count": 0,
+                "followers_count": 1,
+                "won_deals_count": 0,
+                "related_won_deals_count": 0,
+                "lost_deals_count": 0,
+                "related_lost_deals_count": 0,
+                "active_flag": True,
+                "phone": [{
+                    "value": "",
+                    "primary": True
+                }],
+                "email": [{
+                    "value": "",
+                    "primary": True
+                }],
+                "first_char": "t",
+                "update_time": "2017-04-20 14:42:48",
+                "add_time": "2017-04-20 14:42:48",
+                "visible_to": "3",
+                "picture_id": None,
+                "next_activity_date": None,
+                "next_activity_time": None,
+                "next_activity_id": None,
+                "last_activity_id": None,
+                "last_activity_date": None,
+                "last_incoming_mail_time": None,
+                "last_outgoing_mail_time": None,
+                "66fb3447cad79ece76413df362fea1122856bcb3": None,
+                "org_name": None,
+                "cc_email": "miempresa2@pipedrivemail.com"
+            },
+            "indexable_fields": ["66fb3447cad79ece76413df362fea1122856bcb3"],
+            "event": "updated.person"
+        }
+
+        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+
+        person = Person.objects.get(external_id=15)
+
+        additional_field = '66fb3447cad79ece76413df362fea1122856bcb3'
+
+        self.assertEquals(person.additional_fields[additional_field], u'123')
 
 
 class TestPipedriveCreation(TestCase):
@@ -1686,6 +1943,7 @@ class TestPipedrive(TestCase):
 
         self.assertIsNone(result)
 
+
 class TestFetchModels(TestCase):
 
     def test_fetch_from_pipedrive_organizations(self):
@@ -1735,18 +1993,21 @@ class TestFetchModels(TestCase):
         result = PersonField.fetch_from_pipedrive()
 
         self.assertTrue(result)
+        self.assertGreater(PersonField.objects.count(), 0)
 
     def test_fetch_from_pipedrive_organization_fields(self):
 
         result = OrganizationField.fetch_from_pipedrive()
 
         self.assertTrue(result)
+        self.assertGreater(OrganizationField.objects.count(), 0)
 
     def test_fetch_from_pipedrive_deal_fields(self):
 
         result = DealField.fetch_from_pipedrive()
 
         self.assertTrue(result)
+        self.assertGreater(DealField.objects.count(), 0)
 
     def test_sync_from_pipedrive(self):
 
@@ -1760,36 +2021,36 @@ class TestCreateFromObject(TestCase):
     def test_activity_update_or_create_entity_from_api_post(self):
 
         obj = {
-          u'org_name': None, 
-          u'deal_id': None, 
-          u'assigned_to_user_id': 2428657, 
-          u'marked_as_done_time': u'', 
-          u'google_calendar_id': None, 
-          u'done': False, 
-          u'duration': u'', 
-          u'gcal_event_id': None, 
-          u'subject': u'TEST_ACTIVITY', 
-          u'created_by_user_id': 2428657, 
-          u'user_id': 2428657, 
-          u'reference_type': u'none', 
-          u'company_id': 1689563, 
-          u'id': 2, 
-          u'note': u'', 
-          u'due_time': u'', 
-          u'person_id': None, 
-          u'type': u'call', 
-          u'person_dropbox_bcc': None, 
-          u'active_flag': True, 
-          u'due_date': u'2017-04-21', 
-          u'update_time': u'2017-04-21 12:21:10', 
-          u'owner_name': u'TEST_OWNER', 
-          u'person_name': None, 
-          u'deal_dropbox_bcc': None, 
-          u'reference_id': None, 
-          u'add_time': u'2017-04-21 12:21:10', 
-          u'google_calendar_etag': None, 
-          u'org_id': None, 
-          u'deal_title': None
+            u'org_name': None,
+            u'deal_id': None,
+            u'assigned_to_user_id': 2428657,
+            u'marked_as_done_time': u'',
+            u'google_calendar_id': None,
+            u'done': False,
+            u'duration': u'',
+            u'gcal_event_id': None,
+            u'subject': u'TEST_ACTIVITY',
+            u'created_by_user_id': 2428657,
+            u'user_id': 2428657,
+            u'reference_type': u'none',
+            u'company_id': 1689563,
+            u'id': 2,
+            u'note': u'',
+            u'due_time': u'',
+            u'person_id': None,
+            u'type': u'call',
+            u'person_dropbox_bcc': None,
+            u'active_flag': True,
+            u'due_date': u'2017-04-21',
+            u'update_time': u'2017-04-21 12:21:10',
+            u'owner_name': u'TEST_OWNER',
+            u'person_name': None,
+            u'deal_dropbox_bcc': None,
+            u'reference_id': None,
+            u'add_time': u'2017-04-21 12:21:10',
+            u'google_calendar_etag': None,
+            u'org_id': None,
+            u'deal_title': None
         }
 
         result = Activity.update_or_create_entity_from_api_post(obj)
