@@ -9,6 +9,9 @@ import logging
 from django.db import models
 from django.utils import timezone
 
+# postgres
+from django.contrib.postgres.fields import HStoreField
+
 # api
 from pipedrive.pipedrive_client import PipedriveAPIClient
 
@@ -23,14 +26,18 @@ VISIBILITY = (
 
 class UnableToSyncException(Exception):
     def __init__(self, model, external_id):
-       self.external_id = external_id
-       self.model = model
+        self.external_id = external_id
+        self.model = model
 
 
 class PipedriveModel(models.Model):
     """
     Abstract class to include utility functions for extending classes.
     """
+
+    additional_fields = HStoreField(
+        null=True,
+    )
 
     class Meta:
         abstract = True
@@ -58,7 +65,11 @@ class PipedriveModel(models.Model):
         returns a datetime aware of the timezone.
         Returns None if fields do not exist in el.
         """
-        if datetime_field not in el or el[datetime_field] is None or el[datetime_field] == '0000-00-00 00:00:00' or el[datetime_field] == '':
+        if (datetime_field not in el or
+            el[datetime_field] is None or
+            el[datetime_field] == '0000-00-00 00:00:00' or
+                el[datetime_field] == ''):
+
             return None
         else:
             return timezone.make_aware(
@@ -80,6 +91,12 @@ class PipedriveModel(models.Model):
         if first_field_name in el and el[first_field_name] is not None:
             return el[first_field_name][second_field_name]
         return None
+
+    @classmethod
+    def get_id(cls, el, field_name):
+        if field_name in el and isinstance(el[field_name], int):
+            return el[field_name]
+        return cls.get_internal_field(el, field_name, u'value')
 
     @classmethod
     def get_value_or_none(cls, el, field_name):
@@ -135,7 +152,8 @@ class PipedriveModel(models.Model):
             additional_data = post_data['additional_data']
 
             # Break the loop when the API replies there is no more pagination
-            if 'pagination' not in additional_data or not additional_data['pagination']['more_items_in_collection']:
+            if ('pagination' not in additional_data or
+                    not additional_data['pagination']['more_items_in_collection']):
                 break
 
             start = additional_data['pagination']['next_start']
@@ -150,6 +168,9 @@ class PipedriveModel(models.Model):
     @classmethod
     def sync_from_pipedrive(cls):
         result = User.fetch_from_pipedrive()
+        result = result and PersonField.fetch_from_pipedrive()
+        result = result and OrganizationField.fetch_from_pipedrive()
+        result = result and DealField.fetch_from_pipedrive()
         result = result and Pipeline.fetch_from_pipedrive()
         result = result and Stage.fetch_from_pipedrive()
         result = result and Organization.fetch_from_pipedrive()
@@ -167,6 +188,7 @@ class PipedriveModel(models.Model):
 
         if not post_data[u'success']:
             logging.error(post_data)
+            return False
 
         self.external_id = post_data['data']['id']
         self.last_updated_at = timezone.now()
@@ -429,7 +451,7 @@ class Organization(PipedriveModel):
             external_id=el[u'id'],
             defaults={
                 'name': el[u'name'],
-                'owner_id': el[u'owner_id'][u'id'],
+                'owner_id': cls.get_id(el, u'owner_id'),
                 'people_count': el[u'people_count'],
                 'open_deals_count': el[u'open_deals_count'],
                 'add_time': cls.datetime_from_simple_time(el, u'add_time'),
@@ -571,6 +593,15 @@ class Person(PipedriveModel):
 
     @classmethod
     def update_or_create_entity_from_api_post(cls, el):
+
+        fields = PersonField.objects.all()
+
+        additional_fields = {}
+
+        for field in fields:
+            if field.key in el:
+                additional_fields[field.key] = str(el[field.key])
+
         return Person.objects.update_or_create(
             external_id=el[u'id'],
             defaults={
@@ -579,8 +610,8 @@ class Person(PipedriveModel):
                 'email': cls.get_primary(el, u'email'),
                 'add_time': cls.datetime_from_simple_time(el, u'add_time'),
                 'update_time': cls.datetime_from_simple_time(el, u'update_time'),
-                'org_id': cls.get_internal_field(el, u'org_id', u'value'),
-                'owner_id': el[u'owner_id'][u'id'],
+                'org_id': cls.get_id(el, u'org_id'),
+                'owner_id': cls.get_id(el, u'owner_id'),
                 'open_deals_count': el[u'open_deals_count'],
                 'visible_to': el[u'visible_to'],
                 'next_activity_date': cls.get_value_or_none(el, u'next_activity_date'),
@@ -597,7 +628,8 @@ class Person(PipedriveModel):
                 'last_incoming_mail_time': cls.datetime_from_simple_time(
                     el, u'last_incoming_mail_time'),
                 'last_outgoing_mail_time': cls.datetime_from_simple_time(
-                    el, u'last_outgoing_mail_time')
+                    el, u'last_outgoing_mail_time'),
+                'additional_fields': additional_fields,
             }
         )
 
@@ -766,12 +798,12 @@ class Deal(PipedriveModel):
             external_id=el[u'id'],
             defaults={
                 'title': el[u'title'],
-                'creator_user_id': cls.get_internal_field(el, 'creator_user_id', 'id'),
-                'user_id': cls.get_internal_field(el, 'user_id', 'id'),
+                'creator_user_id': cls.get_id(el, 'creator_user_id'),
+                'user_id': cls.get_id(el, 'user_id'),
                 'value': el[u'value'],
-                'org_id': cls.get_internal_field(el, u'org_id', u'value'),
+                'org_id': cls.get_id(el, u'org_id'),
                 'pipeline_id': el[u'pipeline_id'],
-                'person_id': cls.get_internal_field(el, 'person_id', 'value'),
+                'person_id': cls.get_id(el, 'person_id'),
                 'external_stage_id': el[u'stage_id'],
                 'add_time': cls.datetime_from_simple_time(el, u'add_time'),
                 'update_time': cls.datetime_from_simple_time(el, u'update_time'),
@@ -804,7 +836,7 @@ class Deal(PipedriveModel):
             return default_value
 
 
-class BaseField(models.Model):
+class BaseField(PipedriveModel):
     """
     Stores a single field entry.
     :model:`pipeline.BaseField`.
@@ -822,7 +854,7 @@ class BaseField(models.Model):
     name = models.CharField(
         max_length=255,
     )
-    field_kind = models.CharField(
+    field_type = models.CharField(
         max_length=255,
     )
     active_flag = models.NullBooleanField(
@@ -844,6 +876,24 @@ class BaseField(models.Model):
     class Meta:
         abstract = True
 
+    def __unicode__(self):
+        return u'External ID: {}, Name: {}, Key: {}.'.format(
+            self.external_id, self.name, self.key)
+
+    @classmethod
+    def update_or_create_entity_from_api_post(cls, el):
+        return cls.objects.update_or_create(
+            external_id=el[u'id'],
+            defaults={
+                'name': el[u'name'],
+                'key': el[u'key'],
+                'field_type': el[u'field_type'],
+                'active_flag': el[u'active_flag'],
+                'mandatory_flag': el[u'mandatory_flag'],
+                'edit_flag': el[u'edit_flag'],
+            }
+        )
+
 
 class OrganizationField(BaseField):
     """
@@ -852,44 +902,6 @@ class OrganizationField(BaseField):
     """
 
     pipedrive_api_client = PipedriveAPIClient(endpoint='organizationFields')
-
-    def __unicode__(self):
-        return u'External ID: {}, Name: {}, Key: {}.'.format(
-            self.external_id, self.name, self.key)
-
-    @classmethod
-    def get_fields(cls):
-        """
-        Gets and stores all Org Fields from the api
-        """
-        raw_organizations = OrganizationField.pipedrive_api_client.get_instances()
-        organization_fields = OrganizationField.pipedrive_api_client.get_data_list(
-            raw_organizations)
-
-        for organization_field in organization_fields:
-
-            fields_object, created = cls.objects.get_or_create(
-                external_id=organization_field['id'],
-                name=organization_field['name'],
-            )
-
-            if 'is_subfield' in organization_field:
-                fields_object.is_subfield = True
-            else:
-                fields_object.is_subfield = False
-
-            fields_object.key = organization_field['key']
-
-            fields_object.field_kind = organization_field['field_type'],
-
-            fields_object.active_flag = organization_field['active_flag'],
-
-            fields_object.mandatory_flag = organization_field[
-                'mandatory_flag'],
-
-            fields_object.edit_flag = organization_field['edit_flag'],
-
-            fields_object.save()
 
 
 class DealField(BaseField):
@@ -900,42 +912,6 @@ class DealField(BaseField):
 
     pipedrive_api_client = PipedriveAPIClient(endpoint='dealFields')
 
-    def __unicode__(self):
-        return u'External ID: {}, Name: {}, Key: {}.'.format(
-            self.external_id, self.name, self.key)
-
-    @classmethod
-    def get_fields(cls):
-        """
-        Gets and stores all Org Fields from the api
-        """
-        raw_deals = DealField.pipedrive_api_client.get_instances()
-        deal_fields = DealField.pipedrive_api_client.get_data_list(raw_deals)
-
-        for deal_field in deal_fields:
-
-            fields_object, created = cls.objects.get_or_create(
-                external_id=deal_field['id'],
-                name=deal_field['name'],
-            )
-
-            if deal_field.get('is_subfield'):
-                fields_object.is_subfield = deal_field['is_subfield']
-            else:
-                fields_object.is_subfield = False
-
-            fields_object.key = deal_field['key']
-
-            fields_object.field_kind = deal_field['field_type'],
-
-            fields_object.active_flag = deal_field['active_flag'],
-
-            fields_object.mandatory_flag = deal_field['mandatory_flag'],
-
-            fields_object.edit_flag = deal_field['edit_flag'],
-
-            fields_object.save()
-
 
 class PersonField(BaseField):
     """
@@ -944,42 +920,6 @@ class PersonField(BaseField):
     """
 
     pipedrive_api_client = PipedriveAPIClient(endpoint='personFields')
-
-    def __unicode__(self):
-        return u'External ID: {}, Name: {}, Key: {}.'.format(
-            self.external_id, self.name, self.key)
-
-    @classmethod
-    def get_fields(cls):
-        """
-        Gets and stores all Org Fields from the api
-        """
-        raw_persons = PersonField.pipedrive_api_client.get_instances()
-        person_fields = PersonField.pipedrive_api_client.get_data_list(raw_persons)
-
-        for person_field in person_fields:
-
-            fields_object, created = cls.objects.get_or_create(
-                external_id=person_field['id'],
-                name=person_field['name'],
-            )
-
-            if person_field.get('is_subfield'):
-                fields_object.is_subfield = person_field['is_subfield']
-            else:
-                fields_object.is_subfield = False
-
-            fields_object.key = person_field['key']
-
-            fields_object.field_kind = person_field['field_type'],
-
-            fields_object.active_flag = person_field['active_flag'],
-
-            fields_object.mandatory_flag = person_field['mandatory_flag'],
-
-            fields_object.edit_flag = person_field['edit_flag'],
-
-            fields_object.save()
 
 
 class Stage(PipedriveModel):

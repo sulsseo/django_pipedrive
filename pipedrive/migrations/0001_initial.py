@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+from django.contrib.postgres.operations import HStoreExtension
 import django.utils.timezone
 
 
@@ -11,6 +12,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        HStoreExtension(),
         migrations.CreateModel(
             name='Activity',
             fields=[
@@ -75,7 +77,7 @@ class Migration(migrations.Migration):
                 ('external_id', models.IntegerField(db_index=True, unique=True, null=True, blank=True)),
                 ('key', models.CharField(max_length=255)),
                 ('name', models.CharField(max_length=255)),
-                ('field_kind', models.CharField(max_length=255)),
+                ('field_type', models.CharField(max_length=255)),
                 ('active_flag', models.NullBooleanField()),
                 ('mandatory_flag', models.NullBooleanField()),
                 ('edit_flag', models.NullBooleanField()),
@@ -139,7 +141,7 @@ class Migration(migrations.Migration):
                 ('external_id', models.IntegerField(db_index=True, unique=True, null=True, blank=True)),
                 ('key', models.CharField(max_length=255)),
                 ('name', models.CharField(max_length=255)),
-                ('field_kind', models.CharField(max_length=255)),
+                ('field_type', models.CharField(max_length=255)),
                 ('active_flag', models.NullBooleanField()),
                 ('mandatory_flag', models.NullBooleanField()),
                 ('edit_flag', models.NullBooleanField()),
@@ -190,7 +192,7 @@ class Migration(migrations.Migration):
                 ('external_id', models.IntegerField(db_index=True, unique=True, null=True, blank=True)),
                 ('key', models.CharField(max_length=255)),
                 ('name', models.CharField(max_length=255)),
-                ('field_kind', models.CharField(max_length=255)),
+                ('field_type', models.CharField(max_length=255)),
                 ('active_flag', models.NullBooleanField()),
                 ('mandatory_flag', models.NullBooleanField()),
                 ('edit_flag', models.NullBooleanField()),
