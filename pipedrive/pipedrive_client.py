@@ -30,7 +30,7 @@ class PipedriveAPIClient(object):
         if api_key is None:
             self.api_key = settings.PIPEDRIVE_API_KEY
         else:
-            self.api_key = PIPEDRIVE_API_KEY
+            self.api_key = api_key
 
         super(PipedriveAPIClient, self).__init__()
 

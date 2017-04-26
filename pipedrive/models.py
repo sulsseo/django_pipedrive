@@ -4,10 +4,14 @@
 import datetime
 import pytz
 import logging
+from collections import defaultdict
 
 # django
 from django.db import models
 from django.utils import timezone
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericRelation
 
 # postgres
 from django.contrib.postgres.fields import HStoreField
@@ -30,6 +34,64 @@ class UnableToSyncException(Exception):
         self.model = model
 
 
+class FieldModification(models.Model):
+    field_name = models.CharField(
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    previous_value = models.CharField(
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    current_value = models.CharField(
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    created = models.DateTimeField()
+
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+    def __str__(self):              # __unicode__ on Python 2
+        return "{}[{}] changed field '{}' from {} to {}".format(
+            self.content_type,
+            self.object_id,
+            self.field_name,
+            self.previous_value,
+            self.current_value
+        )
+
+    @classmethod
+    def create_modifications(cls, instance, previous, current):
+
+        prev = defaultdict(lambda: None, previous)
+        curr = defaultdict(lambda: None, current)
+        
+        # Compute difference between previous and current
+        diffkeys = set([k for k in prev if prev[k] != curr[k]])
+        in_previous_not_current = set([k for k in prev if k not in curr])
+        in_current_not_previous = set([k for k in curr if k not in prev])
+
+        diffkeys = diffkeys.union(in_previous_not_current).union(in_current_not_previous)
+        current_datetime = datetime.datetime.now()
+
+        
+
+        for key in diffkeys:
+            FieldModification.objects.create(
+                field_name=key,
+                previous_value=prev[key],
+                current_value=curr[key],
+                content_object=instance,
+                created=current_datetime,
+            )
+
+
+
 class PipedriveModel(models.Model):
     """
     Abstract class to include utility functions for extending classes.
@@ -38,6 +100,7 @@ class PipedriveModel(models.Model):
     additional_fields = HStoreField(
         null=True,
     )
+    modifications = GenericRelation(FieldModification)
 
     class Meta:
         abstract = True
@@ -1194,3 +1257,5 @@ class Activity(PipedriveModel):
                 'active_flag': el[u'active_flag'],
             }
         )
+
+

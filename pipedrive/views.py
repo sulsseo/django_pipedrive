@@ -14,6 +14,7 @@ from pipedrive.models import Activity
 from pipedrive.models import Pipeline
 from pipedrive.models import Stage
 from pipedrive.models import PipedriveModel
+from pipedrive.models import FieldModification
 
 
 class NonImplementedVersionException(Exception):
@@ -61,8 +62,9 @@ def handle_v1(json_data):
 
         if action == 'updated':
 
-            # Compute difference between previous and current
-            diffkeys = [k for k in previous if previous[k] != current[k]]
+            instance = model.objects.get(external_id=external_id)
+
+            FieldModification.create_modifications(instance, previous, current)
 
             model.update_or_create_entity_from_api_post(current)
 
@@ -74,6 +76,12 @@ def handle_v1(json_data):
 
             # The corresponding instance is found for delete
             instance = model.objects.get(external_id=external_id)
+
+            FieldModification.create_modifications(
+                instance,
+                {'deleted': instance.deleted},
+                {'deleted': True}
+            )
 
             # The instance is not actually deleted, but marked as deleted
             instance.deleted = True
