@@ -27,6 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
 
 # Application definition
 
@@ -39,6 +41,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django_extensions',
     'django.contrib.postgres',
+    'django_nose',
     'pipedrive'
 )
 
@@ -72,6 +75,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'django_pipedrive.wsgi.application'
+
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 
 # Database
