@@ -187,6 +187,7 @@ class PipedriveModel(models.Model):
         start = 0
         count_created = 0
         queries = 0
+        logging.info("Fetching model {} from pipedrive".format(cls))
 
         while True:
 
@@ -222,9 +223,9 @@ class PipedriveModel(models.Model):
             start = additional_data['pagination']['next_start']
 
         # report
-        logging.info("Queries: " + str(queries))
-        logging.info("Entities created: " + str(count_created))
-        logging.info("Entities updated: " + str(queries - count_created))
+        logging.info("Queries: {}".format(queries))
+        logging.info("Entities created: {}".format(count_created))
+        logging.info("Entities updated: {}".format(queries - count_created))
 
         return True
 
