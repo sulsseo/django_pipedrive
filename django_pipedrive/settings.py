@@ -115,13 +115,6 @@ LOGGING = {
         }
     },
     'handlers': {
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filters': ['require_debug_false'],
-            'filename': '{}/logs/django_pipedrive.log'.format(BASE_DIR),
-            'formatter': 'verbose'
-        },
         'stdout': {
             'level': 'DEBUG',
             'filters': ['require_debug_true'],
