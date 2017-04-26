@@ -8,6 +8,7 @@ from collections import defaultdict
 
 # django
 from django.db import models
+from django.db import IntegrityError
 from django.utils import timezone
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -197,8 +198,11 @@ class PipedriveModel(models.Model):
             # For each element from the request
             for el in post_data['data']:
 
-                # update or create a local Entity
-                entity, created = cls.update_or_create_entity_from_api_post(el)
+                try:
+                    # update or create a local Entity
+                    entity, created = cls.update_or_create_entity_from_api_post(el)
+                except IntegrityError as e:
+                    logging.error(e)
 
                 # update counters
                 queries = queries + 1
