@@ -201,13 +201,13 @@ class PipedriveModel(models.Model):
                 try:
                     # update or create a local Entity
                     entity, created = cls.update_or_create_entity_from_api_post(el)
+                    # update counters
+                    queries = queries + 1
+                    if created:
+                        count_created = count_created + 1
+
                 except IntegrityError as e:
                     logging.error(e)
-
-                # update counters
-                queries = queries + 1
-                if created:
-                    count_created = count_created + 1
 
             # Break the loop when there is no pagination info
             if 'additional_data' not in post_data:
