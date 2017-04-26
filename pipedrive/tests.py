@@ -813,6 +813,112 @@ class TestPipedriveWebhooks(TestCase):
 
         self.assertEquals(instance.owner.external_id, 111)
 
+    def test_create_person_unicode(self):
+
+        c = Client()
+
+        self.assertEquals(Person.objects.count(), 0)
+
+        User.objects.create(external_id=111)
+
+        data = {
+            "v": 1,
+            "matches_filters": {
+                "current": [],
+                "previous": []},
+            "meta": {
+                "v": 1,
+                "action": "added",
+                "object": "person",
+                "id": 998,
+                "company_id": 1689563,
+                "user_id": 2428657,
+                "host": "mycompany.pipedrive.com",
+                "timestamp": 1492650227,
+                "timestamp_milli": 1492650227536,
+                "permitted_user_ids": [2428657],
+                "trans_pending": False,
+                "is_bulk_update": False,
+                "elastic_enabled": True,
+                "matches_filters":
+                {
+                    "current": [],
+                    "previous": []
+                }
+            },
+            "retry": 0,
+            "current": {
+                "id": 998,
+                "company_id": 1689563,
+                "owner_id": 111,
+                "org_id": None,
+                "name": u"हुएआदि विश्वास परि",
+                "first_name": u"प्राथमिक जैसे जानते",
+                "last_name": None,
+                "open_deals_count": 0,
+                "related_open_deals_count": 0,
+                "closed_deals_count": 0,
+                "related_closed_deals_count": 0,
+                "participant_open_deals_count": 0,
+                "participant_closed_deals_count": 0,
+                "email_messages_count": 0,
+                "activities_count": 0,
+                "done_activities_count": 0,
+                "undone_activities_count": 0,
+                "reference_activities_count": 0,
+                "files_count": 0,
+                "notes_count": 0,
+                "followers_count": 0,
+                "won_deals_count": 0,
+                "related_won_deals_count": 0,
+                "lost_deals_count": 0,
+                "related_lost_deals_count": 0,
+                "active_flag": True,
+                "phone": [
+                    {
+                        "label": "work",
+                        "value": "22222222",
+                        "primary": True
+                    }
+                ],
+                "email": [
+                    {
+                        "label": "work",
+                        "value": "mail@example.com",
+                        "primary": True
+                    }
+                ],
+                "first_char": "p",
+                "update_time": "2017-04-20 01:03:47",
+                "add_time": "2017-04-20 01:03:47",
+                "visible_to": "3",
+                "picture_id": None,
+                "next_activity_date": None,
+                "next_activity_time": None,
+                "next_activity_id": None,
+                "last_activity_id": None,
+                "last_activity_date": None,
+                "last_incoming_mail_time": None,
+                "last_outgoing_mail_time": None,
+                "org_name": None,
+                "cc_email": "mycompany@pipedrivemail.com",
+                "owner_name": "OWNER"
+            },
+            "previous": None,
+            "indexable_fields": [],
+            "event": "added.person"
+        }
+
+        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+
+        self.assertEquals(Person.objects.count(), 1)
+
+        instance = Person.objects.get(external_id=998)
+
+        self.assertEquals(instance.name, u"हुएआदि विश्वास परि")
+
+        self.assertEquals(instance.owner.external_id, 111)
+
     def test_create_activity(self):
 
         c = Client()

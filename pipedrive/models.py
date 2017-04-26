@@ -660,7 +660,7 @@ class Person(PipedriveModel):
 
         for field in fields:
             if field.key in el:
-                additional_fields[field.key] = str(el[field.key])
+                additional_fields[field.key] = unicode(el[field.key])
 
         return Person.objects.update_or_create(
             external_id=el[u'id'],
