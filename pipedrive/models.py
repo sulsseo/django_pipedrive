@@ -19,7 +19,6 @@ from django.contrib.postgres.fields import HStoreField
 # api
 from pipedrive.pipedrive_client import PipedriveAPIClient
 
-CREATOR_USER_ID = 2428657   # TestUser
 PRIVATE = 0
 SHARED = 3
 VISIBILITY = (
@@ -70,7 +69,7 @@ class FieldModification(models.Model):
 
         prev = defaultdict(lambda: None, previous)
         curr = defaultdict(lambda: None, current)
-        
+
         # Compute difference between previous and current
         diffkeys = set([k for k in prev if prev[k] != curr[k]])
         in_previous_not_current = set([k for k in prev if k not in curr])
@@ -78,8 +77,6 @@ class FieldModification(models.Model):
 
         diffkeys = diffkeys.union(in_previous_not_current).union(in_current_not_previous)
         current_datetime = datetime.datetime.now()
-
-        
 
         for key in diffkeys:
             FieldModification.objects.create(
@@ -89,7 +86,6 @@ class FieldModification(models.Model):
                 content_object=instance,
                 created=current_datetime,
             )
-
 
 
 class PipedriveModel(models.Model):
@@ -1258,5 +1254,3 @@ class Activity(PipedriveModel):
                 'active_flag': el[u'active_flag'],
             }
         )
-
-

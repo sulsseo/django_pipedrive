@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import sys
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -89,6 +90,67 @@ DATABASES = {
         'USER': os.environ.get('DJANGO_DB_USER'),
         'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD'),
         'HOST': os.environ.get('DJANGO_DB_HOST'),
+    }
+}
+
+# A sample logging configuration. The only tangible logging
+# performed by this configuration is to send an email to
+# the site admins on every HTTP 500 error when DEBUG=False.
+# See http://docs.djangoproject.com/en/dev/topics/logging for
+# more details on how to customize your logging configuration.
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue'
+        }
+    },
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s|%(asctime)s|%(module)s|%(funcName)s|%(lineno)s: %(message)s'
+        }
+    },
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filters': ['require_debug_false'],
+            'filename': '{}/logs/django_pipedrive.log'.format(BASE_DIR),
+            'formatter': 'verbose'
+        },
+        'stdout': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'stream': sys.stdout,
+            'formatter': 'verbose'
+        },
+        'null': {
+            'level': 'DEBUG',
+            'class': 'logging.NullHandler'
+        }
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['mail_admins', 'file'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'django.db.backends': {
+            'handlers': ['null'],
+            'propagate': False,
+            'level': 'DEBUG'
+        }
+    },
+
+    'root': {
+        'handlers': ['mail_admins', 'file', 'stdout'],
+        'level': 'DEBUG',
+        'propagate': True
     }
 }
 
