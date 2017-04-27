@@ -184,6 +184,9 @@ class PipedriveModel(models.Model):
         org_id = cls.get_id(el, 'org_id')
         stage_id = cls.get_id(el, 'stage_id')
         pipeline_id = cls.get_id(el, 'pipeline_id')
+        deal_id = cls.get_id(el, 'deal_id')
+        activity_id = cls.get_id(el, 'activity_id')
+        note_id = cls.get_id(el, 'note_id')
 
         if creator_user_id:
             User.sync_one(creator_user_id)
@@ -197,6 +200,12 @@ class PipedriveModel(models.Model):
             Stage.sync_one(stage_id)
         if person_id:
             Person.sync_one(person_id)
+        if deal_id:
+            Deal.sync_one(deal_id)
+        if activity_id:
+            Activity.sync_one(activity_id)
+        if note_id:
+            Note.sync_one(note_id)
 
     @classmethod
     def fetch_from_pipedrive(cls):
