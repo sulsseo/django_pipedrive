@@ -4,6 +4,7 @@
 import datetime
 import pytz
 import logging
+import re
 from collections import defaultdict
 
 # django
@@ -176,6 +177,28 @@ class PipedriveModel(models.Model):
         return cls.update_or_create_entity_from_api_post(post_data[u'data'])
 
     @classmethod
+    def handle_dependencies(cls, el, e):
+        creator_user_id = cls.get_id(el, 'creator_user_id')
+        user_id = cls.get_id(el, 'user_id')
+        person_id = cls.get_id(el, 'person_id')
+        org_id = cls.get_id(el, 'org_id')
+        stage_id = cls.get_id(el, 'stage_id')
+        pipeline_id = cls.get_id(el, 'pipeline_id')
+
+        if creator_user_id:
+            User.sync_one(creator_user_id)
+        if user_id:
+            User.sync_one(user_id)
+        if org_id:
+            Organization.sync_one(org_id)
+        if pipeline_id:
+            Pipeline.sync_one(pipeline_id)
+        if stage_id:
+            Stage.sync_one(stage_id)
+        if person_id:
+            Person.sync_one(person_id)
+
+    @classmethod
     def fetch_from_pipedrive(cls):
         """
         The function iterates requesting for Organizations while in steps defined
@@ -184,6 +207,7 @@ class PipedriveModel(models.Model):
         start = 0
         count_created = 0
         queries = 0
+        problems_solved = 0
         logging.info("Fetching model {} from pipedrive".format(cls))
 
         while True:
@@ -205,6 +229,7 @@ class PipedriveModel(models.Model):
                 try:
                     # update or create a local Entity
                     entity, created = cls.update_or_create_entity_from_api_post(el)
+
                     # update counters
                     queries = queries + 1
                     if created:
@@ -212,6 +237,13 @@ class PipedriveModel(models.Model):
 
                 except IntegrityError as e:
                     logging.error(e)
+                    cls.handle_dependencies(el, e)
+
+                    # try again to update or create a local Entity
+                    entity, created = cls.update_or_create_entity_from_api_post(el)
+
+                    if created:
+                        problems_solved = problems_solved + 1
 
             # Break the loop when there is no pagination info
             if 'additional_data' not in post_data:
@@ -230,6 +262,7 @@ class PipedriveModel(models.Model):
         logging.info("Queries: {}".format(queries))
         logging.info("Entities created: {}".format(count_created))
         logging.info("Entities updated: {}".format(queries - count_created))
+        logging.info("Problems solved: {}".format(problems_solved))
 
         return True
 

@@ -7,6 +7,7 @@ import datetime
 import json
 
 from django.test import TestCase
+from django.test import TransactionTestCase
 from django.test import Client
 
 from pipedrive.models import Deal
@@ -2431,3 +2432,286 @@ class TestCreateFromObject(TestCase):
         result = Activity.update_or_create_entity_from_api_post(obj)
 
         self.assertIsNotNone(result)
+
+
+class TestIntegrity(TransactionTestCase):
+
+    def test_fetch_from_pipedrive_with_integrity_error(self):
+
+        class fake_user_api():
+            def get_instance(self, external_id):
+                return {
+                    "success": True,
+                    "data": {
+                        "id": 1629618,
+                        "name": "OWNER_NAME",
+                        "default_currency": "CLP",
+                        "locale": "es_CL",
+                        "lang": 6,
+                        "email": "owner@example.com",
+                        "phone": None,
+                        "activated": True,
+                        "last_login": "2017-04-27 10:58:25",
+                        "created": "2016-08-10 00:45:36",
+                        "modified": "2017-04-27 10:58:25",
+                        "signup_flow_variation": None,
+                        "has_created_company": True,
+                        "is_admin": 1,
+                        "role_id": "1",
+                        "timezone_name": "America/Santiago",
+                        "active_flag": True,
+                        "icon_url": None,
+                        "is_you": False
+                    },
+                    "additional_data": {
+                        "company_id": 1142847
+                    }
+                }
+
+        class fake_person_api():
+            def get_instance(self, external_id):
+                return {
+                    "success": True,
+                    "data": {
+                        "id": 8636,
+                        "name": "PERSON",
+                        'open_deals_count': 0,
+                        'visible_to': 3,
+                        'won_deals_count': 0,
+                        'lost_deals_count': 0,
+                        'closed_deals_count': 0,
+                        'activities_count': 0,
+                        'done_activities_count': 0,
+                        'undone_activities_count': 0,
+                        'email_messages_count': 0,
+                    },
+                    "additional_data": {
+                        "company_id": 1142847
+                    }
+                }
+
+        class fake_organization_api():
+            def get_instance(self, external_id):
+                return {
+                    "success": True,
+                    "data": {
+                        "id": 10105,
+                        "name": "EXAMPLE ORGANIZATION",
+                        'people_count': 0,
+                        'open_deals_count': 0,
+                        'won_deals_count': 0,
+                        'lost_deals_count': 0,
+                        'closed_deals_count': 0,
+                        'visible_to': 3,
+                        'activities_count': 0,
+                        'done_activities_count': 0,
+                        'undone_activities_count': 0,
+                        'email_messages_count': 0,
+                        'address_formatted_address': 0,
+                    },
+                    "additional_data": {
+                        "company_id": 1142847
+                    }
+                }
+
+        class fake_stage_api():
+            def get_instance(self, external_id):
+                return {
+                    "success": True,
+                    "data": {
+                        "id": 6,
+                        "name": "EXAMPLE STAGE",
+                    },
+                    "additional_data": {
+                        "company_id": 1142847
+                    }
+                }
+
+        class fake_pipeline_api():
+            def get_instance(self, external_id):
+                return {
+                    "success": True,
+                    "data": {
+                        "id": 1,
+                        "name": "EXAMPLE PIPELINE",
+                    },
+                    "additional_data": {
+                        "company_id": 1142847
+                    }
+                }
+
+        class fake_deal_api():
+            def get_instances(self, **kwargs):
+                return {
+                    "success": True,
+                    "data": [
+                        {
+                            "id": 9973,
+                            "creator_user_id": {
+                                "id": 1629618,
+                                "name": "OWNER_NAME",
+                                "email": "owner@example.com",
+                                "has_pic": False,
+                                "pic_hash": None,
+                                "active_flag": True,
+                                "value": 1629618
+                            },
+                            "user_id": {
+                                "id": 1629618,
+                                "name": "OWNER_NAME",
+                                "email": "owner@example.com",
+                                "has_pic": False,
+                                "pic_hash": None,
+                                "active_flag": True,
+                                "value": 1629618
+                            },
+                            "person_id": {
+                                "name": "PERSON",
+                                "email": [
+                                    {
+                                        "label": "work",
+                                        "value": "example@example.com",
+                                        "primary": True
+                                    }
+                                ],
+                                "phone": [
+                                    {
+                                        "label": "work",
+                                        "value": "22056282",
+                                        "primary": True
+                                    }
+                                ],
+                                "value": 8636
+                            },
+                            "org_id": {
+                                "name": "EXAMPLE ORGANIZATION",
+                                "people_count": 1,
+                                "owner_id": 1629618,
+                                "address": None,
+                                "cc_email": "mycompany@pipedrivemail.com",
+                                "value": 10105
+                            },
+                            "stage_id": 6,
+                            "title": "EXAMPLE DEAL",
+                            "value": 153.466,
+                            "currency": "CLP",
+                            "add_time": "2017-02-21 14:10:25",
+                            "update_time": "2017-03-02 13:39:39",
+                            "stage_change_time": "2017-03-02 13:39:39",
+                            "active": False,
+                            "deleted": False,
+                            "status": "won",
+                            "next_activity_date": None,
+                            "next_activity_time": None,
+                            "next_activity_id": None,
+                            "last_activity_id": None,
+                            "last_activity_date": None,
+                            "lost_reason": None,
+                            "visible_to": "1",
+                            "close_time": "2017-02-28 13:54:25",
+                            "pipeline_id": 1,
+                            "won_time": "2017-02-28 13:54:25",
+                            "first_won_time": "2017-02-28 13:54:25",
+                            "lost_time": None,
+                            "products_count": None,
+                            "files_count": None,
+                            "notes_count": 1,
+                            "followers_count": 1,
+                            "email_messages_count": None,
+                            "activities_count": None,
+                            "done_activities_count": None,
+                            "undone_activities_count": None,
+                            "reference_activities_count": None,
+                            "participants_count": 1,
+                            "expected_close_date": None,
+                            "last_incoming_mail_time": None,
+                            "last_outgoing_mail_time": None,
+                            "c81737a34439d1976b6b68f9f0be075c47c1b3c2": None,
+                            "8a766721a66bbd50506fcb65b18291b2846714b0": 1478000,
+                            "8a766721a66bbd50506fcb65b18291b2846714b0_currency": "CLP",
+                            "b7cfbad4fe7704bcdaaf7efa49cafbddfe22cac5": "https://example.com",
+                            "43a5a5a5febfd470155482c1a572cfe764bfe4eb": "",
+                            "546846b198054138ce8b5240c882517ae924ce4e": {
+                                "name": "",
+                                "people_count": 0,
+                                "owner_id": 1629618,
+                                "address": None,
+                                "cc_email": "mycompany@pipedrivemail.com",
+                                "value": 10110
+                            },
+                            "575333cd64992c1297dcc674cdc3191db3f1dd59": "2017-02-16",
+                            "cc0e1e23219765fff52a966a919351987798d6ac": None,
+                            "536802c95dfaa316ffea4b816438469112ca8210": None,
+                            "faa59be7dcd63eb42d576a19a937d37727b48524": None,
+                            "b8799234117d9a7233bbef58a469b759345cc87c": 122000,
+                            "b8799234117d9a7233bbef58a469b759345cc87c_currency": "CLP",
+                            "c389c981387140016623d9411fffc8feca6f8733": None,
+                            "c389c981387140016623d9411fffc8feca6f8733_currency": None,
+                            "3a2b263fe86c44c98d3abd36d56245b51b8fc51d": None,
+                            "4b17459584cf24172d714c6b687ada2c1ba8da88": "5",
+                            "3d7eb6ab9b6901d30a353d10c52362fae74ce0a3": "2017-01-25",
+                            "7dfd31608b5c8d4997b9434759a17b79548ebade": "rhuiza",
+                            "b2ea26ac273c1ed106168d9106a43ecd144aeb90": 35,
+                            "33b083132080c43608495304712886a40f0b9196": None,
+                            "stage_order_nr": 5,
+                            "person_name": "PERSON Del Sastre",
+                            "org_name": "EXAMPLE ORGANIZATION",
+                            "next_activity_subject": None,
+                            "next_activity_type": None,
+                            "next_activity_duration": None,
+                            "next_activity_note": None,
+                            "formatted_value": "$153",
+                            "rotten_time": None,
+                            "weighted_value": 153.466,
+                            "formatted_weighted_value": "$153",
+                            "owner_name": "OWNER_NAME",
+                            "cc_email": "mycompany+deal9973@pipedrivemail.com",
+                            "org_hidden": False,
+                            "person_hidden": False
+                        },
+                    ],
+                    "additional_data": {
+                        "pagination": {
+                            "start": 0,
+                            "limit": 100,
+                            "more_items_in_collection": False,
+                        }
+                    },
+                }
+
+        old_deal_api = Deal.pipedrive_api_client
+        old_user_api = User.pipedrive_api_client
+        old_person_api = Person.pipedrive_api_client
+        old_org_api = Organization.pipedrive_api_client
+        old_stage_api = Stage.pipedrive_api_client
+        old_pipeline_api = Pipeline.pipedrive_api_client
+
+        try:
+            Deal.pipedrive_api_client = fake_deal_api()
+            User.pipedrive_api_client = fake_user_api()
+            Person.pipedrive_api_client = fake_person_api()
+            Organization.pipedrive_api_client = fake_organization_api()
+
+            self.assertEquals(User.objects.count(), 0)
+            self.assertEquals(Person.objects.count(), 0)
+            self.assertEquals(Organization.objects.count(), 0)
+            self.assertEquals(Stage.objects.count(), 0)
+            self.assertEquals(Pipeline.objects.count(), 0)
+            self.assertEquals(Deal.objects.count(), 0)
+
+            self.assertTrue(Deal.fetch_from_pipedrive())
+
+            self.assertEquals(User.objects.count(), 1)
+            self.assertEquals(Person.objects.count(), 1)
+            self.assertEquals(Organization.objects.count(), 1)
+            self.assertEquals(Stage.objects.count(), 1)
+            self.assertEquals(Pipeline.objects.count(), 1)
+            self.assertEquals(Deal.objects.count(), 1)
+
+        finally:
+            Deal.pipedrive_api_client = old_deal_api
+            User.pipedrive_api_client = old_user_api
+            Person.pipedrive_api_client = old_person_api
+            Organization.pipedrive_api_client = old_org_api
+            Stage.pipedrive_api_client = old_stage_api
+            Pipeline.pipedrive_api_client = old_pipeline_api
