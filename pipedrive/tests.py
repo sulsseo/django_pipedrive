@@ -2367,6 +2367,29 @@ class TestFetchModels(TestCase):
 
         self.assertTrue(result)
 
+    def test_fetch_data_null(self):
+
+        class fake_api():
+            def get_instances(self, **kwargs):
+                return {
+                    "success": True,
+                    "data": None,
+                    "additional_data": {
+                        "pagination": {
+                            "start": 0,
+                            "limit": 100,
+                            "more_items_in_collection": False
+                        }
+                    }
+                }
+
+        old_api = Organization.pipedrive_api_client
+        try:
+            Organization.pipedrive_api_client = fake_api()
+            self.assertTrue(Organization.fetch_from_pipedrive())
+        finally:
+            Organization.pipedrive_api_client = old_api
+
 
 class TestCreateFromObject(TestCase):
 

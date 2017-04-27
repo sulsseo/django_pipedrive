@@ -195,6 +195,10 @@ class PipedriveModel(models.Model):
                 logging.error(post_data[u'error'])
                 return False
 
+            # No data available
+            if post_data['data'] is None:
+                return True
+
             # For each element from the request
             for el in post_data['data']:
 
