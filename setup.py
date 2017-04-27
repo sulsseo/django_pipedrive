@@ -15,18 +15,17 @@ setup(
     license='BSD License',  # example license
     description='A Django app to syncronice data with Pipedrive.',
     long_description=README,
-    url='http://www.example.com/',
-    author='Your Name',
-    author_email='yourname@example.com',
+    url='https://github.com/MasAval/django_pipedrive',
+    autho=r'Gustavo Soto Ridd',
+    author_email='gussoto@ug.uchile.cl',
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
-        'Framework :: Django :: 1.8',  # replace "X.Y" as appropriate
+        'Framework :: Django :: 1.8',
         'Intended Audience :: Developers',
-        #'License :: OSI Approved :: BSD License', # example license
+        'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        # Replace these appropriately if you are stuck on Python 2.
         'Programming Language :: Python :: 2.7',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
