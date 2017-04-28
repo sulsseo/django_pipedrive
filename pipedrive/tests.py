@@ -24,6 +24,8 @@ from pipedrive.models import Activity
 from pipedrive.models import PipedriveModel
 from pipedrive.models import FieldModification
 
+from pipedrive.utils import compare_dicts
+
 
 class TestPipedriveWebhooks(TestCase):
 
@@ -2168,6 +2170,160 @@ class TestPipedriveCreation(TestCase):
         self.assertTrue(result)
         self.assertIsNotNone(activity.external_id)
 
+    def test_create_deal_field(self):
+
+        deal_field = DealField.objects.create(
+            name="TEST_DEAL_FIELD",
+            field_type="text",
+        )
+
+        result = deal_field.upload()
+
+        self.assertTrue(result)
+        self.assertIsNotNone(deal_field.external_id)
+        self.assertIsNotNone(deal_field.field_type)
+        self.assertNotEquals(deal_field.key, u'')
+
+    def test_create_person_field(self):
+
+        person_field = PersonField.objects.create(
+            name="TEST_PERSON_FIELD",
+            field_type="text",
+        )
+
+        result = person_field.upload()
+
+        self.assertTrue(result)
+        self.assertIsNotNone(person_field.external_id)
+        self.assertIsNotNone(person_field.field_type)
+        self.assertNotEquals(person_field.key, u'')
+
+    def test_create_organization_field(self):
+
+        organization_field = OrganizationField.objects.create(
+            name="TEST_ORGANIZATION_FIELD",
+            field_type="text",
+        )
+
+        result = organization_field.upload()
+
+        self.assertTrue(result)
+        self.assertIsNotNone(organization_field.external_id)
+        self.assertIsNotNone(organization_field.field_type)
+        self.assertNotEquals(organization_field.key, u'')
+
+
+class TestPipedriveCreationWithAdditionalFields(TestCase):
+
+    def test_create_organization_with_additional_fields(self):
+
+        organization_field = OrganizationField.objects.create(
+            name="TEST_ORGANIZATION_FIELD",
+            field_type="text",
+        )
+
+        result = organization_field.upload()
+
+        organization_kwargs = {}
+        organization_kwargs['name'] = "TEST_ORGANIZATION"
+        additional_fields = {}
+        additional_fields[organization_field.key] = "TEST_TEXT"
+        organization_kwargs['additional_fields'] = additional_fields
+
+        organization = Organization.objects.create(**organization_kwargs)
+
+        result = organization.upload()
+
+        # The information appears locally
+        self.assertTrue(result)
+        self.assertIsNotNone(organization.external_id)
+        self.assertIsNotNone(organization.name)
+        self.assertIsNotNone(organization.additional_fields)
+        self.assertIsNotNone(organization.additional_fields[organization_field.key])
+        self.assertEquals(organization.additional_fields[organization_field.key], "TEST_TEXT")
+
+        pipedrive_api_client = Organization.pipedrive_api_client
+
+        online_organization = pipedrive_api_client.get_instance(organization.external_id)
+
+        # The information appears online
+        self.assertIsNotNone(online_organization[u'data'])
+        self.assertEquals(online_organization[u'data'][u'name'], u"TEST_ORGANIZATION")
+        self.assertTrue(organization_field.key in online_organization[u'data'])
+        self.assertEquals(online_organization[u'data'][organization_field.key], "TEST_TEXT")
+
+    def test_create_person_with_additional_fields(self):
+
+        person_field = PersonField.objects.create(
+            name="TEST_PERSON_FIELD",
+            field_type="text",
+        )
+
+        person_field.upload()
+
+        person_kwargs = {}
+        person_kwargs['name'] = "TEST_PERSON"
+        additional_fields = {}
+        additional_fields[person_field.key] = "TEST_TEXT"
+        person_kwargs['additional_fields'] = additional_fields
+
+        person = Person.objects.create(**person_kwargs)
+
+        result = person.upload()
+
+        # The information appears locally
+        self.assertTrue(result)
+        self.assertIsNotNone(person.external_id)
+        self.assertIsNotNone(person.name)
+        self.assertIsNotNone(person.additional_fields)
+        self.assertIsNotNone(person.additional_fields[person_field.key])
+        self.assertEquals(person.additional_fields[person_field.key], "TEST_TEXT")
+
+        pipedrive_api_client = Person.pipedrive_api_client
+
+        online_person = pipedrive_api_client.get_instance(person.external_id)
+
+        # The information appears online
+        self.assertIsNotNone(online_person[u'data'])
+        self.assertEquals(online_person[u'data'][u'name'], u"TEST_PERSON")
+        self.assertEquals(online_person[u'data'][person_field.key], "TEST_TEXT")
+
+    def test_create_deal_with_additional_fields(self):
+
+        deal_field = DealField.objects.create(
+            name="TEST_DEAL_FIELD",
+            field_type="text",
+        )
+
+        deal_field.upload()
+
+        deal_kwargs = {}
+        deal_kwargs['title'] = "TEST_DEAL"
+        additional_fields = {}
+        additional_fields[deal_field.key] = "TEST_TEXT"
+        deal_kwargs['additional_fields'] = additional_fields
+
+        deal = Deal.objects.create(**deal_kwargs)
+
+        result = deal.upload()
+
+        # The information appears locally
+        self.assertTrue(result)
+        self.assertIsNotNone(deal.external_id)
+        self.assertIsNotNone(deal.title)
+        self.assertIsNotNone(deal.additional_fields)
+        self.assertIsNotNone(deal.additional_fields[deal_field.key])
+        self.assertEquals(deal.additional_fields[deal_field.key], "TEST_TEXT")
+
+        pipedrive_api_client = Deal.pipedrive_api_client
+
+        online_deal = pipedrive_api_client.get_instance(deal.external_id)
+
+        # The information appears online
+        self.assertIsNotNone(online_deal[u'data'])
+        self.assertEquals(online_deal[u'data'][u'title'], u"TEST_DEAL")
+        self.assertEquals(online_deal[u'data'][deal_field.key], "TEST_TEXT")
+
 
 class TestPipedrive(TestCase):
 
@@ -2339,7 +2495,8 @@ class TestFetchModels(TestCase):
 
         result = Pipeline.fetch_from_pipedrive()
 
-        self.assertTrue(result)
+        # TODO: wait for the API to implement properly
+        self.assertFalse(result)
 
     def test_fetch_from_pipedrive_person_fields(self):
 
@@ -2715,3 +2872,37 @@ class TestIntegrity(TransactionTestCase):
             Organization.pipedrive_api_client = old_org_api
             Stage.pipedrive_api_client = old_stage_api
             Pipeline.pipedrive_api_client = old_pipeline_api
+
+
+class TestUtils(TestCase):
+
+    def test_compare_dicts(self):
+
+        dic = {
+            'a': 1,
+            'b': 2,
+            'c': 3,
+        }
+        eq = {
+            'a': 1,
+            'b': 2,
+            'c': 3,
+        }
+        sub_set = {
+            'a': 1
+        }
+        super_set = {
+            'a': 1,
+            'b': 2,
+            'c': 3,
+            'd': 4,
+        }
+
+        self.assertTrue(compare_dicts(dic, eq))
+        self.assertTrue(compare_dicts(eq, dic))
+        self.assertFalse(compare_dicts(dic, sub_set))
+        self.assertFalse(compare_dicts(sub_set, dic))
+        self.assertFalse(compare_dicts(dic, super_set))
+        self.assertFalse(compare_dicts(super_set, dic))
+        self.assertFalse(compare_dicts(None, dic))
+        self.assertFalse(compare_dicts(dic, None))
