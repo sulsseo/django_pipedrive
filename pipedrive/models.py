@@ -4,7 +4,6 @@
 import datetime
 import pytz
 import logging
-import re
 from collections import defaultdict
 
 # django
@@ -989,6 +988,13 @@ class BaseField(PipedriveModel):
     def __unicode__(self):
         return u'External ID: {}, Name: {}, Key: {}.'.format(
             self.external_id, self.name, self.key)
+
+    def build_kwargs(self):
+        return {
+            'id': self.external_id,
+            'name': self.name,
+            'field_type': self.field_type,
+        }
 
     @classmethod
     def update_or_create_entity_from_api_post(cls, el):

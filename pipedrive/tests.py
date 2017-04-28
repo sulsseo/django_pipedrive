@@ -2168,6 +2168,42 @@ class TestPipedriveCreation(TestCase):
         self.assertTrue(result)
         self.assertIsNotNone(activity.external_id)
 
+    def test_create_deal_field(self):
+
+        deal_field = DealField.objects.create(
+            name="TEST_DEAL_FIELD",
+            field_type="text",
+        )
+
+        result = deal_field.upload()
+
+        self.assertTrue(result)
+        self.assertIsNotNone(deal_field.external_id)
+
+    def test_create_person_field(self):
+
+        person_field = PersonField.objects.create(
+            name="TEST_PERSON_FIELD",
+            field_type="text",
+        )
+
+        result = person_field.upload()
+
+        self.assertTrue(result)
+        self.assertIsNotNone(person_field.external_id)
+
+    def test_create_organization_field(self):
+
+        organization_field = OrganizationField.objects.create(
+            name="TEST_ORGANIZATION_FIELD",
+            field_type="text",
+        )
+
+        result = organization_field.upload()
+
+        self.assertTrue(result)
+        self.assertIsNotNone(organization_field.external_id)
+
 
 class TestPipedrive(TestCase):
 
