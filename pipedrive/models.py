@@ -303,7 +303,14 @@ class PipedriveModel(models.Model):
         self.last_updated_at = timezone.now()
         self.save()
 
-        self.__class__.update_or_create_entity_from_api_post(post_data[u'data'])
+        entity, created = self.__class__.update_or_create_entity_from_api_post(post_data[u'data'])
+
+        # Attributes from the newly created object are copier so self
+        for field in self.__class__._meta.get_fields(include_parents=True):
+            if field.concrete and field.attname != 'id':
+                if field.concrete:
+                    setattr(self, field.attname, getattr(entity, field.attname))
+
         return True
 
 
@@ -544,12 +551,21 @@ class Organization(PipedriveModel):
     pipedrive_api_client = PipedriveAPIClient(endpoint='organizations')
 
     def build_kwargs(self):
-        return {
+
+        kwargs = {
             'id': self.external_id,
             'name': self.name,
             'visible_to': self.visible_to,
             'address': self.address,
         }
+
+        additional_fields = self.additional_fields
+
+        if additional_fields:
+            for key, value in additional_fields.iteritems():
+                kwargs[key] = value
+
+        return kwargs
 
     def __unicode__(self):
         return str(self.external_id) + " : " + str(self.name)
@@ -690,12 +706,21 @@ class Person(PipedriveModel):
     pipedrive_api_client = PipedriveAPIClient(endpoint='persons')
 
     def build_kwargs(self):
-        return {
+
+        kwargs = {
             'id': self.external_id,
             'name': self.name,
             'phone': self.phone,
             'email': self.email,
         }
+
+        additional_fields = self.additional_fields
+
+        if additional_fields:
+            for key, value in additional_fields.iteritems():
+                kwargs[key] = value
+
+        return kwargs
 
     def __unicode__(self):
         return str(self.external_id) + " : " + str(self.name)
@@ -890,13 +915,22 @@ class Deal(PipedriveModel):
     pipedrive_api_client = PipedriveAPIClient(endpoint='deals')
 
     def build_kwargs(self):
-        return {
+
+        kwargs = {
             'id': self.external_id,
             'title': self.title,
             'value': self.value,
             'pipeline': self.pipeline,
             'visible_to': self.visible_to,
         }
+
+        additional_fields = self.additional_fields
+
+        if additional_fields:
+            for key, value in additional_fields.iteritems():
+                kwargs[key] = value
+
+        return kwargs
 
     def __unicode__(self):
         return str(self.external_id) + " : " + str(self.title)
