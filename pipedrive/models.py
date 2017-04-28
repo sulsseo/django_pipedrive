@@ -4,6 +4,7 @@
 import datetime
 import pytz
 import logging
+import copy
 from collections import defaultdict
 
 # django
@@ -19,6 +20,8 @@ from django.contrib.postgres.fields import HStoreField
 
 # api
 from pipedrive.pipedrive_client import PipedriveAPIClient
+
+from pipedrive.utils import compare_dicts
 
 PRIVATE = 0
 SHARED = 3
@@ -217,10 +220,19 @@ class PipedriveModel(models.Model):
         queries = 0
         problems_solved = 0
         logging.info("Fetching model {} from pipedrive".format(cls))
-
+        previous_post_data = {}
         while True:
 
             post_data = cls.pipedrive_api_client.get_instances(start=start)
+
+            post_copy = copy.copy(post_data)
+            post_copy.pop('additional_data', None)
+
+            if compare_dicts(previous_post_data, post_copy):
+                logging.warn("Same post_data as previous request")
+                return False
+
+            previous_post_data = post_copy
 
             # Error code from the API
             if not post_data['success']:
@@ -280,7 +292,10 @@ class PipedriveModel(models.Model):
         result = result and PersonField.fetch_from_pipedrive()
         result = result and OrganizationField.fetch_from_pipedrive()
         result = result and DealField.fetch_from_pipedrive()
-        result = result and Pipeline.fetch_from_pipedrive()
+
+        # TODO: wait for the API to implement properly
+        Pipeline.fetch_from_pipedrive()
+
         result = result and Stage.fetch_from_pipedrive()
         result = result and Organization.fetch_from_pipedrive()
         result = result and Person.fetch_from_pipedrive()
