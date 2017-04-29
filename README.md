@@ -1,6 +1,7 @@
 # django_pipedrive
 
 [![CircleCI](https://circleci.com/gh/MasAval/django_pipedrive.svg?style=svg)](https://circleci.com/gh/MasAval/django_pipedrive)
+[![codecov](https://codecov.io/gh/MasAval/django_pipedrive/branch/master/graph/badge.svg)](https://codecov.io/gh/MasAval/django_pipedrive)
 
 django_pipedrive is a simple Django app to post data to the Pipedrive service and keep track of its online data. 
 The app listens for the Pipedrive webhooks for every event as for version 1 of the API.
