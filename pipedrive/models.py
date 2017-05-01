@@ -179,6 +179,16 @@ class PipedriveModel(models.Model):
         return cls.update_or_create_entity_from_api_post(post_data[u'data'])
 
     @classmethod
+    def get_table_fields(cls):
+        table_fields = set()
+
+        for field in cls._meta.get_fields(include_parents=True):
+            if field.concrete and field.attname != 'id':
+                table_fields.add(field.attname)
+
+        return table_fields
+
+    @classmethod
     def handle_dependencies(cls, el, e):
         creator_user_id = cls.get_id(el, 'creator_user_id')
         user_id = cls.get_id(el, 'user_id')
@@ -208,6 +218,22 @@ class PipedriveModel(models.Model):
             Activity.sync_one(activity_id)
         if note_id:
             Note.sync_one(note_id)
+
+    @classmethod
+    def update_or_create_entity_from_api_post(cls, el):
+        """
+        The method computes which fields go to additional_fields by getting
+        all keys from @el which are not fields in the model's table.
+        """
+        table_fields = cls.get_table_fields()
+
+        additional_fields = {}
+
+        for key in el.iterkeys():
+            if key not in table_fields:
+                additional_fields[key] = unicode(el[key])
+
+        return cls.update_or_create_entity_with_additional_fields(el, additional_fields)
 
     @classmethod
     def fetch_from_pipedrive(cls):
@@ -390,7 +416,7 @@ class User(PipedriveModel):
         }
 
     @classmethod
-    def update_or_create_entity_from_api_post(cls, el):
+    def update_or_create_entity_with_additional_fields(cls, el, additional_fields):
         return User.objects.update_or_create(
             external_id=el[u'id'],
             defaults={
@@ -402,6 +428,7 @@ class User(PipedriveModel):
                 'modified': cls.datetime_from_simple_time(el, u'modified'),
                 'role_id': el[u'role_id'],
                 'active_flag': el[u'active_flag'],
+                'additional_fields': additional_fields,
             }
         )
 
@@ -460,7 +487,7 @@ class Pipeline(PipedriveModel):
             self.external_id, self.name)
 
     @classmethod
-    def update_or_create_entity_from_api_post(cls, el):
+    def update_or_create_entity_with_additional_fields(cls, el, additional_fields):
         return Pipeline.objects.update_or_create(
             external_id=el[u'id'],
             defaults={
@@ -470,6 +497,7 @@ class Pipeline(PipedriveModel):
                 'add_time': cls.datetime_from_simple_time(el, u'add_time'),
                 'update_time': cls.datetime_from_simple_time(el, u'update_time'),
                 'active': el[u'active'],
+                'additional_fields': additional_fields,
             }
         )
 
@@ -586,7 +614,7 @@ class Organization(PipedriveModel):
         return str(self.external_id) + " : " + str(self.name)
 
     @classmethod
-    def update_or_create_entity_from_api_post(cls, el):
+    def update_or_create_entity_with_additional_fields(cls, el, additional_fields):
         return Organization.objects.update_or_create(
             external_id=el[u'id'],
             defaults={
@@ -609,6 +637,7 @@ class Organization(PipedriveModel):
                 'undone_activities_count': el[u'undone_activities_count'],
                 'email_messages_count': el[u'email_messages_count'],
                 'address': el[u'address_formatted_address'],
+                'additional_fields': additional_fields,
             }
         )
 
@@ -741,16 +770,7 @@ class Person(PipedriveModel):
         return str(self.external_id) + " : " + str(self.name)
 
     @classmethod
-    def update_or_create_entity_from_api_post(cls, el):
-
-        fields = PersonField.objects.all()
-
-        additional_fields = {}
-
-        for field in fields:
-            if field.key in el:
-                additional_fields[field.key] = unicode(el[field.key])
-
+    def update_or_create_entity_with_additional_fields(cls, el, additional_fields):
         return Person.objects.update_or_create(
             external_id=el[u'id'],
             defaults={
@@ -951,7 +971,7 @@ class Deal(PipedriveModel):
         return str(self.external_id) + " : " + str(self.title)
 
     @classmethod
-    def update_or_create_entity_from_api_post(cls, el):
+    def update_or_create_entity_with_additional_fields(cls, el, additional_fields):
         return Deal.objects.update_or_create(
             external_id=el[u'id'],
             defaults={
@@ -984,6 +1004,7 @@ class Deal(PipedriveModel):
                 'undone_activities_count': el[u'undone_activities_count'],
                 'email_messages_count': el[u'email_messages_count'],
                 'expected_close_date': el[u'expected_close_date'],
+                'additional_fields': additional_fields,
             }
         )
 
@@ -1148,7 +1169,7 @@ class Stage(PipedriveModel):
             self.external_id, self.name)
 
     @classmethod
-    def update_or_create_entity_from_api_post(cls, el):
+    def update_or_create_entity_with_additional_fields(cls, el, additional_fields):
         return Stage.objects.update_or_create(
             external_id=el[u'id'],
             defaults={
@@ -1160,6 +1181,7 @@ class Stage(PipedriveModel):
                 'active_flag': el[u'active_flag'],
                 'add_time': cls.datetime_from_simple_time(el, u'add_time'),
                 'update_time': cls.datetime_from_simple_time(el, u'update_time'),
+                'additional_fields': additional_fields,
             }
         )
 
@@ -1227,7 +1249,7 @@ class Note(PipedriveModel):
         }
 
     @classmethod
-    def update_or_create_entity_from_api_post(cls, el):
+    def update_or_create_entity_with_additional_fields(cls, el, additional_fields):
         return Note.objects.update_or_create(
             external_id=el[u'id'],
             defaults={
@@ -1239,6 +1261,7 @@ class Note(PipedriveModel):
                 'add_time': cls.datetime_from_simple_time(el, u'add_time'),
                 'update_time': cls.datetime_from_simple_time(el, u'update_time'),
                 'active_flag': el[u'active_flag'],
+                'additional_fields': additional_fields,
             }
         )
 
@@ -1338,7 +1361,7 @@ class Activity(PipedriveModel):
         }
 
     @classmethod
-    def update_or_create_entity_from_api_post(cls, el):
+    def update_or_create_entity_with_additional_fields(cls, el, additional_fields):
         return Activity.objects.update_or_create(
             external_id=el[u'id'],
             defaults={
@@ -1357,5 +1380,6 @@ class Activity(PipedriveModel):
                 'add_time': cls.datetime_from_simple_time(el, u'add_time'),
                 'update_time': cls.datetime_from_simple_time(el, u'update_time'),
                 'active_flag': el[u'active_flag'],
+                'additional_fields': additional_fields,
             }
         )
