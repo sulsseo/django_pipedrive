@@ -29,11 +29,6 @@ from pipedrive.utils import compare_dicts
 
 class TestPipedriveWebhooks(TestCase):
 
-    def setUp(self):
-        DealField.fetch_from_pipedrive()
-        OrganizationField.fetch_from_pipedrive()
-        PersonField.fetch_from_pipedrive()
-
     def test_activity_marked_as_done(self):
 
         c = Client()
@@ -140,7 +135,6 @@ class TestPipedriveWebhooks(TestCase):
         expected = datetime.datetime(2017, 4, 22, 21, 56, 17, tzinfo=pytz.utc)
 
         self.assertEquals(activity.marked_as_done_time, expected)
-
 
     def test_activity_marked_as_done_field_modification(self):
 
@@ -1260,8 +1254,7 @@ class TestPipedriveWebhooks(TestCase):
         self.assertEquals(Organization.objects.count(), 1)
         self.assertEquals(Organization.objects.filter(deleted=True).count(), 1)
 
-
-    def test_delete_organization(self):
+    def test_field_modification_when_delete_organization(self):
 
         c = Client()
 
@@ -2496,7 +2489,7 @@ class TestFetchModels(TestCase):
         result = Pipeline.fetch_from_pipedrive()
 
         # TODO: wait for the API to implement properly
-        self.assertFalse(result)
+        self.assertTrue(result)
 
     def test_fetch_from_pipedrive_person_fields(self):
 
@@ -2678,6 +2671,9 @@ class TestIntegrity(TransactionTestCase):
                     "data": {
                         "id": 6,
                         "name": "EXAMPLE STAGE",
+                        "pipeline_id": 1,
+                        "order_nr": 1,
+                        "active_flag": True,
                     },
                     "additional_data": {
                         "company_id": 1142847
@@ -2691,6 +2687,8 @@ class TestIntegrity(TransactionTestCase):
                     "data": {
                         "id": 1,
                         "name": "EXAMPLE PIPELINE",
+                        "url_title": "EXAMPLE_URL_TITLE",
+                        "active": True,
                     },
                     "additional_data": {
                         "company_id": 1142847
@@ -2848,6 +2846,8 @@ class TestIntegrity(TransactionTestCase):
             User.pipedrive_api_client = fake_user_api()
             Person.pipedrive_api_client = fake_person_api()
             Organization.pipedrive_api_client = fake_organization_api()
+            Stage.pipedrive_api_client = fake_stage_api()
+            Pipeline.pipedrive_api_client = fake_pipeline_api()
 
             self.assertEquals(User.objects.count(), 0)
             self.assertEquals(Person.objects.count(), 0)
