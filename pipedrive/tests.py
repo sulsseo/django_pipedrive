@@ -1254,6 +1254,120 @@ class TestPipedriveWebhooks(TestCase):
         self.assertEquals(Organization.objects.count(), 1)
         self.assertEquals(Organization.objects.filter(deleted=True).count(), 1)
 
+    def test_delete_inexistent_organization(self):
+
+        c = Client()
+
+        self.assertEquals(Organization.objects.count(), 0)
+
+        data = {
+            "v": 1,
+            "matches_filters":
+            {
+                "current": [],
+                "previous": []
+            },
+            "meta":
+            {
+                "v": 1,
+                "action": "deleted",
+                "object": "organization",
+                "id": 997,
+                "company_id": 1689563,
+                "user_id": 2428657,
+                "host": "mycompany.pipedrive.com",
+                "timestamp": 1492653308,
+                "timestamp_milli": 1492653308072,
+                "permitted_user_ids": [2428657],
+                "trans_pending": False,
+                "is_bulk_update": False,
+                "elastic_enabled": True,
+                "matches_filters":
+                {
+                    "current": [],
+                    "previous": []
+                }
+            },
+            "retry": 0,
+            "current": None,
+            "previous":
+            {
+                "id": 997,
+                "company_id": 1689563,
+                "owner_id": 2428657,
+                "name": "TEST_ORGANIZATION",
+                "open_deals_count": 0,
+                "related_open_deals_count": 0,
+                "closed_deals_count": 0,
+                "related_closed_deals_count": 0,
+                "email_messages_count": 0,
+                "people_count": 0,
+                "activities_count": 0,
+                "done_activities_count": 0,
+                "undone_activities_count": 0,
+                "reference_activities_count": 0,
+                "files_count": 0,
+                "notes_count": 0,
+                "followers_count": 1,
+                "won_deals_count": 0,
+                "related_won_deals_count": 0,
+                "lost_deals_count": 0,
+                "related_lost_deals_count": 0,
+                "active_flag": True,
+                "category_id": None,
+                "picture_id": None,
+                "country_code": None,
+                "first_char": "t",
+                "update_time": "2017-04-19 19:43:41",
+                "add_time": "2017-04-19 19:43:41",
+                "visible_to": "3",
+                "next_activity_date": None,
+                "next_activity_time": None,
+                "next_activity_id": None,
+                "last_activity_id": None,
+                "last_activity_date": None,
+                "address": None,
+                "address_lat": None,
+                "address_long": None,
+                "address_subpremise": None,
+                "address_street_number": None,
+                "address_route": None,
+                "address_sublocality": None,
+                "address_locality": None,
+                "address_admin_area_level_1": None,
+                "address_admin_area_level_2": None,
+                "address_country": None,
+                "address_postal_code": None,
+                "address_formatted_address": None,
+                "owner_name": "OWNER",
+                "cc_email": "mycompany@pipedrivemail.com"
+            },
+            "indexable_fields": [],
+            "event": "deleted.organization"
+        }
+
+        class fake_organization_api():
+            def get_instances(self, **kwargs):
+                return {
+                    "success": True,
+                    'data': [data['previous']],
+                    "additional_data": {
+                        "company_id": 1142847
+                    }
+                }
+
+        old_org_api = Organization.pipedrive_api_client
+
+        try:
+            Organization.pipedrive_api_client = fake_organization_api()
+            c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+
+            self.assertEquals(Organization.objects.count(), 1)
+            self.assertEquals(Organization.objects.filter(deleted=True).count(), 1)
+
+        finally:
+            Organization.pipedrive_api_client = old_org_api
+
     def test_field_modification_when_delete_organization(self):
 
         c = Client()
