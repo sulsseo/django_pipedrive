@@ -339,11 +339,26 @@ class PipedriveModel(models.Model):
         result = result and Activity.fetch_from_pipedrive()
         return result
 
+    RESERVED_NAMES = [
+        u'id',
+        u'next_activity',
+        u'last_activity',
+        u'cc_email',
+        u'owner_name',
+        u'edit_name',
+    ]
+
     def upload(self):
 
         kwargs = self.build_kwargs()
 
-        post_data = self.pipedrive_api_client.post_instance(**kwargs)
+        # Filter keys not changeable by API
+        kwargs = {k: v for k, v in kwargs.iteritems() if k not in PipedriveModel.RESERVED_NAMES}
+
+        if self.external_id is None:
+            post_data = self.pipedrive_api_client.post_instance(**kwargs)
+        else:
+            post_data = self.pipedrive_api_client.update(self.external_id, **kwargs)
 
         if not post_data[u'success']:
             logging.error(post_data)
@@ -355,7 +370,7 @@ class PipedriveModel(models.Model):
 
         entity, created = self.__class__.update_or_create_entity_from_api_post(post_data[u'data'])
 
-        # Attributes from the newly created object are copier so self
+        # Attributes from the newly created object are copied to self
         for field in self.__class__._meta.get_fields(include_parents=True):
             if field.concrete and field.attname != 'id':
                 if field.concrete:

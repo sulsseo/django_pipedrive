@@ -71,17 +71,17 @@ class PipedriveAPIClient(object):
         return self.call_api('delete', endpoint, payload=None)
 
     # put methods
-    def update(self, endpoint, element_id, payload):
+    def update(self, element_id, **kwargs):
         """
         updates an element on pipedrive
         using /endpoint/:id as url
         """
 
-        endpoint = str(endpoint) + '/:' + str(element_id)
+        endpoint = str(self.endpoint) + '/' + str(element_id)
 
         restpoint = self.post_put_restify(endpoint)
 
-        content = self.put(restpoint, payload)
+        content = self.put(restpoint, kwargs)
 
         return content
 

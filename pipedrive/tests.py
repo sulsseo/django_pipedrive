@@ -2201,6 +2201,18 @@ class TestPipedriveCreation(TestCase):
         self.assertTrue(result)
         self.assertIsNotNone(organization.external_id)
 
+    def test_upload_organization_with_id_at_additional_attributes(self):
+
+        organization = Organization.objects.create(
+            name="TEST_ORGANIZATION",
+            additional_fields={'id': '3'}
+        )
+
+        result = organization.upload()
+
+        self.assertTrue(result)
+        self.assertIsNotNone(organization.external_id)
+
     def test_create_person(self):
 
         person = Person.objects.create(name="TEST_PERSON")
@@ -2318,6 +2330,76 @@ class TestPipedriveCreation(TestCase):
         self.assertIsNotNone(organization_field.external_id)
         self.assertIsNotNone(organization_field.field_type)
         self.assertNotEquals(organization_field.key, u'')
+
+
+class TestCreateSyncAndUpload(TestCase):
+
+    def case_create_sync_and_upload_instance(self, cls, field_name, defaults={}):
+        """
+        The test case creates a local instance, then it uploads it.
+        After, it retrieves the instance from the API to change @field_name
+        and upload it again.
+        Finally the instance is retreived again to check that attributes were
+        changed accordingly.
+        """
+        kwargs = {}
+        kwargs[field_name] = "TEST_FIELD_1"
+        kwargs.update(defaults)
+
+        instance = cls.objects.create(**kwargs)
+
+        result = instance.upload()
+
+        self.assertTrue(result)
+        self.assertIsNotNone(instance.external_id)
+        self.assertEquals(getattr(instance, field_name), "TEST_FIELD_1")
+
+        external_id = instance.external_id
+
+        instance, created = cls.sync_one(external_id)
+
+        self.assertEquals(getattr(instance, field_name), "TEST_FIELD_1")
+
+        setattr(instance, field_name, "TEST_FIELD_2")
+        for key in defaults.iterkeys():
+            setattr(instance, key, defaults[key])
+
+        result = instance.upload()
+
+        self.assertTrue(result)
+
+        instance, created = cls.sync_one(external_id)
+
+        self.assertEquals(getattr(instance, field_name), "TEST_FIELD_2")
+
+    def test_case_create_sync_and_upload_organization(self):
+
+        self.case_create_sync_and_upload_instance(Organization, 'name')
+
+    def test_case_create_sync_and_upload_person(self):
+
+        self.case_create_sync_and_upload_instance(Person, 'name')
+
+    def test_case_create_sync_and_upload_pipeline(self):
+
+        self.case_create_sync_and_upload_instance(Pipeline, 'name')
+
+    def test_case_create_sync_and_upload_organization_field(self):
+
+        self.case_create_sync_and_upload_instance(
+            OrganizationField, 'name', {'field_type': 'text'})
+
+    def test_case_create_sync_and_upload_deal_deal(self):
+
+        self.case_create_sync_and_upload_instance(DealField, 'name', {'field_type': 'text'})
+
+    def test_case_create_sync_and_upload_person_field(self):
+
+        self.case_create_sync_and_upload_instance(PersonField, 'name', {'field_type': 'text'})
+
+    def test_case_create_sync_and_upload_activity(self):
+
+        self.case_create_sync_and_upload_instance(Activity, 'subject')
 
 
 class TestPipedriveCreationWithAdditionalFields(TestCase):
