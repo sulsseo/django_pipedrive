@@ -3084,6 +3084,11 @@ class TestUtils(TestCase):
             'b': 2,
             'c': 3,
         }
+        neq = {
+            'a': 1,
+            'b': 4,
+            'c': 3,
+        }
         sub_set = {
             'a': 1
         }
@@ -3096,6 +3101,7 @@ class TestUtils(TestCase):
 
         self.assertTrue(compare_dicts(dic, eq))
         self.assertTrue(compare_dicts(eq, dic))
+        self.assertFalse(compare_dicts(dic, neq))
         self.assertFalse(compare_dicts(dic, sub_set))
         self.assertFalse(compare_dicts(sub_set, dic))
         self.assertFalse(compare_dicts(dic, super_set))
