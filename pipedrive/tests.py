@@ -2231,6 +2231,44 @@ class TestPipedriveCreation(TestCase):
         self.assertTrue(result)
         self.assertIsNotNone(deal.external_id)
 
+    def test_create_deal_with_person(self):
+
+        person = Person.objects.create(name="TEST_PERSON")
+        person.upload()
+        deal = Deal.objects.create(
+            title="TEST_DEAL",
+            person_id=person.external_id,
+        )
+
+        result = deal.upload()
+
+        self.assertTrue(result)
+        self.assertIsNotNone(deal.external_id)
+
+        deal, created = Deal.sync_one(deal.external_id)
+
+        self.assertFalse(created)
+        self.assertEquals(deal.person_id, person.external_id)
+
+    def test_create_person_with_organization(self):
+
+        organization = Organization.objects.create(name="TEST_ORGANIZATION")
+        organization.upload()
+        person = Person.objects.create(
+            name="TEST_PERSON",
+            org_id=organization.external_id,
+        )
+
+        result = person.upload()
+
+        self.assertTrue(result)
+        self.assertIsNotNone(person.external_id)
+
+        person, created = Person.sync_one(person.external_id)
+
+        self.assertFalse(created)
+        self.assertEquals(person.org_id, organization.external_id)
+
     def test_create_stage(self):
 
         Pipeline.objects.create(
@@ -2247,14 +2285,14 @@ class TestPipedriveCreation(TestCase):
         self.assertTrue(result)
         self.assertIsNotNone(stage.external_id)
 
-    def test_create_user(self):
+    # def test_create_user(self):
 
-        user = User.objects.create(name="TEST_USER", email="example@example.com")
+    #     user = User.objects.create(name="TEST_USER", email="example@example.com")
 
-        result = user.upload()
+    #     result = user.upload()
 
-        self.assertTrue(result)
-        self.assertIsNotNone(user.external_id)
+    #     self.assertTrue(result)
+    #     self.assertIsNotNone(user.external_id)
 
     def test_create_pipeline(self):
 
