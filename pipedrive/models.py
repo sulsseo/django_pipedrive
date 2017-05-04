@@ -780,6 +780,7 @@ class Person(PipedriveModel):
             'name': self.name,
             'phone': self.phone,
             'email': self.email,
+            'org_id': self.org_id,
         }
 
         additional_fields = self.additional_fields
@@ -981,6 +982,8 @@ class Deal(PipedriveModel):
             'value': self.value,
             'pipeline': self.pipeline,
             'visible_to': self.visible_to,
+            'person_id': self.person_id,
+            'org_id': self.org_id,
         }
 
         additional_fields = self.additional_fields
