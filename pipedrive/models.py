@@ -124,7 +124,7 @@ class PipedriveModel(models.Model):
         if date_fieldname not in el or el[date_fieldname] is None:
             return None
         else:
-            time_string = str(el[date_fieldname]) + " " + str(el[time_fieldname])
+            time_string = u"{} {}".format(el[date_fieldname], el[time_fieldname])
             aware_date = timezone.make_aware(
                 datetime.datetime.strptime(time_string + " UTC", "%Y-%m-%d %H:%M:%S %Z"),
                 pytz.utc)
@@ -635,7 +635,7 @@ class Organization(PipedriveModel):
         return kwargs
 
     def __unicode__(self):
-        return str(self.external_id) + " : " + str(self.name)
+        return "{} : {}".format(self.external_id, self.name)
 
     @classmethod
     def update_or_create_entity_with_additional_fields(cls, el, additional_fields):
@@ -792,7 +792,7 @@ class Person(PipedriveModel):
         return kwargs
 
     def __unicode__(self):
-        return str(self.external_id) + " : " + str(self.name)
+        return "{} : {}".format(self.external_id, self.name)
 
     @classmethod
     def update_or_create_entity_with_additional_fields(cls, el, additional_fields):
@@ -995,7 +995,7 @@ class Deal(PipedriveModel):
         return kwargs
 
     def __unicode__(self):
-        return str(self.external_id) + " : " + str(self.title)
+        return "{} : {}".format(self.external_id, self.title)
 
     @classmethod
     def update_or_create_entity_with_additional_fields(cls, el, additional_fields):
@@ -1264,6 +1264,9 @@ class Note(PipedriveModel):
     )
 
     pipedrive_api_client = PipedriveAPIClient(endpoint='notes')
+
+    def __unicode__(self):
+        return u"{} : {}".format(self.external_id, self.content)
 
     def build_kwargs(self):
         return {
