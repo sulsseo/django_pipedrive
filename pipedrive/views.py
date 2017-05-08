@@ -38,8 +38,8 @@ def index(request):
                 raise NonImplementedVersionException()
 
     except IntegrityError as e:
-        logging.error(e.message)
-        logging.error("Forcing full sync from pipedrive")
+        logging.warning(e.message)
+        logging.warning("Forcing full sync from pipedrive")
         PipedriveModel.sync_from_pipedrive()
 
     return HttpResponse("Hello, world!")
@@ -111,8 +111,8 @@ def handle_v1(json_data):
 
 
 def handle_does_not_exist(e, external_id, json_data):
-    logging.error(e.message)
-    logging.error("Forcing full sync from pipedrive")
+    logging.warning(e.message)
+    logging.warning("Forcing full sync from pipedrive")
     PipedriveModel.sync_from_pipedrive()
     handle_v1(json_data)
 

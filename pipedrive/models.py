@@ -291,7 +291,7 @@ class PipedriveModel(models.Model):
                         count_created = count_created + 1
 
                 except IntegrityError as e:
-                    logging.error(e)
+                    logging.warning(e)
                     cls.handle_dependencies(el, e)
 
                     # try again to update or create a local Entity
