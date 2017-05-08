@@ -60,7 +60,7 @@ class FieldModification(models.Model):
     content_object = GenericForeignKey('content_type', 'object_id')
 
     def __str__(self):              # __unicode__ on Python 2
-        return "{}[{}] changed field '{}' from {} to {}".format(
+        return u"{}[{}] changed field '{}' from {} to {}".format(
             self.content_type,
             self.object_id,
             self.field_name,
@@ -126,7 +126,7 @@ class PipedriveModel(models.Model):
         else:
             time_string = u"{} {}".format(el[date_fieldname], el[time_fieldname])
             aware_date = timezone.make_aware(
-                datetime.datetime.strptime(time_string + " UTC", "%Y-%m-%d %H:%M:%S %Z"),
+                datetime.datetime.strptime(u"{} UTC".format(time_string), "%Y-%m-%d %H:%M:%S %Z"),
                 pytz.utc)
             return aware_date
 
@@ -145,7 +145,7 @@ class PipedriveModel(models.Model):
             return None
         else:
             return timezone.make_aware(
-                datetime.datetime.strptime(el[datetime_field] + " UTC", "%Y-%m-%d %H:%M:%S %Z"),
+                datetime.datetime.strptime(u"{} UTC".format(el[datetime_field]), "%Y-%m-%d %H:%M:%S %Z"),
                 pytz.utc)
 
     @classmethod
@@ -181,7 +181,7 @@ class PipedriveModel(models.Model):
         post_data = cls.pipedrive_api_client.get_instance(external_id)
 
         # Error code from the API
-        if not post_data['success']:
+        if not post_data[u'success']:
             logging.error(post_data[u'error'])
             raise UnableToSyncException(cls, external_id)
 
@@ -192,22 +192,22 @@ class PipedriveModel(models.Model):
         table_fields = set()
 
         for field in cls._meta.get_fields(include_parents=True):
-            if field.concrete and field.attname != 'id':
+            if field.concrete and field.attname != u'id':
                 table_fields.add(field.attname)
 
         return table_fields
 
     @classmethod
     def handle_dependencies(cls, el, e):
-        creator_user_id = cls.get_id(el, 'creator_user_id')
-        user_id = cls.get_id(el, 'user_id')
-        person_id = cls.get_id(el, 'person_id')
-        org_id = cls.get_id(el, 'org_id')
-        stage_id = cls.get_id(el, 'stage_id')
-        pipeline_id = cls.get_id(el, 'pipeline_id')
-        deal_id = cls.get_id(el, 'deal_id')
-        activity_id = cls.get_id(el, 'activity_id')
-        note_id = cls.get_id(el, 'note_id')
+        creator_user_id = cls.get_id(el, u'creator_user_id')
+        user_id = cls.get_id(el, u'user_id')
+        person_id = cls.get_id(el, u'person_id')
+        org_id = cls.get_id(el, u'org_id')
+        stage_id = cls.get_id(el, u'stage_id')
+        pipeline_id = cls.get_id(el, u'pipeline_id')
+        deal_id = cls.get_id(el, u'deal_id')
+        activity_id = cls.get_id(el, u'activity_id')
+        note_id = cls.get_id(el, u'note_id')
 
         if creator_user_id:
             User.sync_one(creator_user_id)
@@ -254,7 +254,7 @@ class PipedriveModel(models.Model):
         count_created = 0
         queries = 0
         problems_solved = 0
-        logging.info("Fetching model {} from pipedrive".format(cls))
+        logging.info(u"Fetching model {} from pipedrive".format(cls))
         previous_post_data = {}
         while True:
 
@@ -314,10 +314,10 @@ class PipedriveModel(models.Model):
             start = additional_data['pagination']['next_start']
 
         # report
-        logging.info("Queries: {}".format(queries))
-        logging.info("Entities created: {}".format(count_created))
-        logging.info("Entities updated: {}".format(queries - count_created))
-        logging.info("Problems solved: {}".format(problems_solved))
+        logging.info(u"Queries: {}".format(queries))
+        logging.info(u"Entities created: {}".format(count_created))
+        logging.info(u"Entities updated: {}".format(queries - count_created))
+        logging.info(u"Problems solved: {}".format(problems_solved))
 
         return True
 
@@ -372,7 +372,7 @@ class PipedriveModel(models.Model):
 
         # Attributes from the newly created object are copied to self
         for field in self.__class__._meta.get_fields(include_parents=True):
-            if field.concrete and field.attname != 'id':
+            if field.concrete and field.attname != u'id':
                 if field.concrete:
                     setattr(self, field.attname, getattr(entity, field.attname))
 
