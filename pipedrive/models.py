@@ -390,17 +390,17 @@ class User(PipedriveModel):
         default=False
     )
     name = models.CharField(
-        max_length=255,
+        max_length=500,
         null=True,
         blank=True,
     )
     email = models.CharField(
-        max_length=255,
+        max_length=500,
         null=True,
         blank=True,
     )
     phone = models.CharField(
-        max_length=255,
+        max_length=500,
         null=True,
         blank=True,
     )
@@ -472,12 +472,12 @@ class Pipeline(PipedriveModel):
         default=False
     )
     name = models.CharField(
-        max_length=255,
+        max_length=500,
         null=True,
         blank=True,
     )
     url_title = models.CharField(
-        max_length=255,
+        max_length=500,
         null=True,
         blank=True,
     )
@@ -544,7 +544,7 @@ class Organization(PipedriveModel):
         blank=True,
     )
     name = models.CharField(
-        max_length=255,
+        max_length=500,
         null=True,
         blank=True,
     )
@@ -610,7 +610,7 @@ class Organization(PipedriveModel):
         null=True
     )
     address = models.CharField(
-        max_length=255,
+        max_length=500,
         null=True,
         blank=True,
     )
@@ -684,17 +684,17 @@ class Person(PipedriveModel):
         blank=True,
     )
     name = models.CharField(
-        max_length=255,
+        max_length=500,
         null=True,
         blank=True,
     )
     phone = models.CharField(
-        max_length=255,
+        max_length=500,
         null=True,
         blank=True,
     )
     email = models.CharField(
-        max_length=255,
+        max_length=500,
         null=True,
         blank=True,
     )
@@ -833,7 +833,7 @@ class Deal(PipedriveModel):
     saves a registry of deal sent to pipedrive
     """
     title = models.CharField(
-        max_length=255,
+        max_length=500,
         null=True,
         blank=True,
     )
@@ -947,7 +947,7 @@ class Deal(PipedriveModel):
         blank=True,
     )
     lost_reason = models.CharField(
-        max_length=255,
+        max_length=500,
         null=True,
         blank=True,
     )
@@ -1055,13 +1055,13 @@ class BaseField(PipedriveModel):
         unique=True,
     )
     key = models.CharField(
-        max_length=255,
+        max_length=500,
     )
     name = models.CharField(
-        max_length=255,
+        max_length=500,
     )
     field_type = models.CharField(
-        max_length=255,
+        max_length=500,
     )
     active_flag = models.NullBooleanField(
         null=True,
@@ -1157,12 +1157,12 @@ class Stage(PipedriveModel):
         to_field="external_id",
     )
     pipeline_name = models.CharField(
-        max_length=255,
+        max_length=500,
         null=True,
         blank=True,
     )
     name = models.CharField(
-        max_length=255,
+        max_length=500,
     )
     order_nr = models.IntegerField(
         null=True,
@@ -1330,7 +1330,7 @@ class Activity(PipedriveModel):
         null=True
     )
     subject = models.CharField(
-        max_length=255,
+        max_length=500,
         null=True,
         blank=True,
     )
@@ -1340,7 +1340,7 @@ class Activity(PipedriveModel):
         blank=True,
     )
     type = models.CharField(
-        max_length=255,
+        max_length=500,
         null=True,
         blank=True,
     )
