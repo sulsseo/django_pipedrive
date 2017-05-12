@@ -37,7 +37,23 @@ class UnableToSyncException(Exception):
         self.model = model
 
 
-class FieldModification(models.Model):
+class BaseModel(models.Model):
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        help_text="creation date",
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True, null=True,
+        help_text="edition date",
+    )
+
+    class Meta:
+        """ set to abstract """
+        abstract = True
+
+
+class FieldModification(BaseModel):
     field_name = models.CharField(
         max_length=1024,
         null=True,
@@ -92,7 +108,7 @@ class FieldModification(models.Model):
             )
 
 
-class PipedriveModel(models.Model):
+class PipedriveModel(BaseModel):
     """
     Abstract class to include utility functions for extending classes.
     """
