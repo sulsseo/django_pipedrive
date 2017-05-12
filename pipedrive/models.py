@@ -37,7 +37,36 @@ class UnableToSyncException(Exception):
         self.model = model
 
 
-class FieldModification(models.Model):
+class BaseModel(models.Model):
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        help_text="creation date",
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True, null=True,
+        help_text="edition date",
+    )
+
+    class Meta:
+        """ set to abstract """
+        abstract = True
+
+    def update(self, commit=True, **kwargs):
+        """ proxy method for the QuerySet: update method
+        highly recommended when you need to save just one field
+
+        """
+        kwargs['updated_at'] = timezone.now()
+
+        for kw in kwargs:
+            self.__setattr__(kw, kwargs[kw])
+
+        if commit:
+            self.__class__.objects.filter(pk=self.pk).update(**kwargs)
+
+
+class FieldModification(BaseModel):
     field_name = models.CharField(
         max_length=1024,
         null=True,
@@ -92,7 +121,7 @@ class FieldModification(models.Model):
             )
 
 
-class PipedriveModel(models.Model):
+class PipedriveModel(BaseModel):
     """
     Abstract class to include utility functions for extending classes.
     """
