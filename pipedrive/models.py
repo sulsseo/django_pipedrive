@@ -22,6 +22,7 @@ from django.contrib.postgres.fields import HStoreField
 from pipedrive.pipedrive_client import PipedriveAPIClient
 
 from pipedrive.utils import compare_dicts
+from fields import TruncatingCharField
 
 PRIVATE = 0
 SHARED = 3
@@ -67,17 +68,17 @@ class BaseModel(models.Model):
 
 
 class FieldModification(BaseModel):
-    field_name = models.CharField(
+    field_name = TruncatingCharField(
         max_length=1024,
         null=True,
         blank=True,
     )
-    previous_value = models.CharField(
+    previous_value = TruncatingCharField(
         max_length=1024,
         null=True,
         blank=True,
     )
-    current_value = models.CharField(
+    current_value = TruncatingCharField(
         max_length=1024,
         null=True,
         blank=True,
@@ -418,17 +419,17 @@ class User(PipedriveModel):
     deleted = models.BooleanField(
         default=False
     )
-    name = models.CharField(
+    name = TruncatingCharField(
         max_length=500,
         null=True,
         blank=True,
     )
-    email = models.CharField(
+    email = TruncatingCharField(
         max_length=500,
         null=True,
         blank=True,
     )
-    phone = models.CharField(
+    phone = TruncatingCharField(
         max_length=500,
         null=True,
         blank=True,
@@ -500,12 +501,12 @@ class Pipeline(PipedriveModel):
     deleted = models.BooleanField(
         default=False
     )
-    name = models.CharField(
+    name = TruncatingCharField(
         max_length=500,
         null=True,
         blank=True,
     )
-    url_title = models.CharField(
+    url_title = TruncatingCharField(
         max_length=500,
         null=True,
         blank=True,
@@ -572,7 +573,7 @@ class Organization(PipedriveModel):
         null=True,
         blank=True,
     )
-    name = models.CharField(
+    name = TruncatingCharField(
         max_length=500,
         null=True,
         blank=True,
@@ -638,7 +639,7 @@ class Organization(PipedriveModel):
     email_messages_count = models.IntegerField(
         null=True
     )
-    address = models.CharField(
+    address = TruncatingCharField(
         max_length=500,
         null=True,
         blank=True,
@@ -712,17 +713,17 @@ class Person(PipedriveModel):
         null=True,
         blank=True,
     )
-    name = models.CharField(
+    name = TruncatingCharField(
         max_length=500,
         null=True,
         blank=True,
     )
-    phone = models.CharField(
+    phone = TruncatingCharField(
         max_length=500,
         null=True,
         blank=True,
     )
-    email = models.CharField(
+    email = TruncatingCharField(
         max_length=500,
         null=True,
         blank=True,
@@ -861,7 +862,7 @@ class Deal(PipedriveModel):
     """
     saves a registry of deal sent to pipedrive
     """
-    title = models.CharField(
+    title = TruncatingCharField(
         max_length=500,
         null=True,
         blank=True,
@@ -975,7 +976,7 @@ class Deal(PipedriveModel):
         null=True,
         blank=True,
     )
-    lost_reason = models.CharField(
+    lost_reason = TruncatingCharField(
         max_length=500,
         null=True,
         blank=True,
@@ -1083,13 +1084,13 @@ class BaseField(PipedriveModel):
         db_index=True,
         unique=True,
     )
-    key = models.CharField(
+    key = TruncatingCharField(
         max_length=500,
     )
-    name = models.CharField(
+    name = TruncatingCharField(
         max_length=500,
     )
-    field_type = models.CharField(
+    field_type = TruncatingCharField(
         max_length=500,
     )
     active_flag = models.NullBooleanField(
@@ -1185,12 +1186,12 @@ class Stage(PipedriveModel):
         db_index=True,
         to_field="external_id",
     )
-    pipeline_name = models.CharField(
+    pipeline_name = TruncatingCharField(
         max_length=500,
         null=True,
         blank=True,
     )
-    name = models.CharField(
+    name = TruncatingCharField(
         max_length=500,
     )
     order_nr = models.IntegerField(
@@ -1275,7 +1276,7 @@ class Note(PipedriveModel):
         blank=True,
         to_field="external_id",
     )
-    content = models.CharField(
+    content = TruncatingCharField(
         max_length=1024,
         null=True,
         blank=True,
@@ -1361,17 +1362,17 @@ class Activity(PipedriveModel):
     done = models.NullBooleanField(
         null=True
     )
-    subject = models.CharField(
+    subject = TruncatingCharField(
         max_length=500,
         null=True,
         blank=True,
     )
-    note = models.CharField(
+    note = TruncatingCharField(
         max_length=1024,
         null=True,
         blank=True,
     )
-    type = models.CharField(
+    type = TruncatingCharField(
         max_length=500,
         null=True,
         blank=True,
