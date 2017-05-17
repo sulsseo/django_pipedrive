@@ -3152,4 +3152,6 @@ class TestFields(TestCase):
 
     def test_truncating_char_field(self):
         person = Person.objects.create(name="a" * 1000)
-        self.assertEquals(len(person.name), 500)
+
+        person_refresh = Person.objects.get(id=person.id)
+        self.assertEquals(len(person_refresh.name), 500)
