@@ -3146,3 +3146,10 @@ class TestUtils(TestCase):
         self.assertFalse(compare_dicts(super_set, dic))
         self.assertFalse(compare_dicts(None, dic))
         self.assertFalse(compare_dicts(dic, None))
+
+
+class TestFields(TestCase):
+
+    def test_truncating_char_field(self):
+        person = Person.objects.create(name="a" * 1000)
+        self.assertEquals(len(person.name), 500)
