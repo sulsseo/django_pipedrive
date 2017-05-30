@@ -388,7 +388,6 @@ class PipedriveModel(BaseModel):
         if self.external_id is None:
             post_data = self.pipedrive_api_client.post_instance(**kwargs)
         else:
-            kwargs = {k: v for k, v in kwargs.iteritems() if k in self.__class__.CHANGEABLE_FIELDS}
             post_data = self.pipedrive_api_client.update(self.external_id, **kwargs)
 
         if not post_data[u'success']:
@@ -862,11 +861,6 @@ class Person(PipedriveModel):
 
 class Deal(PipedriveModel):
 
-    CHANGEABLE_FIELDS = [
-        'title', 'value', 'currency', 'user_id', 'person_id',
-        'org_id', 'stage_id', 'status', 'lost_reason', 'visible_to'
-    ]
-
     """
     saves a registry of deal sent to pipedrive
     """
@@ -1023,6 +1017,9 @@ class Deal(PipedriveModel):
             'person_id': self.person_id,
             'org_id': self.org_id,
             'user_id': self.user_id,
+            'stage_id': self.stage_id,
+            'status': self.status,
+            'lost_reason': self.lost_reason,
         }
 
         additional_fields = self.additional_fields
