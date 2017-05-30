@@ -5,6 +5,7 @@
 import pytz
 import datetime
 import json
+import logging
 
 from django.test import TestCase
 from django.test import TransactionTestCase
@@ -3155,3 +3156,22 @@ class TestFields(TestCase):
 
         person_refresh = Person.objects.get(id=person.id)
         self.assertEquals(len(person_refresh.name), 500)
+
+
+class DealTestCase(TestCase):
+
+    def setUp(self):
+        self.user_1 = User.objects.create(name="User1", email="someemail1@mailinator.com")
+        self.deal = Deal.objects.create(title="Some Deal")
+        self.user_1.upload()
+        self.deal.upload()
+        logging.debug(self.user_1.external_id)
+        logging.debug(self.deal.external_id)
+
+    def test_change_ownership(self):
+
+        self.deal.user_id = self.user_1.external_id
+        self.deal.save()
+        self.deal.upload()
+
+        self.assertEquals(self.deal.user_id, self.user_1.external_id)
