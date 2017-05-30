@@ -410,6 +410,7 @@ class PipedriveModel(BaseModel):
 
 
 class User(PipedriveModel):
+
     external_id = models.IntegerField(
         null=True,
         blank=True,
@@ -859,6 +860,7 @@ class Person(PipedriveModel):
 
 
 class Deal(PipedriveModel):
+
     """
     saves a registry of deal sent to pipedrive
     """
@@ -878,6 +880,13 @@ class Deal(PipedriveModel):
         db_index=True,
         to_field="external_id",
     )
+    stage = models.ForeignKey(
+        'Stage',
+        null=True,
+        blank=True,
+        db_index=True,
+        to_field="external_id",
+    )
     external_id = models.IntegerField(
         null=True,
         blank=True,
@@ -888,6 +897,11 @@ class Deal(PipedriveModel):
         default=False
     )
     last_updated_at = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+    status = TruncatingCharField(
+        max_length=500,
         null=True,
         blank=True,
     )
@@ -1014,6 +1028,10 @@ class Deal(PipedriveModel):
             'visible_to': self.visible_to,
             'person_id': self.person_id,
             'org_id': self.org_id,
+            'user_id': self.user_id,
+            'stage_id': self.stage_id,
+            'status': self.status,
+            'lost_reason': self.lost_reason,
         }
 
         additional_fields = self.additional_fields

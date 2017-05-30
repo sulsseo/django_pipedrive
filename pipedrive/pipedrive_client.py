@@ -75,7 +75,7 @@ class PipedriveAPIClient(object):
 
         endpoint = str(self.endpoint) + '/' + str(element_id)
 
-        restpoint = self.post_put_restify(endpoint)
+        restpoint = self.restify(endpoint)
 
         content = self.put(restpoint, kwargs)
 
@@ -105,7 +105,7 @@ class PipedriveAPIClient(object):
         """
         Add an instance to Pipedrive
         """
-        restpoint = self.post_put_restify(self.endpoint)
+        restpoint = self.restify(self.endpoint)
 
         content = self.post(restpoint, kwargs)
 
@@ -125,7 +125,7 @@ class PipedriveAPIClient(object):
 
         return restful
 
-    def post_put_restify(self, endpoint):
+    def restify(self, endpoint):
         """
         Creates and retuns a valid Pipedrive url for
         post method
@@ -138,3 +138,13 @@ class PipedriveAPIClient(object):
         )
 
         return restful
+
+    def delete_instance(self, element_id):
+
+        endpoint = str(self.endpoint) + '/' + str(element_id)
+
+        restpoint = self.restify(endpoint)
+
+        content = self.delete(restpoint)
+
+        return content
