@@ -880,6 +880,13 @@ class Deal(PipedriveModel):
         db_index=True,
         to_field="external_id",
     )
+    stage = models.ForeignKey(
+        'Stage',
+        null=True,
+        blank=True,
+        db_index=True,
+        to_field="external_id",
+    )
     external_id = models.IntegerField(
         null=True,
         blank=True,
@@ -890,6 +897,11 @@ class Deal(PipedriveModel):
         default=False
     )
     last_updated_at = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+    status = TruncatingCharField(
+        max_length=500,
         null=True,
         blank=True,
     )
