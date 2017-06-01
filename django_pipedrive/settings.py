@@ -43,7 +43,8 @@ INSTALLED_APPS = (
     'django_extensions',
     'django.contrib.postgres',
     'django_nose',
-    'pipedrive'
+    'pipedrive',
+    'test_app',
 )
 
 MIDDLEWARE_CLASSES = (
