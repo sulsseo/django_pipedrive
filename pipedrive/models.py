@@ -272,10 +272,10 @@ class PipedriveModel(BaseModel):
             if key not in table_fields:
                 additional_fields[key] = unicode(el[key])
 
-        entity, _ = cls.update_or_create_entity_with_additional_fields(el, additional_fields)
+        entity, created = cls.update_or_create_entity_with_additional_fields(el, additional_fields)
         # Force save for signals
         entity.save()
-        return entity
+        return entity, created
 
     @classmethod
     def fetch_from_pipedrive(cls):
@@ -1146,7 +1146,7 @@ class BaseField(PipedriveModel):
 
     @classmethod
     def update_or_create_entity_from_api_post(cls, el):
-        obj = cls.objects.update_or_create(
+        obj, created = cls.objects.update_or_create(
             external_id=el[u'id'],
             defaults={
                 'name': el[u'name'],
@@ -1158,7 +1158,7 @@ class BaseField(PipedriveModel):
             }
         )
         obj.save()
-        return obj
+        return obj, created
 
 
 class OrganizationField(BaseField):
