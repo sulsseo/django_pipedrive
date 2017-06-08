@@ -2373,7 +2373,21 @@ class TestPipedriveCreation(TestCase):
 
 class TestCreateSyncAndUpload(TestCase):
 
-    def case_create_sync_and_upload_instance(self, cls, field_name, defaults={}):
+    def setUp(self):
+        self.user_1 = User.objects.create(name="user_1", email="myemail1@mailinator.com")
+        self.user_2 = User.objects.create(name="user_2", email="myemail2@mailinator.com")
+        self.user_1.upload()
+        self.user_2.upload()
+        self.org_1 = Organization.objects.create(name="org_1")
+        self.org_2 = Organization.objects.create(name="org_2")
+        self.org_1.upload()
+        self.org_2.upload()
+        logging.info(u'user_1: {}'.format(self.user_1.external_id))
+        logging.info(u'user_2: {}'.format(self.user_2.external_id))
+        logging.info(u'org_1: {}'.format(self.org_1.external_id))
+        logging.info(u'org_2: {}'.format(self.org_2.external_id))
+
+    def case_create_sync_and_upload_instance(self, cls, pre_fields, pos_fields):
         """
         The test case creates a local instance, then it uploads it.
         After, it retrieves the instance from the API to change @field_name
@@ -2381,47 +2395,125 @@ class TestCreateSyncAndUpload(TestCase):
         Finally the instance is retreived again to check that attributes were
         changed accordingly.
         """
-        kwargs = {}
-        kwargs[field_name] = "TEST_FIELD_1"
-        kwargs.update(defaults)
 
-        instance = cls.objects.create(**kwargs)
+        instance = cls.objects.create(**pre_fields)
+
+        # Check that all values are saved locally
+        for field in pre_fields.iterkeys():
+            value = getattr(instance, field)
+            self.assertEquals(
+                pre_fields[field],
+                value,
+                u"Field {} was not saved locally as {}, but as {}".format(field, pre_fields[field], value))
 
         result = instance.upload()
 
         self.assertTrue(result)
         self.assertIsNotNone(instance.external_id)
-        self.assertEquals(getattr(instance, field_name), "TEST_FIELD_1")
+
+        # Check that all values are saved as intended
+        for field in pre_fields.iterkeys():
+            value = getattr(instance, field)
+            self.assertEquals(
+                pre_fields[field],
+                value,
+                u"Field {} was changed by upload() from {} to {}".format(field, pre_fields[field], value))
 
         external_id = instance.external_id
 
+        # Remove local instance
+        instance.delete()
+
+        # Request the instance again
         instance, created = cls.sync_one(external_id)
 
-        self.assertEquals(getattr(instance, field_name), "TEST_FIELD_1")
+        # Check that all values are saved as intended
+        for field in pre_fields.iterkeys():
+            value = getattr(instance, field)
+            self.assertEquals(
+                pre_fields[field],
+                value,
+                u"Field {} was expected to be {} instead of {} after first sync".format(field, pre_fields[field], value))
 
-        setattr(instance, field_name, "TEST_FIELD_2")
-        for key in defaults.iterkeys():
-            setattr(instance, key, defaults[key])
+        # Modify values
+
+        for field in pos_fields.iterkeys():
+            setattr(instance, field, pos_fields[field])
 
         result = instance.upload()
 
         self.assertTrue(result)
+        self.assertIsNotNone(instance.external_id)
 
+        # Remove local instance
+        instance.delete()
+
+        # Request the instance again
         instance, created = cls.sync_one(external_id)
 
-        self.assertEquals(getattr(instance, field_name), "TEST_FIELD_2")
+        # Check that all values are saved as intended
+        for field in pos_fields.iterkeys():
+            value = getattr(instance, field)
+            self.assertEquals(
+                pos_fields[field],
+                value,
+                u"Field {} was expected to be {} instead of {} after second sync".format(field, pre_fields[field], value))
+
+        return instance
 
     def test_case_create_sync_and_upload_organization(self):
 
-        self.case_create_sync_and_upload_instance(Organization, 'name')
+        pre_kwars = {
+            'name': "NAME_1",
+            'owner_id': self.user_1.external_id,
+            'visible_to': u'1',
+        }
+
+        pos_kwars = {
+            'name': "NAME_2",
+            'owner_id': self.user_2.external_id,
+            'visible_to': u'3',
+        }
+
+        self.case_create_sync_and_upload_instance(Organization, pre_kwars, pos_kwars)
 
     def test_case_create_sync_and_upload_person(self):
 
-        self.case_create_sync_and_upload_instance(Person, 'name')
+        pre_kwars = {
+            'name': "NAME_1",
+            'owner_id': self.user_1.external_id,
+            'org_id': self.org_1.external_id,
+            'email': "mail_1@example.com",
+            'phone': "11111111",
+            'visible_to': u'1',
+        }
+
+        pos_kwars = {
+            'name': "NAME_2",
+            'owner_id': self.user_2.external_id,
+            'org_id': self.org_2.external_id,
+            'email': "mail_2@example.com",
+            'phone': "22222222",
+            'visible_to': u'3',
+        }
+
+        self.case_create_sync_and_upload_instance(Person, pre_kwars, pos_kwars)
 
     def test_case_create_sync_and_upload_pipeline(self):
 
-        self.case_create_sync_and_upload_instance(Pipeline, 'name')
+        pre_kwars = {
+            'name': "NAME_1",
+            'order_nr': u'0',
+            'active': u'1',
+        }
+
+        pos_kwars = {
+            'name': "NAME_2",
+            'order_nr': u'1',
+            'active': u'0',
+        }
+
+        self.case_create_sync_and_upload_instance(Pipeline, pre_kwars, pos_kwars)
 
     def test_case_create_sync_and_upload_organization_field(self):
 
@@ -2439,6 +2531,19 @@ class TestCreateSyncAndUpload(TestCase):
     def test_case_create_sync_and_upload_activity(self):
 
         self.case_create_sync_and_upload_instance(Activity, 'subject')
+
+    def test_case_create_sync_and_upload_note(self):
+
+        pre_kwars = {
+            'content': "TEXT1",
+        }
+
+        pos_kwars = {
+            'content': "TEXT2",
+        }
+
+        note = self.case_create_sync_and_upload_instance(Note, pre_kwars, pos_kwars)
+        self.assertTrue(note.active_flag)
 
 
 class TestPipedriveCreationWithAdditionalFields(TestCase):

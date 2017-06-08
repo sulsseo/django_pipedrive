@@ -510,6 +510,10 @@ class Pipeline(PipedriveModel):
         null=True,
         blank=True,
     )
+    order_nr = models.IntegerField(
+        null=True,
+        blank=True,
+    )
     url_title = TruncatingCharField(
         max_length=500,
         null=True,
@@ -535,6 +539,7 @@ class Pipeline(PipedriveModel):
             'id': self.external_id,
             'name': self.name,
             'url_title': self.url_title,
+            'order_nr': self.order_nr,
             'active': self.active,
             'add_time': self.add_time,
             'update_time': self.update_time,
@@ -552,9 +557,9 @@ class Pipeline(PipedriveModel):
                 'name': el[u'name'],
                 'url_title': el[u'url_title'],
                 'active': el[u'active'],
+                'order_nr': el[u'order_nr'],
                 'add_time': cls.datetime_from_simple_time(el, u'add_time'),
                 'update_time': cls.datetime_from_simple_time(el, u'update_time'),
-                'active': el[u'active'],
                 'additional_fields': additional_fields,
             }
         )
@@ -658,6 +663,7 @@ class Organization(PipedriveModel):
             'name': self.name,
             'visible_to': self.visible_to,
             'address': self.address,
+            'owner_id': self.owner_id,
         }
 
         additional_fields = self.additional_fields
@@ -815,6 +821,8 @@ class Person(PipedriveModel):
             'phone': self.phone,
             'email': self.email,
             'org_id': self.org_id,
+            'owner_id': self.owner_id,
+            'visible_to': self.visible_to,
         }
 
         additional_fields = self.additional_fields
