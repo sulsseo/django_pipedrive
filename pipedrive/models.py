@@ -5,6 +5,7 @@ import datetime
 import pytz
 import logging
 import copy
+import re
 from collections import defaultdict
 
 # django
@@ -1159,6 +1160,9 @@ class BaseField(PipedriveModel):
         )
         obj.save()
         return obj, created
+
+    def is_custom_field(self):
+        return re.match('([a-f0-9]{40}_currency)|([a-f0-9]{40})', self.key) is not None
 
 
 class OrganizationField(BaseField):

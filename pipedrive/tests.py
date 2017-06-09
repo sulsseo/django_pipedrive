@@ -3158,6 +3158,36 @@ class TestFields(TestCase):
         self.assertEquals(len(person_refresh.name), 500)
 
 
+class TestBaseField(TestCase):
+
+    def setUp(self):
+        self.regular_kwargs = {
+            'key': "title",
+            'name': "Título",
+            'field_type': "varchar",
+        }
+        self.custom_kwargs = {
+            'key': "b8799234117d9a7233bbef58a469b759345cc87c_currency",
+            'name': "comision_boletas",
+            'field_type': "varchar"
+        }
+
+    def is_custom_field_cls(self, cls):
+        self.field_regular = cls.objects.create(**self.regular_kwargs)
+        self.field_custom = cls.objects.create(**self.custom_kwargs)
+        self.assertFalse(self.field_regular.is_custom_field())
+        self.assertTrue(self.field_custom.is_custom_field())
+
+    def test_is_custom_organization_field(self):
+        self.is_custom_field_cls(OrganizationField)
+
+    def test_is_custom_person_field(self):
+        self.is_custom_field_cls(PersonField)
+
+    def test_is_custom_deal_field(self):
+        self.is_custom_field_cls(DealField)
+
+
 class DealTestCase(TestCase):
 
     def setUp(self):
