@@ -2374,12 +2374,13 @@ class TestPipedriveCreation(TestCase):
 class TestCreateSyncAndUpload(TestCase):
 
     def setUp(self):
-        self.user_1 = User.objects.create(name="user_1", email="myemail1@mailinator.com")
-        self.user_2 = User.objects.create(name="user_2", email="myemail2@mailinator.com")
+        User.fetch_from_pipedrive()
+        self.user_1, _ = User.objects.get_or_create(name="user_1", email="myemail1@mailinator.com")
+        self.user_2, _ = User.objects.get_or_create(name="user_2", email="myemail2@mailinator.com")
         self.user_1.upload()
         self.user_2.upload()
-        self.org_1 = Organization.objects.create(name="org_1")
-        self.org_2 = Organization.objects.create(name="org_2")
+        self.org_1, _ = Organization.objects.get_or_create(name="org_1")
+        self.org_2, _ = Organization.objects.get_or_create(name="org_2")
         self.org_1.upload()
         self.org_2.upload()
         logging.info(u'user_1: {}'.format(self.user_1.external_id))
@@ -2440,6 +2441,7 @@ class TestCreateSyncAndUpload(TestCase):
         for field in pos_fields.iterkeys():
             setattr(instance, field, pos_fields[field])
 
+        instance.save()
         result = instance.upload()
 
         self.assertTrue(result)
@@ -2457,7 +2459,7 @@ class TestCreateSyncAndUpload(TestCase):
             self.assertEquals(
                 pos_fields[field],
                 value,
-                u"Field {} was expected to be {} instead of {} after second sync".format(field, pre_fields[field], value))
+                u"Field {} was expected to be {} instead of {} after second sync".format(field, pos_fields[field], value))
 
         return instance
 
@@ -2503,47 +2505,86 @@ class TestCreateSyncAndUpload(TestCase):
 
         pre_kwars = {
             'name': "NAME_1",
-            'order_nr': u'0',
-            'active': u'1',
+            # 'order_nr': 1,
+            # 'active': True,
         }
 
         pos_kwars = {
             'name': "NAME_2",
-            'order_nr': u'1',
-            'active': u'0',
+            # 'order_nr': 2,
+            # 'active': False,
         }
 
         self.case_create_sync_and_upload_instance(Pipeline, pre_kwars, pos_kwars)
 
     def test_case_create_sync_and_upload_organization_field(self):
 
+        pre_kwars = {
+            'name': "NAME_1",
+            'field_type': u'varchar',
+        }
+
+        pos_kwars = {
+            'name': "NAME_2",
+        }
+
         self.case_create_sync_and_upload_instance(
-            OrganizationField, 'name', {'field_type': 'text'})
+            OrganizationField, pre_kwars, pos_kwars)
 
-    def test_case_create_sync_and_upload_deal_deal(self):
+    def test_case_create_sync_and_upload_deal_field(self):
 
-        self.case_create_sync_and_upload_instance(DealField, 'name', {'field_type': 'text'})
+        pre_kwars = {
+            'name': "NAME_1",
+            'field_type': u'varchar',
+        }
+
+        pos_kwars = {
+            'name': "NAME_2",
+        }
+
+        self.case_create_sync_and_upload_instance(DealField, pre_kwars, pos_kwars)
 
     def test_case_create_sync_and_upload_person_field(self):
 
-        self.case_create_sync_and_upload_instance(PersonField, 'name', {'field_type': 'text'})
+        pre_kwars = {
+            'name': "NAME_1",
+            'field_type': u'varchar',
+        }
+
+        pos_kwars = {
+            'name': "NAME_2",
+        }
+
+        self.case_create_sync_and_upload_instance(PersonField, pre_kwars, pos_kwars)
 
     def test_case_create_sync_and_upload_activity(self):
 
-        self.case_create_sync_and_upload_instance(Activity, 'subject')
+        pre_kwars = {
+            'subject': "NAME_1",
+            'type': u'call',
+            'done': False,
+        }
+
+        pos_kwars = {
+            'subject': "NAME_2",
+            'done': True,
+        }
+
+        self.case_create_sync_and_upload_instance(Activity, pre_kwars, pos_kwars)
 
     def test_case_create_sync_and_upload_note(self):
 
         pre_kwars = {
             'content': "TEXT1",
+            'org_id': self.org_1.external_id,
         }
 
         pos_kwars = {
             'content': "TEXT2",
+            'org_id': self.org_2.external_id,
         }
 
-        note = self.case_create_sync_and_upload_instance(Note, pre_kwars, pos_kwars)
-        self.assertTrue(note.active_flag)
+        self.case_create_sync_and_upload_instance(Note, pre_kwars, pos_kwars)
 
 
 class TestPipedriveCreationWithAdditionalFields(TestCase):
