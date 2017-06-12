@@ -1068,7 +1068,7 @@ class Deal(PipedriveModel):
                 'org_id': cls.get_id(el, u'org_id'),
                 'pipeline_id': el[u'pipeline_id'],
                 'person_id': cls.get_id(el, 'person_id'),
-                'external_stage_id': el[u'stage_id'],
+                'stage_id': el[u'stage_id'],
                 'add_time': cls.datetime_from_simple_time(el, u'add_time'),
                 'update_time': cls.datetime_from_simple_time(el, u'update_time'),
                 'stage_change_time': cls.datetime_from_simple_time(el, u'stage_change_time'),

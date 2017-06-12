@@ -2375,6 +2375,7 @@ class TestCreateSyncAndUpload(TestCase):
 
     def setUp(self):
         User.fetch_from_pipedrive()
+        Pipeline.fetch_from_pipedrive()
         self.user_1, _ = User.objects.get_or_create(name="user_1", email="myemail1@mailinator.com")
         self.user_2, _ = User.objects.get_or_create(name="user_2", email="myemail2@mailinator.com")
         self.user_1.upload()
@@ -2500,6 +2501,27 @@ class TestCreateSyncAndUpload(TestCase):
         }
 
         self.case_create_sync_and_upload_instance(Person, pre_kwars, pos_kwars)
+
+    def test_case_create_sync_and_upload_deal(self):
+
+        pre_kwars = {
+            'title': "NAME_1",
+            'user_id': self.user_1.external_id,
+            'org_id': self.org_1.external_id,
+            'value': 100,
+            'stage_id': 1,
+            'visible_to': u'1',
+        }
+
+        pos_kwars = {
+            'title': "NAME_2",
+            'user_id': self.user_2.external_id,
+            'org_id': self.org_2.external_id,
+            'value': 200,
+            'visible_to': u'3',
+        }
+
+        self.case_create_sync_and_upload_instance(Deal, pre_kwars, pos_kwars)
 
     def test_case_create_sync_and_upload_pipeline(self):
 
