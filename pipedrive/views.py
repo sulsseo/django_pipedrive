@@ -25,13 +25,7 @@ class NonImplementedVersionException(Exception):
 @csrf_exempt
 def index(request):
 
-    # HACK to use hstore in commands
-    # source: https://github.com/djangonauts/django-hstore/issues/141
-
-    from django.db import connection
-    from psycopg2.extras import register_hstore
-    # And then in `def handle`
-    register_hstore(connection.cursor(), globally=True, unicode=True)
+    enable_hstore()
 
     try:
         if request.method == 'POST':
@@ -51,6 +45,17 @@ def index(request):
         PipedriveModel.sync_from_pipedrive()
 
     return HttpResponse("Hello, world!")
+
+
+def enable_hstore():
+
+    # HACK to use hstore in commands
+    # source: https://github.com/djangonauts/django-hstore/issues/141
+
+    from django.db import connection
+    from psycopg2.extras import register_hstore
+    # And then in `def handle`
+    register_hstore(connection.cursor(), globally=True, unicode=True)
 
 
 def handle_v1(json_data):
