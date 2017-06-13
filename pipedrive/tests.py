@@ -524,7 +524,15 @@ class TestPipedriveWebhooks(TestCase):
                 {
                     "id": 999,
                     "creator_user_id": 2428657,
-                    "user_id": 2428657,
+                    "user_id": {
+                        "id": 2428657,
+                        "name": "SOME USER",
+                        "email": "user@example.com",
+                        "has_pic": False,
+                        "pic_hash": None,
+                        "active_flag": True,
+                        "value": 1656137
+                    },
                     "person_id": None,
                     "org_id": None,
                     "stage_id": 1,
