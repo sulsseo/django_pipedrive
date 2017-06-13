@@ -524,7 +524,15 @@ class TestPipedriveWebhooks(TestCase):
                 {
                     "id": 999,
                     "creator_user_id": 2428657,
-                    "user_id": 2428657,
+                    "user_id": {
+                        "id": 2428657,
+                        "name": "SOME USER",
+                        "email": "user@example.com",
+                        "has_pic": False,
+                        "pic_hash": None,
+                        "active_flag": True,
+                        "value": 1656137
+                    },
                     "person_id": None,
                     "org_id": None,
                     "stage_id": 1,
@@ -2193,6 +2201,11 @@ class TestPipedriveWebhooks(TestCase):
 
 class TestPipedriveCreation(TestCase):
 
+    def setUp(self):
+        Pipeline.fetch_from_pipedrive()
+
+        self.pipeline = Pipeline.objects.first()
+
     def test_create_organization(self):
 
         organization = Organization.objects.create(name="TEST_ORGANIZATION")
@@ -2225,7 +2238,10 @@ class TestPipedriveCreation(TestCase):
 
     def test_create_deal(self):
 
-        deal = Deal.objects.create(title="TEST_DEAL")
+        deal = Deal.objects.create(
+            title="TEST_DEAL",
+            pipeline_id=self.pipeline.external_id,
+        )
 
         result = deal.upload()
 
@@ -2239,6 +2255,7 @@ class TestPipedriveCreation(TestCase):
         deal = Deal.objects.create(
             title="TEST_DEAL",
             person_id=person.external_id,
+            pipeline_id=self.pipeline.external_id,
         )
 
         result = deal.upload()
@@ -2443,6 +2460,11 @@ class TestCreateSyncAndUpload(TestCase):
 
 class TestPipedriveCreationWithAdditionalFields(TestCase):
 
+    def setUp(self):
+        Pipeline.fetch_from_pipedrive()
+
+        self.pipeline = Pipeline.objects.first()
+
     def test_create_organization_with_additional_fields(self):
 
         organization_field = OrganizationField.objects.create(
@@ -2527,6 +2549,7 @@ class TestPipedriveCreationWithAdditionalFields(TestCase):
 
         deal_kwargs = {}
         deal_kwargs['title'] = "TEST_DEAL"
+        deal_kwargs['pipeline_id'] = self.pipeline.external_id
         additional_fields = {}
         additional_fields[deal_field.key] = "TEST_TEXT"
         deal_kwargs['additional_fields'] = additional_fields

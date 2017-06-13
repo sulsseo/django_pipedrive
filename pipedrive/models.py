@@ -1027,7 +1027,7 @@ class Deal(PipedriveModel):
             'id': self.external_id,
             'title': self.title,
             'value': self.value,
-            'pipeline': self.pipeline,
+            'pipeline_id': self.pipeline_id,
             'visible_to': self.visible_to,
             'person_id': self.person_id,
             'org_id': self.org_id,
