@@ -15,6 +15,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericRelation
 
+
 # postgres
 from django.contrib.postgres.fields import HStoreField
 
@@ -110,7 +111,7 @@ class FieldModification(BaseModel):
         in_current_not_previous = set([k for k in curr if k not in prev])
 
         diffkeys = diffkeys.union(in_previous_not_current).union(in_current_not_previous)
-        current_datetime = datetime.datetime.now()
+        current_datetime = timezone.now()
 
         for key in diffkeys:
             FieldModification.objects.create(
