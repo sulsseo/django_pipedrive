@@ -2553,7 +2553,7 @@ class TestPipedriveCreationWithAdditionalFields(TestCase):
         additional_fields = {}
         additional_fields[deal_field.key] = "TEST_TEXT"
         deal_kwargs['additional_fields'] = additional_fields
-        logging.info(deal_kwargs)
+
         deal = Deal.objects.create(**deal_kwargs)
 
         result = deal.upload()
