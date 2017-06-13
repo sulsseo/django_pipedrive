@@ -25,6 +25,14 @@ class NonImplementedVersionException(Exception):
 @csrf_exempt
 def index(request):
 
+    # HACK to use hstore in commands
+    # source: https://github.com/djangonauts/django-hstore/issues/141
+
+    from django.db import connection
+    from psycopg2.extras import register_hstore
+    # And then in `def handle`
+    register_hstore(connection.cursor(), globally=True, unicode=True)
+
     try:
         if request.method == 'POST':
 
