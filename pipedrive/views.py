@@ -3,7 +3,6 @@ import logging
 
 from django.views.decorators.csrf import csrf_exempt
 from django.db import IntegrityError
-
 from django.http import HttpResponse
 
 from pipedrive.models import Deal
@@ -68,7 +67,7 @@ def handle_v1(json_data):
 
     model = map_models(object_type)
 
-    previous = json_data[u'previous']
+    # previous = json_data[u'previous']
     current = json_data[u'current']
 
     try:
@@ -76,8 +75,6 @@ def handle_v1(json_data):
         if action == 'updated':
 
             instance = model.objects.get(external_id=external_id)
-
-            FieldModification.create_modifications(instance, previous, current)
 
             model.update_or_create_entity_from_api_post(current)
 
@@ -89,12 +86,6 @@ def handle_v1(json_data):
 
             # The corresponding instance is found for delete
             instance = model.objects.get(external_id=external_id)
-
-            FieldModification.create_modifications(
-                instance,
-                {'deleted': instance.deleted},
-                {'deleted': True}
-            )
 
             # The instance is not actually deleted, but marked as deleted
             instance.deleted = True
