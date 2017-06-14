@@ -137,7 +137,7 @@ class TestPipedriveWebhooks(TestCase):
 
         self.assertEquals(activity.marked_as_done_time, expected)
 
-    def test_activity_marked_as_done_field_modification(self):
+    # def test_activity_marked_as_done_field_modification(self):
 
         # c = Client()
 
