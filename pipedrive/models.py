@@ -1245,7 +1245,7 @@ class BaseField(PipedriveModel):
             }
         )
 
-        if options:
+        if options and obj.field_type == 'enum':
             obj.enums.all().delete()
             for option in el.get('options'):
                 logging.info(option['id'])
