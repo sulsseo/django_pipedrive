@@ -5,6 +5,7 @@ import datetime
 import pytz
 import logging
 import copy
+import re
 from collections import defaultdict
 
 # django
@@ -37,6 +38,13 @@ class UnableToSyncException(Exception):
     def __init__(self, model, external_id):
         self.external_id = external_id
         self.model = model
+
+
+class SameErrorTwiceSyncException(Exception):
+    def __init__(self, model, external_id, message):
+        self.external_id = external_id
+        self.model = model
+        self.message = message
 
 
 class BaseModel(models.Model):
@@ -208,15 +216,43 @@ class PipedriveModel(BaseModel):
         return None
 
     @classmethod
-    def sync_one(cls, external_id):
+    def sync_one(cls, external_id, last_error=None):
         post_data = cls.pipedrive_api_client.get_instance(external_id)
 
         # Error code from the API
         if not post_data[u'success']:
             logging.error(post_data)
             raise UnableToSyncException(cls, external_id)
+        try:
+            return cls.update_or_create_entity_from_api_post(post_data[u'data'])
+        except IntegrityError as e:
+            logging.warning(e)
+            if e.message == last_error:
+                raise SameErrorTwiceSyncException(cls, external_id, e.message)
+            match = re.search('.*Key \((.*)\)=\((.*)\).*', e.message)
+            if match:
+                field_name = match.group(1)
+                field_id = match.group(2)
+                model = cls.field_model_map(field_name)
+                model.sync_one(field_id)
+                return cls.sync_one(external_id, e.message)
+            else:
+                raise Exception("Could not handle error message")
 
-        return cls.update_or_create_entity_from_api_post(post_data[u'data'])
+    @classmethod
+    def field_model_map(cls, field_name):
+        mapping = {
+            'creator_user_id': User,
+            'user_id': User,
+            'org_id': Organization,
+            'pipeline_id': Pipeline,
+            'person_id': Person,
+            'deal_id': Deal,
+            'stage_id': Stage,
+            'activity_id': Activity,
+            'note_id': Note,
+        }
+        return mapping.get(field_name)
 
     @classmethod
     def get_table_fields(cls):
