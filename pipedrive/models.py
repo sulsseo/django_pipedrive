@@ -1248,7 +1248,6 @@ class BaseField(PipedriveModel):
         if options and obj.field_type == 'enum':
             obj.enums.all().delete()
             for option in el.get('options'):
-                logging.info(option['id'])
                 EnumField.objects.create(
                     external_id=option['id'],
                     label=option['label'],
