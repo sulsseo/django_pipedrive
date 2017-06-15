@@ -1119,6 +1119,7 @@ class Deal(PipedriveModel):
                 'user_id': cls.get_id(el, 'user_id'),
                 'value': el[u'value'],
                 'org_id': cls.get_id(el, u'org_id'),
+                'stage_id': cls.get_id(el, u'stage_id'),
                 'pipeline_id': el[u'pipeline_id'],
                 'person_id': cls.get_id(el, 'person_id'),
                 'external_stage_id': el[u'stage_id'],
