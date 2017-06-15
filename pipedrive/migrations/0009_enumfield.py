@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
             name='EnumField',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('external_id', models.IntegerField(db_index=True, unique=True, null=True, blank=True)),
+                ('external_id', models.IntegerField(db_index=True, null=True, blank=True)),
                 ('label', pipedrive.fields.TruncatingCharField(max_length=500)),
                 ('object_id', models.PositiveIntegerField()),
                 ('content_type', models.ForeignKey(to='contenttypes.ContentType')),

@@ -1160,7 +1160,6 @@ class EnumField(models.Model):
     external_id = models.IntegerField(
         null=True,
         blank=True,
-        unique=True,
         db_index=True,
     )
 
