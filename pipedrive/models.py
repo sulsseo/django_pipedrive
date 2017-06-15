@@ -1232,7 +1232,7 @@ class BaseField(PipedriveModel):
     @classmethod
     def update_or_create_entity_from_api_post(cls, el):
 
-        logging.info(el.get('options'))
+        options = el.get('options')
 
         obj, created = cls.objects.update_or_create(
             external_id=el[u'id'],
@@ -1245,14 +1245,16 @@ class BaseField(PipedriveModel):
                 'edit_flag': el[u'edit_flag'],
             }
         )
-        obj.enums.all().delete()
-        for option in el.get('options'):
-            logging.info(option['id'])
-            EnumField.objects.create(
-                external_id=option['id'],
-                label=option['label'],
-                content_object=obj,
-            )
+
+        if options:
+            obj.enums.all().delete()
+            for option in el.get('options'):
+                logging.info(option['id'])
+                EnumField.objects.create(
+                    external_id=option['id'],
+                    label=option['label'],
+                    content_object=obj,
+                )
 
         obj.save()
         return obj, created
