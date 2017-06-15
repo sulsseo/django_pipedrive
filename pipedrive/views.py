@@ -13,7 +13,6 @@ from pipedrive.models import Activity
 from pipedrive.models import Pipeline
 from pipedrive.models import Stage
 from pipedrive.models import PipedriveModel
-from pipedrive.models import FieldModification
 
 
 class NonImplementedVersionException(Exception):
@@ -97,28 +96,27 @@ def handle_v1(json_data):
             instance = model.objects.get(external_id=external_id)
 
     except Activity.DoesNotExist as e:
-        handle_does_not_exist(e, external_id, json_data)
+        handle_does_not_exist(e, Activity, external_id, json_data)
     except Deal.DoesNotExist as e:
-        handle_does_not_exist(e, external_id, json_data)
+        handle_does_not_exist(e, Deal, external_id, json_data)
     except Person.DoesNotExist as e:
-        handle_does_not_exist(e, external_id, json_data)
+        handle_does_not_exist(e, Person, external_id, json_data)
     except Organization.DoesNotExist as e:
-        handle_does_not_exist(e, external_id, json_data)
+        handle_does_not_exist(e, Organization, external_id, json_data)
     except Note.DoesNotExist as e:
-        handle_does_not_exist(e, external_id, json_data)
+        handle_does_not_exist(e, Note, external_id, json_data)
     except Pipeline.DoesNotExist as e:
-        handle_does_not_exist(e, external_id, json_data)
+        handle_does_not_exist(e, Pipeline, external_id, json_data)
     except Stage.DoesNotExist as e:
-        handle_does_not_exist(e, external_id, json_data)
+        handle_does_not_exist(e, Stage, external_id, json_data)
 
     return HttpResponse("OK!")
 
 
-def handle_does_not_exist(e, external_id, json_data):
+def handle_does_not_exist(e, model, external_id, json_data):
     logging.warning(e.message)
-    logging.warning("Forcing full sync from pipedrive")
-    PipedriveModel.sync_from_pipedrive()
-    handle_v1(json_data)
+    logging.warning("Forcing sync from pipedrive for model: '{}'' external_id: '{}'".format(model.__name__, external_id))
+    model.sync_one(external_id)
 
 
 def map_models(object_type):

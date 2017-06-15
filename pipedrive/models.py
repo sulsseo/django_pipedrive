@@ -213,7 +213,7 @@ class PipedriveModel(BaseModel):
 
         # Error code from the API
         if not post_data[u'success']:
-            logging.error(post_data[u'error'])
+            logging.error(post_data)
             raise UnableToSyncException(cls, external_id)
 
         return cls.update_or_create_entity_from_api_post(post_data[u'data'])
@@ -229,7 +229,13 @@ class PipedriveModel(BaseModel):
         return table_fields
 
     @classmethod
-    def handle_dependencies(cls, el, e):
+    def handle_dependencies(cls, el):
+        """
+        For every possible dependency, check if it appears locally
+        and sync_one only if necessary. The goal is to minimize
+        api calls.
+        """
+
         creator_user_id = cls.get_id(el, u'creator_user_id')
         user_id = cls.get_id(el, u'user_id')
         person_id = cls.get_id(el, u'person_id')
@@ -241,23 +247,41 @@ class PipedriveModel(BaseModel):
         note_id = cls.get_id(el, u'note_id')
 
         if creator_user_id:
-            User.sync_one(creator_user_id)
+            creator_user = User.objects.filter(external_id=creator_user_id).first()
+            if not creator_user:
+                User.sync_one(creator_user_id)
         if user_id:
-            User.sync_one(user_id)
+            user = User.objects.filter(external_id=user_id).first()
+            if not user:
+                User.sync_one(user_id)
         if org_id:
-            Organization.sync_one(org_id)
+            org = Organization.objects.filter(external_id=org_id).first()
+            if not org:
+                Organization.sync_one(org_id)
         if pipeline_id:
-            Pipeline.sync_one(pipeline_id)
+            pipeline = Pipeline.objects.filter(external_id=pipeline_id).first()
+            if not pipeline:
+                Pipeline.sync_one(pipeline_id)
         if stage_id:
-            Stage.sync_one(stage_id)
+            stage = Stage.objects.filter(external_id=stage_id).first()
+            if stage:
+                Stage.sync_one(stage_id)
         if person_id:
-            Person.sync_one(person_id)
+            person = Person.objects.filter(external_id=person_id).first()
+            if not person:
+                Person.sync_one(person_id)
         if deal_id:
-            Deal.sync_one(deal_id)
+            deal = Deal.objects.filter(external_id=deal_id).first()
+            if not deal:
+                Deal.sync_one(deal_id)
         if activity_id:
-            Activity.sync_one(activity_id)
+            activity = Activity.objects.filter(external_id=activity_id).first()
+            if not activity:
+                Activity.sync_one(activity_id)
         if note_id:
-            Note.sync_one(note_id)
+            note = Note.objects.filter(external_id=note_id).first()
+            if not note:
+                Note.sync_one(note_id)
 
     @classmethod
     def update_or_create_entity_from_api_post(cls, el):
@@ -305,7 +329,7 @@ class PipedriveModel(BaseModel):
 
             # Error code from the API
             if not post_data['success']:
-                logging.error(post_data[u'error'])
+                logging.error(post_data)
                 return False
 
             # No data available
@@ -326,7 +350,7 @@ class PipedriveModel(BaseModel):
 
                 except IntegrityError as e:
                     logging.warning(e)
-                    cls.handle_dependencies(el, e)
+                    cls.handle_dependencies(el)
 
                     # try again to update or create a local Entity
                     entity, created = cls.update_or_create_entity_from_api_post(el)
