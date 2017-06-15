@@ -1155,6 +1155,27 @@ class Deal(PipedriveModel):
             return default_value
 
 
+class EnumField(models.Model):
+
+    external_id = models.IntegerField(
+        null=True,
+        blank=True,
+        unique=True,
+        db_index=True,
+    )
+
+    label = TruncatingCharField(
+        max_length=500,
+    )
+
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+    def __unicode__(self):
+        return u'{} - {}'.format(self.external_id, self.label)
+
+
 class BaseField(PipedriveModel):
     """
     Stores a single field entry.
@@ -1192,6 +1213,8 @@ class BaseField(PipedriveModel):
         default=timezone.now,
     )
 
+    enums = GenericRelation(EnumField)
+
     class Meta:
         abstract = True
 
@@ -1208,6 +1231,9 @@ class BaseField(PipedriveModel):
 
     @classmethod
     def update_or_create_entity_from_api_post(cls, el):
+
+        logging.info(el.get('options'))
+
         obj, created = cls.objects.update_or_create(
             external_id=el[u'id'],
             defaults={
@@ -1219,6 +1245,15 @@ class BaseField(PipedriveModel):
                 'edit_flag': el[u'edit_flag'],
             }
         )
+        obj.enums.all().delete()
+        for option in el.get('options'):
+            logging.info(option['id'])
+            EnumField.objects.create(
+                external_id=option['id'],
+                label=option['label'],
+                content_object=obj,
+            )
+
         obj.save()
         return obj, created
 
