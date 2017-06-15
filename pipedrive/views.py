@@ -117,6 +117,7 @@ def handle_does_not_exist(e, model, external_id, json_data):
     logging.warning(e.message)
     logging.warning("Forcing sync from pipedrive for model: '{}' external_id: '{}'".format(model.__name__, external_id))
     model.sync_one(external_id)
+    handle_v1(json_data)
 
 
 def map_models(object_type):
