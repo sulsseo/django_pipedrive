@@ -2070,8 +2070,12 @@ class TestPipedriveCreation(TestCase):
 
     def setUp(self):
         Pipeline.fetch_from_pipedrive()
-
         self.pipeline = Pipeline.objects.first()
+        self.for_delete = []
+
+    def tearDown(self):
+        for instance in self.for_delete:
+            instance.delete_from_pipedrive()
 
     def test_create_organization(self):
 
@@ -2081,6 +2085,8 @@ class TestPipedriveCreation(TestCase):
 
         self.assertTrue(result)
         self.assertIsNotNone(organization.external_id)
+
+        self.for_delete.append(organization)
 
     def test_upload_organization_with_id_at_additional_attributes(self):
 
@@ -2094,6 +2100,8 @@ class TestPipedriveCreation(TestCase):
         self.assertTrue(result)
         self.assertIsNotNone(organization.external_id)
 
+        self.for_delete.append(organization)
+
     def test_create_person(self):
 
         person = Person.objects.create(name="TEST_PERSON")
@@ -2102,6 +2110,8 @@ class TestPipedriveCreation(TestCase):
 
         self.assertTrue(result)
         self.assertIsNotNone(person.external_id)
+
+        self.for_delete.append(person)
 
     def test_create_deal(self):
 
@@ -2114,6 +2124,8 @@ class TestPipedriveCreation(TestCase):
 
         self.assertTrue(result)
         self.assertIsNotNone(deal.external_id)
+
+        self.for_delete.append(deal)
 
     def test_create_deal_with_person(self):
 
@@ -2135,6 +2147,8 @@ class TestPipedriveCreation(TestCase):
         self.assertFalse(created)
         self.assertEquals(deal.person_id, person.external_id)
 
+        self.for_delete.append(deal)
+
     def test_create_person_with_organization(self):
 
         organization = Organization.objects.create(name="TEST_ORGANIZATION")
@@ -2154,6 +2168,9 @@ class TestPipedriveCreation(TestCase):
         self.assertFalse(created)
         self.assertEquals(person.org_id, organization.external_id)
 
+        self.for_delete.append(organization)
+        self.for_delete.append(person)
+
     def test_create_stage(self):
 
         Pipeline.objects.create(
@@ -2169,6 +2186,8 @@ class TestPipedriveCreation(TestCase):
 
         self.assertTrue(result)
         self.assertIsNotNone(stage.external_id)
+
+        self.for_delete.append(stage)
 
     # def test_create_user(self):
 
@@ -2188,6 +2207,8 @@ class TestPipedriveCreation(TestCase):
         self.assertTrue(result)
         self.assertIsNotNone(pipeline.external_id)
 
+        self.for_delete.append(pipeline)
+
     def test_create_note(self):
 
         organization = Organization.objects.create(name="TEST_ORGANIZATION")
@@ -2203,6 +2224,9 @@ class TestPipedriveCreation(TestCase):
         self.assertTrue(result)
         self.assertIsNotNone(note.external_id)
 
+        self.for_delete.append(organization)
+        self.for_delete.append(note)
+
     def test_create_activity(self):
 
         activity = Activity.objects.create(subject="TEST_ACTIVITY")
@@ -2211,6 +2235,8 @@ class TestPipedriveCreation(TestCase):
 
         self.assertTrue(result)
         self.assertIsNotNone(activity.external_id)
+
+        self.for_delete.append(activity)
 
     def test_create_deal_field(self):
 
@@ -2226,6 +2252,8 @@ class TestPipedriveCreation(TestCase):
         self.assertIsNotNone(deal_field.field_type)
         self.assertNotEquals(deal_field.key, u'')
 
+        self.for_delete.append(deal_field)
+
     def test_create_person_field(self):
 
         person_field = PersonField.objects.create(
@@ -2240,6 +2268,8 @@ class TestPipedriveCreation(TestCase):
         self.assertIsNotNone(person_field.field_type)
         self.assertNotEquals(person_field.key, u'')
 
+        self.for_delete.append(person_field)
+
     def test_create_organization_field(self):
 
         organization_field = OrganizationField.objects.create(
@@ -2253,6 +2283,8 @@ class TestPipedriveCreation(TestCase):
         self.assertIsNotNone(organization_field.external_id)
         self.assertIsNotNone(organization_field.field_type)
         self.assertNotEquals(organization_field.key, u'')
+
+        self.for_delete.append(organization_field)
 
 
 class TestCreateSyncAndUpload(TestCase):
