@@ -472,6 +472,20 @@ class PipedriveModel(BaseModel):
 
         return True
 
+    def delete_from_pipedrive(self):
+        if self.external_id is None:
+            logging.warning(u"Trying to delete from pipedrive some {} that has not been uploaded yet".format(self.__class__.__name__))
+            return
+
+        delete_data = self.pipedrive_api_client.delete_instance(self.external_id)
+
+        if not delete_data[u'success']:
+            logging.error(delete_data)
+            return False
+
+        self.deleted = True
+        return True
+
 
 class User(PipedriveModel):
 
