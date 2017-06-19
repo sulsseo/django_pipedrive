@@ -240,8 +240,8 @@ class PipedriveModel(BaseModel):
                 raise Exception("Could not handle error message")
 
     @classmethod
-    def field_model_map(cls, field_name):
-        mapping = {
+    def get_field_model_map(cls):
+        return {
             'creator_user_id': User,
             'user_id': User,
             'org_id': Organization,
@@ -252,6 +252,10 @@ class PipedriveModel(BaseModel):
             'activity_id': Activity,
             'note_id': Note,
         }
+
+    @classmethod
+    def field_model_map(cls, field_name):
+        mapping = cls.get_field_model_map()
         return mapping.get(field_name)
 
     @classmethod
@@ -272,52 +276,17 @@ class PipedriveModel(BaseModel):
         api calls.
         """
 
-        creator_user_id = cls.get_id(el, u'creator_user_id')
-        user_id = cls.get_id(el, u'user_id')
-        person_id = cls.get_id(el, u'person_id')
-        org_id = cls.get_id(el, u'org_id')
-        stage_id = cls.get_id(el, u'stage_id')
-        pipeline_id = cls.get_id(el, u'pipeline_id')
-        deal_id = cls.get_id(el, u'deal_id')
-        activity_id = cls.get_id(el, u'activity_id')
-        note_id = cls.get_id(el, u'note_id')
+        mapping = cls.get_field_model_map()
 
-        if creator_user_id:
-            creator_user = User.objects.filter(external_id=creator_user_id).first()
-            if not creator_user:
-                User.sync_one(creator_user_id)
-        if user_id:
-            user = User.objects.filter(external_id=user_id).first()
-            if not user:
-                User.sync_one(user_id)
-        if org_id:
-            org = Organization.objects.filter(external_id=org_id).first()
-            if not org:
-                Organization.sync_one(org_id)
-        if pipeline_id:
-            pipeline = Pipeline.objects.filter(external_id=pipeline_id).first()
-            if not pipeline:
-                Pipeline.sync_one(pipeline_id)
-        if stage_id:
-            stage = Stage.objects.filter(external_id=stage_id).first()
-            if stage:
-                Stage.sync_one(stage_id)
-        if person_id:
-            person = Person.objects.filter(external_id=person_id).first()
-            if not person:
-                Person.sync_one(person_id)
-        if deal_id:
-            deal = Deal.objects.filter(external_id=deal_id).first()
-            if not deal:
-                Deal.sync_one(deal_id)
-        if activity_id:
-            activity = Activity.objects.filter(external_id=activity_id).first()
-            if not activity:
-                Activity.sync_one(activity_id)
-        if note_id:
-            note = Note.objects.filter(external_id=note_id).first()
-            if not note:
-                Note.sync_one(note_id)
+        def handle(field_name):
+            external_id = cls.get_id(el, field_name)
+            model = mapping[field_name]
+            instance = model.objects.filter(external_id=external_id).first()
+            if not instance:
+                model.sync_one(external_id)
+
+        for k in mapping.iterkeys():
+            handle(k)
 
     @classmethod
     def update_or_create_entity_from_api_post(cls, el):
