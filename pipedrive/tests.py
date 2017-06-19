@@ -2065,6 +2065,22 @@ class TestPipedriveWebhooks(TestCase):
 
         self.assertEquals(person.additional_fields[additional_field], u'123')
 
+    def test_non_implemented_version_exception(self):
+
+        data = {
+            "v": 2,
+            "meta": {
+                "v": 2,
+                "action": "updated",
+                "object": "person",
+            },
+            "event": "updated.person"
+        }
+
+        response = self.client.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+
+        self.assertEquals(response.status_code, 500)
+
 
 class TestPipedriveCreation(TestCase):
 

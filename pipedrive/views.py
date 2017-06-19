@@ -15,10 +15,6 @@ from pipedrive.models import Stage
 from pipedrive.models import PipedriveModel
 
 
-class NonImplementedVersionException(Exception):
-    pass
-
-
 # Create your views here.
 @csrf_exempt
 def index(request):
@@ -35,7 +31,10 @@ def index(request):
             if meta[u'v'] == 1:
                 return handle_v1(json_data)
             else:
-                raise NonImplementedVersionException()
+                logging.error("Don't know how to handle version: {}".format(meta[u'v']))
+                response = HttpResponse()
+                response.status_code = 500
+                return response
 
     except IntegrityError as e:
         logging.warning(e.message)
