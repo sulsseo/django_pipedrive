@@ -1,6 +1,6 @@
 import os
 import pypandoc
-from setuptools import find_packages, setup
+from setuptools import find_packages, setup, Command
 
 try:
     long_description = pypandoc.convert('README.md', 'rst')
@@ -11,6 +11,29 @@ except OSError as e:
     # pandoc is not installed, fallback to using raw contents
     with io.open('README.md', encoding="utf-8") as f:
         long_description = f.read()
+
+
+class DownloadPandocCommand(Command):
+
+    """Download pandoc"""
+
+    description = "downloads a pandoc release and adds it to the package"
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        from pypandoc.pandoc_download import download_pandoc
+        targetfolder = os.path.join(os.path.dirname(os.path.realpath(__file__)), "pypandoc", "files")
+        download_pandoc(targetfolder=targetfolder)
+
+
+cmd_classes = {'download_pandoc': DownloadPandocCommand}
+
 
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
@@ -38,4 +61,5 @@ setup(
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
+    cmdclass=cmd_classes,
 )
