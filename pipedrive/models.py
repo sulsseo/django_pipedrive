@@ -135,7 +135,12 @@ class PipedriveModel(BaseModel):
     """
     Abstract class to include utility functions for extending classes.
     """
-
+    external_id = models.IntegerField(
+        null=True,
+        blank=True,
+        db_index=True,
+        unique=True,
+    )
     additional_fields = HStoreField(
         null=True,
     )
@@ -458,12 +463,6 @@ class PipedriveModel(BaseModel):
 
 class User(PipedriveModel):
 
-    external_id = models.IntegerField(
-        null=True,
-        blank=True,
-        db_index=True,
-        unique=True,
-    )
     deleted = models.BooleanField(
         default=False
     )
@@ -540,12 +539,6 @@ class Pipeline(PipedriveModel):
     Stores a single pipe line stage entry.
     :model:`pipeline.Pipeline`.
     """
-    external_id = models.IntegerField(
-        null=True,
-        blank=True,
-        unique=True,
-        db_index=True,
-    )
     deleted = models.BooleanField(
         default=False
     )
@@ -608,12 +601,6 @@ class Organization(PipedriveModel):
     """
     saves a registry of Org sent to pipedrive
     """
-    external_id = models.IntegerField(
-        null=True,
-        blank=True,
-        db_index=True,
-        unique=True,
-    )
     deleted = models.BooleanField(
         default=False
     )
@@ -748,12 +735,6 @@ class Person(PipedriveModel):
     """
     saves a registry of Person sent to pipedrive
     """
-    external_id = models.IntegerField(
-        null=True,
-        blank=True,
-        db_index=True,
-        unique=True,
-    )
     deleted = models.BooleanField(
         default=False
     )
@@ -933,12 +914,6 @@ class Deal(PipedriveModel):
         blank=True,
         db_index=True,
         to_field="external_id",
-    )
-    external_id = models.IntegerField(
-        null=True,
-        blank=True,
-        db_index=True,
-        unique=True,
     )
     deleted = models.BooleanField(
         default=False
@@ -1163,13 +1138,6 @@ class BaseField(PipedriveModel):
     Stores a single field entry.
     :model:`pipeline.BaseField`.
     """
-
-    external_id = models.IntegerField(
-        null=True,
-        blank=True,
-        db_index=True,
-        unique=True,
-    )
     key = TruncatingCharField(
         max_length=500,
     )
@@ -1273,12 +1241,6 @@ class Stage(PipedriveModel):
     Stores a single stage entry.
     :model:`pipeline.Stage`.
     """
-    external_id = models.IntegerField(
-        null=True,
-        blank=True,
-        unique=True,
-        db_index=True,
-    )
     deleted = models.BooleanField(
         default=False
     )
@@ -1347,11 +1309,7 @@ class Stage(PipedriveModel):
 
 
 class Note(PipedriveModel):
-    external_id = models.IntegerField(
-        null=True,
-        blank=True,
-        db_index=True,
-    )
+    
     deleted = models.BooleanField(
         default=False
     )
@@ -1430,11 +1388,6 @@ class Note(PipedriveModel):
 
 
 class Activity(PipedriveModel):
-    external_id = models.IntegerField(
-        null=True,
-        blank=True,
-        db_index=True,
-    )
     deleted = models.BooleanField(
         default=False
     )
