@@ -239,8 +239,8 @@ class PipedriveModel(BaseModel):
             else:
                 raise Exception("Could not handle error message")
 
-    @classmethod
-    def get_field_model_map(cls):
+    @staticmethod
+    def get_field_model_map():
         return {
             'creator_user_id': User,
             'user_id': User,
