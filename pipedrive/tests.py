@@ -1220,15 +1220,6 @@ class TestPipedriveWebhooks(TestCase):
         }
 
         class fake_organization_api():
-            def get_instances(self, **kwargs):
-                return {
-                    "success": True,
-                    'data': [data['previous']],
-                    "additional_data": {
-                        "company_id": 1142847
-                    }
-                }
-
             def get_instance(self, *args, **kwargs):
                 return {
                     "success": True,
@@ -2080,6 +2071,14 @@ class TestPipedriveWebhooks(TestCase):
         response = self.client.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
 
         self.assertEquals(response.status_code, 500)
+
+    def test_view_get(self):
+
+        response = self.client.get('/pipedrive/')
+
+        self.assertEquals(response.status_code, 200)
+
+        self.assertEquals(response.content, "Hello, world!")
 
 
 class TestPipedriveCreation(TestCase):
@@ -2995,19 +2994,6 @@ class TestIntegrity(TransactionTestCase):
                 "person_hidden": False
             }
 
-            def get_instances(self, **kwargs):
-                return {
-                    "success": True,
-                    "data": [fake_deal_api.deal],
-                    "additional_data": {
-                        "pagination": {
-                            "start": 0,
-                            "limit": 100,
-                            "more_items_in_collection": False,
-                        }
-                    },
-                }
-
             def get_instance(self, *args, **kwargs):
                 return {
                     "success": True,
@@ -3127,3 +3113,38 @@ class DealTestCase(TestCase):
         self.deal.upload()
 
         self.assertEquals(self.deal.user_id, self.user_1.external_id)
+
+
+class ModelUnicodeTestCase(TestCase):
+
+    def test_unicode_deal(self):
+        instance = Deal.objects.create(external_id="12", title="Some Deal")
+        self.assertEquals(u'{}'.format(instance), u"Deal : 12 : Some Deal")
+
+    def test_unicode_organization(self):
+        instance = Organization.objects.create(external_id="12", name="Some Organization")
+        self.assertEquals(u'{}'.format(instance), u"Organization : 12 : Some Organization")
+
+    def test_unicode_person(self):
+        instance = Person.objects.create(external_id="12", name="Some Person")
+        self.assertEquals(u'{}'.format(instance), u"Person : 12 : Some Person")
+
+    def test_unicode_pipeline(self):
+        instance = Pipeline.objects.create(external_id="12", name="Some Pipeline")
+        self.assertEquals(u'{}'.format(instance), u"Pipeline : 12 : Some Pipeline")
+
+    def test_unicode_stage(self):
+        instance = Stage.objects.create(external_id="12", name="Some Stage")
+        self.assertEquals(u'{}'.format(instance), u"Stage : 12 : Some Stage")
+
+    def test_unicode_note(self):
+        instance = Note.objects.create(external_id="12", content="Some Note")
+        self.assertEquals(u'{}'.format(instance), u"Note : 12 : Some Note")
+
+    def test_unicode_activity(self):
+        instance = Activity.objects.create(external_id="12", subject="Some Activity")
+        self.assertEquals(u'{}'.format(instance), u"Activity : 12 : Some Activity")
+
+    def test_unicode_user(self):
+        instance = User.objects.create(external_id="12", name="Some User")
+        self.assertEquals(u'{}'.format(instance), u"User : 12 : Some User")

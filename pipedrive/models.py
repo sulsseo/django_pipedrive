@@ -460,6 +460,12 @@ class PipedriveModel(BaseModel):
         self.deleted = True
         return True
 
+    def __unicode__(self):
+        return u'{} : {} : {}'.format(self.__class__.__name__, self.external_id, self.get_display())
+
+    def get_display(self):
+        return ""
+
 
 class User(PipedriveModel):
 
@@ -533,6 +539,9 @@ class User(PipedriveModel):
             }
         )
 
+    def get_display(self):
+        return self.name
+
 
 class Pipeline(PipedriveModel):
     """
@@ -577,9 +586,8 @@ class Pipeline(PipedriveModel):
             'update_time': self.update_time,
         }
 
-    def __unicode__(self):
-        return u'Pipe ID: {}, Name: {}.'.format(
-            self.external_id, self.name)
+    def get_display(self):
+        return self.name
 
     @classmethod
     def update_or_create_entity_with_additional_fields(cls, el, additional_fields):
@@ -699,8 +707,8 @@ class Organization(PipedriveModel):
 
         return kwargs
 
-    def __unicode__(self):
-        return "{} : {}".format(self.external_id, self.name)
+    def get_display(self):
+        return self.name
 
     @classmethod
     def update_or_create_entity_with_additional_fields(cls, el, additional_fields):
@@ -850,8 +858,8 @@ class Person(PipedriveModel):
 
         return kwargs
 
-    def __unicode__(self):
-        return "{} : {}".format(self.external_id, self.name)
+    def get_display(self):
+        return self.name
 
     @classmethod
     def update_or_create_entity_with_additional_fields(cls, el, additional_fields):
@@ -1064,8 +1072,8 @@ class Deal(PipedriveModel):
 
         return kwargs
 
-    def __unicode__(self):
-        return "{} : {}".format(self.external_id, self.title)
+    def get_display(self):
+        return self.title
 
     @classmethod
     def update_or_create_entity_with_additional_fields(cls, el, additional_fields):
@@ -1286,9 +1294,8 @@ class Stage(PipedriveModel):
             'active_flag': self.active_flag,
         }
 
-    def __unicode__(self):
-        return u'Stage ID: {}, Name: {}.'.format(
-            self.external_id, self.name)
+    def get_display(self):
+        return self.name
 
     @classmethod
     def update_or_create_entity_with_additional_fields(cls, el, additional_fields):
@@ -1356,8 +1363,8 @@ class Note(PipedriveModel):
 
     pipedrive_api_client = PipedriveAPIClient(endpoint='notes')
 
-    def __unicode__(self):
-        return u"{} : {}".format(self.external_id, self.content)
+    def get_display(self):
+        return self.content
 
     def build_kwargs(self):
         return {
@@ -1499,3 +1506,6 @@ class Activity(PipedriveModel):
                 'additional_fields': additional_fields,
             }
         )
+
+    def get_display(self):
+        return self.subject

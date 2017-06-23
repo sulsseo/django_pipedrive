@@ -13,7 +13,6 @@ class PipedriveAPIClient(object):
 
     def __init__(
         self,
-        api_key=None,
         email=None,
         password=None,
         api_base_url=None,
@@ -26,10 +25,7 @@ class PipedriveAPIClient(object):
             api_base_url = 'https://api.pipedrive.com/v1/'
         self.api_base_url = api_base_url
 
-        if api_key is None:
-            self.api_key = settings.PIPEDRIVE_API_KEY
-        else:
-            self.api_key = api_key
+        self.api_key = settings.PIPEDRIVE_API_KEY
 
         super(PipedriveAPIClient, self).__init__()
 
