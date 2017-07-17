@@ -1159,6 +1159,7 @@ class Deal(PipedriveModel):
                 'email_messages_count': el[u'email_messages_count'],
                 'expected_close_date': el[u'expected_close_date'],
                 'additional_fields': additional_fields,
+                'status': el['status']
             }
         )
 
