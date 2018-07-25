@@ -486,15 +486,6 @@ class PipedriveModel(BaseModel):
         self.deleted = True
         return True
 
-    def get_pipedrive_api_client(self, api_key=None):
-        if not hasattr(self, 'pipedrive_api_client'):
-            return None
-
-        pipedrive_api_client = getattr(self, 'pipedrive_api_client', None)
-        if api_key:
-            return PipedriveAPIClient(api_key=api_key, endpoint=pipedrive_api_client.endpoint)
-        return pipedrive_api_client
-
 
 class User(PipedriveModel):
 

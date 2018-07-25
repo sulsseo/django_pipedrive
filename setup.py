@@ -8,16 +8,16 @@ with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
-    name='django-pipedrive',
-    version='0.1.14',
+    name='django-pipedrive2',
+    version='0.1.0',
     packages=find_packages(),
     include_package_data=True,
     license='BSD License',  # example license
     description='A Django app to syncronice data with Pipedrive.',
     long_description=README,
     url='https://github.com/MasAval/django_pipedrive',
-    autho=r'Gustavo Soto Ridd',
-    author_email='gussoto@ug.uchile.cl',
+    autho=r'Dev MasAVAL',
+    author_email='dev@masaval.cl',
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
