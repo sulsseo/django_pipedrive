@@ -24,6 +24,7 @@ from pipedrive.models import Note
 from pipedrive.models import Activity
 from pipedrive.models import PipedriveModel
 from pipedrive.models import FieldModification
+from pipedrive.pipedrive_client import PipedriveAPIClient
 
 from pipedrive.utils import compare_dicts
 
@@ -2481,6 +2482,23 @@ class TestPipedrive(TestCase):
         DealField.fetch_from_pipedrive()
         OrganizationField.fetch_from_pipedrive()
         PersonField.fetch_from_pipedrive()
+
+    def test_get_pipedrive_api_client(self):
+        person = Person.objects.create(name='TestPerson', phone='123123123', email='a@test.com')
+        api_client = person.get_pipedrive_api_client()
+
+        self.assertEqual(person.pipedrive_api_client, api_client)
+        self.assertIsNotNone(api_client.api_key)
+        self.assertIsInstance(api_client.api_key, str)
+
+        new_api_client = person.get_pipedrive_api_client(api_key='12341234')
+
+        self.assertIsInstance(new_api_client, PipedriveAPIClient)
+        self.assertEqual(person.pipedrive_api_client.endpoint, new_api_client.endpoint)
+        self.assertEqual('12341234', new_api_client.api_key)
+
+        person.pipedrive_api_client = None
+        self.assertIsNone(person.get_pipedrive_api_client())
 
     def test_datetime_from_fields_none_fields(self):
 
