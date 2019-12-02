@@ -144,7 +144,7 @@ class PipedriveModel(BaseModel):
     content_type = models.ForeignKey(
         ContentType,
         null=True,
-        on_delete=models.PROTECT
+        on_delete=models.PROTECT,
     )
     object_id = models.PositiveIntegerField(
         null=True,
