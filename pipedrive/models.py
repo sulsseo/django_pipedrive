@@ -24,7 +24,7 @@ from django.contrib.postgres.fields import HStoreField
 from pipedrive.pipedrive_client import PipedriveAPIClient
 
 from pipedrive.utils import compare_dicts
-from fields import TruncatingCharField
+from .fields import TruncatingCharField
 
 PRIVATE = 0
 SHARED = 3
@@ -94,7 +94,7 @@ class FieldModification(BaseModel):
     )
     created = models.DateTimeField()
 
-    content_type = models.ForeignKey(ContentType)
+    content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
 
@@ -144,6 +144,7 @@ class PipedriveModel(BaseModel):
     content_type = models.ForeignKey(
         ContentType,
         null=True,
+        on_delete=models.PROTECT
     )
     object_id = models.PositiveIntegerField(
         null=True,
@@ -662,6 +663,7 @@ class Organization(PipedriveModel):
         null=True,
         blank=True,
         to_field="external_id",
+        on_delete=models.PROTECT,
     )
     people_count = models.IntegerField(
         null=True
@@ -820,12 +822,14 @@ class Person(PipedriveModel):
         null=True,
         blank=True,
         to_field="external_id",
+        on_delete=models.PROTECT,
     )
     owner = models.ForeignKey(
         User,
         null=True,
         blank=True,
         to_field="external_id",
+        on_delete=models.PROTECT,
     )
     open_deals_count = models.IntegerField(
         null=True,
@@ -957,6 +961,7 @@ class Deal(PipedriveModel):
         blank=True,
         db_index=True,
         to_field="external_id",
+        on_delete=models.PROTECT,
     )
     stage = models.ForeignKey(
         'Stage',
@@ -964,6 +969,7 @@ class Deal(PipedriveModel):
         blank=True,
         db_index=True,
         to_field="external_id",
+        on_delete=models.PROTECT,
     )
     external_id = models.IntegerField(
         null=True,
@@ -989,7 +995,8 @@ class Deal(PipedriveModel):
         blank=True,
         db_index=True,
         to_field="external_id",
-        related_name='user'
+        related_name='user',
+        on_delete = models.PROTECT,
     )
     creator_user = models.ForeignKey(
         User,
@@ -997,7 +1004,8 @@ class Deal(PipedriveModel):
         blank=True,
         db_index=True,
         to_field="external_id",
-        related_name='creator'
+        related_name='creator',
+        on_delete=models.PROTECT,
     )
     value = models.IntegerField(
         null=True
@@ -1008,6 +1016,7 @@ class Deal(PipedriveModel):
         blank=True,
         db_index=True,
         to_field="external_id",
+        on_delete=models.PROTECT,
     )
     pipeline = models.ForeignKey(
         Pipeline,
@@ -1015,6 +1024,7 @@ class Deal(PipedriveModel):
         blank=True,
         db_index=True,
         to_field="external_id",
+        on_delete=models.PROTECT,
     )
 
     external_stage_id = models.IntegerField(
@@ -1181,7 +1191,7 @@ class EnumField(models.Model):
         max_length=500,
     )
 
-    content_type = models.ForeignKey(ContentType)
+    content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
 
@@ -1319,6 +1329,7 @@ class Stage(PipedriveModel):
         blank=True,
         db_index=True,
         to_field="external_id",
+        on_delete=models.PROTECT,
     )
     pipeline_name = TruncatingCharField(
         max_length=500,
@@ -1391,24 +1402,28 @@ class Note(PipedriveModel):
         null=True,
         blank=True,
         to_field="external_id",
+        on_delete=models.PROTECT,
     )
     deal = models.ForeignKey(
         Deal,
         null=True,
         blank=True,
         to_field="external_id",
+        on_delete=models.PROTECT,
     )
     person = models.ForeignKey(
         Person,
         null=True,
         blank=True,
         to_field="external_id",
+        on_delete=models.PROTECT,
     )
     org = models.ForeignKey(
         Organization,
         null=True,
         blank=True,
         to_field="external_id",
+        on_delete=models.PROTECT,
     )
     content = TruncatingCharField(
         max_length=1024,
@@ -1474,24 +1489,28 @@ class Activity(PipedriveModel):
         null=True,
         blank=True,
         to_field="external_id",
+        on_delete=models.PROTECT,
     )
     deal = models.ForeignKey(
         Deal,
         null=True,
         blank=True,
         to_field="external_id",
+        on_delete=models.PROTECT,
     )
     org = models.ForeignKey(
         Organization,
         null=True,
         blank=True,
         to_field="external_id",
+        on_delete=models.PROTECT,
     )
     person = models.ForeignKey(
         Person,
         null=True,
         blank=True,
         to_field="external_id",
+        on_delete=models.PROTECT,
     )
     done = models.NullBooleanField(
         null=True

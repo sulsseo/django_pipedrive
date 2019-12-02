@@ -2,7 +2,12 @@
 
 # standard library
 import json
-import urlparse
+import sys
+
+if (sys.version_info > (3, 0)):
+    import urllib.parse as urlparse
+else:
+    import urlparse
 
 # requests
 import requests
