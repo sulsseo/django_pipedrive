@@ -1,5 +1,3 @@
-
-
 def compare_dicts(dict1, dict2):
     """
     Compares two dictionaries. Returns True if they hold the same

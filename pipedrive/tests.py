@@ -30,7 +30,6 @@ from pipedrive.utils import compare_dicts
 
 
 class TestPipedriveWebhooks(TestCase):
-
     def test_activity_marked_as_done(self):
 
         c = Client()
@@ -41,9 +40,7 @@ class TestPipedriveWebhooks(TestCase):
 
         data = {
             "v": 1,
-            "matches_filters": {
-                "current": [],
-                "previous": []},
+            "matches_filters": {"current": [], "previous": []},
             "meta": {
                 "v": 1,
                 "action": "updated",
@@ -57,10 +54,7 @@ class TestPipedriveWebhooks(TestCase):
                 "permitted_user_ids": ["*"],
                 "trans_pending": False,
                 "is_bulk_update": False,
-                "matches_filters": {
-                    "current": [],
-                    "previous": []
-                }
+                "matches_filters": {"current": [], "previous": []},
             },
             "retry": 0,
             "current": {
@@ -94,7 +88,7 @@ class TestPipedriveWebhooks(TestCase):
                 "owner_name": "Gustavo",
                 "person_dropbox_bcc": None,
                 "deal_dropbox_bcc": None,
-                "no_gcal": False
+                "no_gcal": False,
             },
             "previous": {
                 "id": 2,
@@ -126,12 +120,12 @@ class TestPipedriveWebhooks(TestCase):
                 "created_by_user_id": 2428657,
                 "owner_name": "Gustavo",
                 "person_dropbox_bcc": None,
-                "deal_dropbox_bcc": None
+                "deal_dropbox_bcc": None,
             },
-            "event": "updated.activity"
+            "event": "updated.activity",
         }
 
-        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+        c.post("/pipedrive/", data=json.dumps(data), content_type="application/json")
 
         activity = Activity.objects.get(external_id=2)
         expected = datetime.datetime(2017, 4, 22, 21, 56, 17, tzinfo=pytz.utc)
@@ -148,10 +142,7 @@ class TestPipedriveWebhooks(TestCase):
 
         data = {
             "v": 1,
-            "matches_filters": {
-                "current": [],
-                "previous": []
-            },
+            "matches_filters": {"current": [], "previous": []},
             "meta": {
                 "v": 1,
                 "action": "updated",
@@ -165,10 +156,7 @@ class TestPipedriveWebhooks(TestCase):
                 "permitted_user_ids": ["*"],
                 "trans_pending": False,
                 "is_bulk_update": False,
-                "matches_filters": {
-                    "current": [],
-                    "previous": []
-                }
+                "matches_filters": {"current": [], "previous": []},
             },
             "retry": 0,
             "current": {
@@ -202,7 +190,7 @@ class TestPipedriveWebhooks(TestCase):
                 "owner_name": "Gustavo",
                 "person_dropbox_bcc": None,
                 "deal_dropbox_bcc": None,
-                "no_gcal": False
+                "no_gcal": False,
             },
             "previous": {
                 "id": 2,
@@ -234,12 +222,12 @@ class TestPipedriveWebhooks(TestCase):
                 "created_by_user_id": 2428657,
                 "owner_name": "Gustavo",
                 "person_dropbox_bcc": None,
-                "deal_dropbox_bcc": None
+                "deal_dropbox_bcc": None,
             },
-            "event": "updated.activity"
+            "event": "updated.activity",
         }
 
-        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+        c.post("/pipedrive/", data=json.dumps(data), content_type="application/json")
 
         activity = Activity.objects.get(external_id=2)
 
@@ -255,10 +243,7 @@ class TestPipedriveWebhooks(TestCase):
 
         data = {
             "v": 1,
-            "matches_filters": {
-                "current": [],
-                "previous": []
-            },
+            "matches_filters": {"current": [], "previous": []},
             "meta": {
                 "v": 1,
                 "action": "added",
@@ -272,10 +257,7 @@ class TestPipedriveWebhooks(TestCase):
                 "permitted_user_ids": [123456, 1428742],
                 "trans_pending": False,
                 "is_bulk_update": False,
-                "matches_filters": {
-                    "current": [],
-                    "previous": []
-                }
+                "matches_filters": {"current": [], "previous": []},
             },
             "retry": 0,
             "current": {
@@ -328,14 +310,14 @@ class TestPipedriveWebhooks(TestCase):
                 "address_formatted_address": "Some address",
                 "cc_email": "mycompany@pipedrivemail.com",
                 "owner_name": "TEST_OWNER",
-                "edit_name": True
+                "edit_name": True,
             },
             "previous": None,
             "indexable_fields": [],
-            "event": "added.organization"
+            "event": "added.organization",
         }
 
-        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+        c.post("/pipedrive/", data=json.dumps(data), content_type="application/json")
 
         self.assertEquals(Organization.objects.count(), 1)
 
@@ -346,11 +328,7 @@ class TestPipedriveWebhooks(TestCase):
     def test_update_deal(self):
         c = Client()
 
-        Deal.objects.create(
-            title="TEST_DEAL",
-            external_id=999,
-            value=0,
-        )
+        Deal.objects.create(title="TEST_DEAL", external_id=999, value=0)
 
         Pipeline.objects.create(external_id=1)
 
@@ -359,161 +337,151 @@ class TestPipedriveWebhooks(TestCase):
 
         data = {
             "v": 1,
-            "matches_filters":
-                {
-                    "current": [],
-                    "previous": []
-                },
-            "meta":
-                {
-                    "v": 1,
-                    "action": "updated",
-                    "object": "deal",
-                    "id": 999,
-                    "company_id": 1689563,
-                    "user_id": 2428657,
-                    "host": "mycompany.pipedrive.com",
-                    "timestamp": 1492636837,
-                    "timestamp_milli": 1492636837696,
-                    "permitted_user_ids": [2428657],
-                    "trans_pending": False,
-                    "is_bulk_update": False,
-                    "elastic_enabled": True,
-                    "matches_filters": {
-                        "current": [],
-                        "previous": []
-                    }
-                },
+            "matches_filters": {"current": [], "previous": []},
+            "meta": {
+                "v": 1,
+                "action": "updated",
+                "object": "deal",
+                "id": 999,
+                "company_id": 1689563,
+                "user_id": 2428657,
+                "host": "mycompany.pipedrive.com",
+                "timestamp": 1492636837,
+                "timestamp_milli": 1492636837696,
+                "permitted_user_ids": [2428657],
+                "trans_pending": False,
+                "is_bulk_update": False,
+                "elastic_enabled": True,
+                "matches_filters": {"current": [], "previous": []},
+            },
             "retry": 0,
-            "current":
-                {
-                    "id": 999,
-                    "creator_user_id": 2428657,
-                    "user_id": {
-                        "id": 2428657,
-                        "name": "SOME USER",
-                        "email": "user@example.com",
-                        "has_pic": False,
-                        "pic_hash": None,
-                        "active_flag": True,
-                        "value": 1656137
-                    },
-                    "person_id": None,
-                    "org_id": None,
-                    "stage_id": 1,
-                    "title": "TEST_DEAL",
-                    "value": 1000,
-                    "currency": "USD",
-                    "add_time": "2017-04-19 19:43:40",
-                    "update_time": "2017-04-19 21:20:37",
-                    "stage_change_time": None,
-                    "active": True,
-                    "deleted": False,
-                    "status": "open",
-                    "next_activity_date": None,
-                    "next_activity_time": None,
-                    "next_activity_id": None,
-                    "last_activity_id": None,
-                    "last_activity_date": None,
-                    "lost_reason": None,
-                    "visible_to": "3",
-                    "close_time": None,
-                    "pipeline_id": 1,
-                    "won_time": None,
-                    "first_won_time": None,
-                    "lost_time": None,
-                    "products_count": 0,
-                    "files_count": 0,
-                    "notes_count": 0,
-                    "followers_count": 1,
-                    "email_messages_count": 0,
-                    "activities_count": 0,
-                    "done_activities_count": 0,
-                    "undone_activities_count": 0,
-                    "reference_activities_count": 0,
-                    "participants_count": 0,
-                    "expected_close_date": None,
-                    "last_incoming_mail_time": None,
-                    "last_outgoing_mail_time": None,
-                    "stage_order_nr": 1,
-                    "person_name": None,
-                    "org_name": None,
-                    "next_activity_subject": None,
-                    "next_activity_type": None,
-                    "next_activity_duration": None,
-                    "next_activity_note": None,
-                    "formatted_value": "1 000 $",
-                    "rotten_time": None,
-                    "weighted_value": 1000,
-                    "formatted_weighted_value": "1 000 $",
-                    "owner_name": "TEST_owner",
-                    "cc_email": "mycompany+deal2@pipedrivemail.com",
-                    "org_hidden": False,
-                    "person_hidden": False
+            "current": {
+                "id": 999,
+                "creator_user_id": 2428657,
+                "user_id": {
+                    "id": 2428657,
+                    "name": "SOME USER",
+                    "email": "user@example.com",
+                    "has_pic": False,
+                    "pic_hash": None,
+                    "active_flag": True,
+                    "value": 1656137,
                 },
-            "previous":
-                {
-                    "id": 999,
-                    "creator_user_id": 2428657,
-                    "user_id": 2428657,
-                    "person_id": None,
-                    "org_id": None,
-                    "stage_id": 1,
-                    "title": "TEST_DEAL",
-                    "value": 0,
-                    "currency": "USD",
-                    "add_time": "2017-04-19 19:43:40",
-                    "update_time": "2017-04-19 19:43:41",
-                    "stage_change_time": None,
-                    "active": True,
-                    "deleted": False,
-                    "status": "open",
-                    "next_activity_date": None,
-                    "next_activity_time": None,
-                    "next_activity_id": None,
-                    "last_activity_id": None,
-                    "last_activity_date": None,
-                    "lost_reason": None,
-                    "visible_to": "3",
-                    "close_time": None,
-                    "pipeline_id": 5,
-                    "won_time": None,
-                    "first_won_time": None,
-                    "lost_time": None,
-                    "products_count": 0,
-                    "files_count": 0,
-                    "notes_count": 0,
-                    "followers_count": 1,
-                    "email_messages_count": 0,
-                    "activities_count": 0,
-                    "done_activities_count": 0,
-                    "undone_activities_count": 0,
-                    "reference_activities_count": 0,
-                    "participants_count": 0,
-                    "expected_close_date": None,
-                    "last_incoming_mail_time": None,
-                    "last_outgoing_mail_time": None,
-                    "stage_order_nr": 1,
-                    "person_name": None,
-                    "org_name": None,
-                    "next_activity_subject": None,
-                    "next_activity_type": None,
-                    "next_activity_duration": None,
-                    "next_activity_note": None,
-                    "formatted_value": "0 $",
-                    "rotten_time": None,
-                    "weighted_value": 0,
-                    "formatted_weighted_value": "0 $",
-                    "owner_name": "TEST_owner",
-                    "cc_email": "mycompany+deal2@pipedrivemail.com",
-                    "org_hidden": False,
-                    "person_hidden": False
-                },
+                "person_id": None,
+                "org_id": None,
+                "stage_id": 1,
+                "title": "TEST_DEAL",
+                "value": 1000,
+                "currency": "USD",
+                "add_time": "2017-04-19 19:43:40",
+                "update_time": "2017-04-19 21:20:37",
+                "stage_change_time": None,
+                "active": True,
+                "deleted": False,
+                "status": "open",
+                "next_activity_date": None,
+                "next_activity_time": None,
+                "next_activity_id": None,
+                "last_activity_id": None,
+                "last_activity_date": None,
+                "lost_reason": None,
+                "visible_to": "3",
+                "close_time": None,
+                "pipeline_id": 1,
+                "won_time": None,
+                "first_won_time": None,
+                "lost_time": None,
+                "products_count": 0,
+                "files_count": 0,
+                "notes_count": 0,
+                "followers_count": 1,
+                "email_messages_count": 0,
+                "activities_count": 0,
+                "done_activities_count": 0,
+                "undone_activities_count": 0,
+                "reference_activities_count": 0,
+                "participants_count": 0,
+                "expected_close_date": None,
+                "last_incoming_mail_time": None,
+                "last_outgoing_mail_time": None,
+                "stage_order_nr": 1,
+                "person_name": None,
+                "org_name": None,
+                "next_activity_subject": None,
+                "next_activity_type": None,
+                "next_activity_duration": None,
+                "next_activity_note": None,
+                "formatted_value": "1 000 $",
+                "rotten_time": None,
+                "weighted_value": 1000,
+                "formatted_weighted_value": "1 000 $",
+                "owner_name": "TEST_owner",
+                "cc_email": "mycompany+deal2@pipedrivemail.com",
+                "org_hidden": False,
+                "person_hidden": False,
+            },
+            "previous": {
+                "id": 999,
+                "creator_user_id": 2428657,
+                "user_id": 2428657,
+                "person_id": None,
+                "org_id": None,
+                "stage_id": 1,
+                "title": "TEST_DEAL",
+                "value": 0,
+                "currency": "USD",
+                "add_time": "2017-04-19 19:43:40",
+                "update_time": "2017-04-19 19:43:41",
+                "stage_change_time": None,
+                "active": True,
+                "deleted": False,
+                "status": "open",
+                "next_activity_date": None,
+                "next_activity_time": None,
+                "next_activity_id": None,
+                "last_activity_id": None,
+                "last_activity_date": None,
+                "lost_reason": None,
+                "visible_to": "3",
+                "close_time": None,
+                "pipeline_id": 5,
+                "won_time": None,
+                "first_won_time": None,
+                "lost_time": None,
+                "products_count": 0,
+                "files_count": 0,
+                "notes_count": 0,
+                "followers_count": 1,
+                "email_messages_count": 0,
+                "activities_count": 0,
+                "done_activities_count": 0,
+                "undone_activities_count": 0,
+                "reference_activities_count": 0,
+                "participants_count": 0,
+                "expected_close_date": None,
+                "last_incoming_mail_time": None,
+                "last_outgoing_mail_time": None,
+                "stage_order_nr": 1,
+                "person_name": None,
+                "org_name": None,
+                "next_activity_subject": None,
+                "next_activity_type": None,
+                "next_activity_duration": None,
+                "next_activity_note": None,
+                "formatted_value": "0 $",
+                "rotten_time": None,
+                "weighted_value": 0,
+                "formatted_weighted_value": "0 $",
+                "owner_name": "TEST_owner",
+                "cc_email": "mycompany+deal2@pipedrivemail.com",
+                "org_hidden": False,
+                "person_hidden": False,
+            },
             "indexable_fields": [],
-            "event": "updated.deal"
+            "event": "updated.deal",
         }
 
-        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+        c.post("/pipedrive/", data=json.dumps(data), content_type="application/json")
 
         self.assertEquals(Deal.objects.count(), 1)
 
@@ -546,7 +514,7 @@ class TestPipedriveWebhooks(TestCase):
                 "timestamp_milli": 1492704744018,
                 "permitted_user_ids": ["*"],
                 "trans_pending": False,
-                "is_bulk_update": False
+                "is_bulk_update": False,
             },
             "retry": 0,
             "current": {
@@ -556,7 +524,7 @@ class TestPipedriveWebhooks(TestCase):
                 "order_nr": 1,
                 "active": True,
                 "add_time": "2017-04-13 16:58:30",
-                "update_time": "2017-04-20 16:12:23"
+                "update_time": "2017-04-20 16:12:23",
             },
             "previous": {
                 "id": 1,
@@ -565,12 +533,12 @@ class TestPipedriveWebhooks(TestCase):
                 "order_nr": 1,
                 "active": True,
                 "add_time": "2017-04-13 16:58:30",
-                "update_time": None
+                "update_time": None,
             },
-            "event": "updated.pipeline"
+            "event": "updated.pipeline",
         }
 
-        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+        c.post("/pipedrive/", data=json.dumps(data), content_type="application/json")
 
         self.assertEquals(Pipeline.objects.count(), 1)
 
@@ -588,9 +556,7 @@ class TestPipedriveWebhooks(TestCase):
 
         data = {
             "v": 1,
-            "matches_filters": {
-                "current": [],
-                "previous": []},
+            "matches_filters": {"current": [], "previous": []},
             "meta": {
                 "v": 1,
                 "action": "added",
@@ -605,11 +571,7 @@ class TestPipedriveWebhooks(TestCase):
                 "trans_pending": False,
                 "is_bulk_update": False,
                 "elastic_enabled": True,
-                "matches_filters":
-                {
-                    "current": [],
-                    "previous": []
-                }
+                "matches_filters": {"current": [], "previous": []},
             },
             "retry": 0,
             "current": {
@@ -639,19 +601,9 @@ class TestPipedriveWebhooks(TestCase):
                 "lost_deals_count": 0,
                 "related_lost_deals_count": 0,
                 "active_flag": True,
-                "phone": [
-                    {
-                        "label": "work",
-                        "value": "22222222",
-                        "primary": True
-                    }
-                ],
+                "phone": [{"label": "work", "value": "22222222", "primary": True}],
                 "email": [
-                    {
-                        "label": "work",
-                        "value": "mail@example.com",
-                        "primary": True
-                    }
+                    {"label": "work", "value": "mail@example.com", "primary": True}
                 ],
                 "first_char": "p",
                 "update_time": "2017-04-20 01:03:47",
@@ -667,14 +619,14 @@ class TestPipedriveWebhooks(TestCase):
                 "last_outgoing_mail_time": None,
                 "org_name": None,
                 "cc_email": "mycompany@pipedrivemail.com",
-                "owner_name": "OWNER"
+                "owner_name": "OWNER",
             },
             "previous": None,
             "indexable_fields": [],
-            "event": "added.person"
+            "event": "added.person",
         }
 
-        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+        c.post("/pipedrive/", data=json.dumps(data), content_type="application/json")
 
         self.assertEquals(Person.objects.count(), 1)
 
@@ -694,9 +646,7 @@ class TestPipedriveWebhooks(TestCase):
 
         data = {
             "v": 1,
-            "matches_filters": {
-                "current": [],
-                "previous": []},
+            "matches_filters": {"current": [], "previous": []},
             "meta": {
                 "v": 1,
                 "action": "added",
@@ -711,11 +661,7 @@ class TestPipedriveWebhooks(TestCase):
                 "trans_pending": False,
                 "is_bulk_update": False,
                 "elastic_enabled": True,
-                "matches_filters":
-                {
-                    "current": [],
-                    "previous": []
-                }
+                "matches_filters": {"current": [], "previous": []},
             },
             "retry": 0,
             "current": {
@@ -745,19 +691,9 @@ class TestPipedriveWebhooks(TestCase):
                 "lost_deals_count": 0,
                 "related_lost_deals_count": 0,
                 "active_flag": True,
-                "phone": [
-                    {
-                        "label": "work",
-                        "value": "22222222",
-                        "primary": True
-                    }
-                ],
+                "phone": [{"label": "work", "value": "22222222", "primary": True}],
                 "email": [
-                    {
-                        "label": "work",
-                        "value": "mail@example.com",
-                        "primary": True
-                    }
+                    {"label": "work", "value": "mail@example.com", "primary": True}
                 ],
                 "first_char": "p",
                 "update_time": "2017-04-20 01:03:47",
@@ -773,14 +709,14 @@ class TestPipedriveWebhooks(TestCase):
                 "last_outgoing_mail_time": None,
                 "org_name": None,
                 "cc_email": "mycompany@pipedrivemail.com",
-                "owner_name": "OWNER"
+                "owner_name": "OWNER",
             },
             "previous": None,
             "indexable_fields": [],
-            "event": "added.person"
+            "event": "added.person",
         }
 
-        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+        c.post("/pipedrive/", data=json.dumps(data), content_type="application/json")
 
         self.assertEquals(Person.objects.count(), 1)
 
@@ -798,10 +734,7 @@ class TestPipedriveWebhooks(TestCase):
 
         data = {
             "v": 1,
-            "matches_filters": {
-                "current": [],
-                "previous": []
-            },
+            "matches_filters": {"current": [], "previous": []},
             "meta": {
                 "v": 1,
                 "action": "added",
@@ -815,10 +748,7 @@ class TestPipedriveWebhooks(TestCase):
                 "permitted_user_ids": ["*"],
                 "trans_pending": False,
                 "is_bulk_update": False,
-                "matches_filters": {
-                    "current": [],
-                    "previous": []
-                }
+                "matches_filters": {"current": [], "previous": []},
             },
             "retry": 0,
             "current": {
@@ -853,13 +783,13 @@ class TestPipedriveWebhooks(TestCase):
                 "person_dropbox_bcc": "mycompany@pipedrivemail.com",
                 "deal_dropbox_bcc": "mycompany+deal14@pipedrivemail.com",
                 "updates_story_id": 69,
-                "no_gcal": False
+                "no_gcal": False,
             },
             "previous": None,
-            "event": "added.activity"
+            "event": "added.activity",
         }
 
-        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+        c.post("/pipedrive/", data=json.dumps(data), content_type="application/json")
 
         self.assertEquals(Activity.objects.count(), 1)
 
@@ -880,9 +810,7 @@ class TestPipedriveWebhooks(TestCase):
 
         data = {
             "v": 1,
-            "matches_filters": {
-                "current": [],
-                "previous": []},
+            "matches_filters": {"current": [], "previous": []},
             "meta": {
                 "v": 1,
                 "action": "added",
@@ -897,11 +825,7 @@ class TestPipedriveWebhooks(TestCase):
                 "trans_pending": False,
                 "is_bulk_update": False,
                 "elastic_enabled": True,
-                "matches_filters":
-                {
-                    "current": [],
-                    "previous": []
-                }
+                "matches_filters": {"current": [], "previous": []},
             },
             "retry": 0,
             "current": {
@@ -931,19 +855,9 @@ class TestPipedriveWebhooks(TestCase):
                 "lost_deals_count": 0,
                 "related_lost_deals_count": 0,
                 "active_flag": True,
-                "phone": [
-                    {
-                        "label": "work",
-                        "value": "22222222",
-                        "primary": True
-                    }
-                ],
+                "phone": [{"label": "work", "value": "22222222", "primary": True}],
                 "email": [
-                    {
-                        "label": "work",
-                        "value": "mail@example.com",
-                        "primary": True
-                    }
+                    {"label": "work", "value": "mail@example.com", "primary": True}
                 ],
                 "first_char": "p",
                 "update_time": "2017-04-20 01:03:47",
@@ -959,14 +873,14 @@ class TestPipedriveWebhooks(TestCase):
                 "last_outgoing_mail_time": None,
                 "org_name": None,
                 "cc_email": "mycompany@pipedrivemail.com",
-                "owner_name": "OWNER"
+                "owner_name": "OWNER",
             },
             "previous": None,
             "indexable_fields": [],
-            "event": "added.person"
+            "event": "added.person",
         }
 
-        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+        c.post("/pipedrive/", data=json.dumps(data), content_type="application/json")
 
         self.assertEquals(Person.objects.count(), 1)
 
@@ -999,7 +913,7 @@ class TestPipedriveWebhooks(TestCase):
                 "timestamp_milli": 1492712041663,
                 "permitted_user_ids": ["*"],
                 "trans_pending": False,
-                "is_bulk_update": False
+                "is_bulk_update": False,
             },
             "retry": 0,
             "current": {
@@ -1012,13 +926,13 @@ class TestPipedriveWebhooks(TestCase):
                 "rotten_flag": True,
                 "rotten_days": 5,
                 "add_time": "2017-04-20 18:14:01",
-                "update_time": "2017-04-20 18:14:01"
+                "update_time": "2017-04-20 18:14:01",
             },
             "previous": None,
-            "event": "added.stage"
+            "event": "added.stage",
         }
 
-        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+        c.post("/pipedrive/", data=json.dumps(data), content_type="application/json")
 
         self.assertEquals(Stage.objects.count(), 1)
 
@@ -1030,22 +944,14 @@ class TestPipedriveWebhooks(TestCase):
 
         c = Client()
 
-        Organization.objects.create(
-            name="TEST_ORGANIZATION",
-            external_id=997,
-        )
+        Organization.objects.create(name="TEST_ORGANIZATION", external_id=997)
 
         self.assertEquals(Organization.objects.count(), 1)
 
         data = {
             "v": 1,
-            "matches_filters":
-            {
-                "current": [],
-                "previous": []
-            },
-            "meta":
-            {
+            "matches_filters": {"current": [], "previous": []},
+            "meta": {
                 "v": 1,
                 "action": "deleted",
                 "object": "organization",
@@ -1059,16 +965,11 @@ class TestPipedriveWebhooks(TestCase):
                 "trans_pending": False,
                 "is_bulk_update": False,
                 "elastic_enabled": True,
-                "matches_filters":
-                {
-                    "current": [],
-                    "previous": []
-                }
+                "matches_filters": {"current": [], "previous": []},
             },
             "retry": 0,
             "current": None,
-            "previous":
-            {
+            "previous": {
                 "id": 997,
                 "company_id": 1689563,
                 "owner_id": 2428657,
@@ -1117,13 +1018,13 @@ class TestPipedriveWebhooks(TestCase):
                 "address_postal_code": None,
                 "address_formatted_address": None,
                 "owner_name": "OWNER",
-                "cc_email": "mycompany@pipedrivemail.com"
+                "cc_email": "mycompany@pipedrivemail.com",
             },
             "indexable_fields": [],
-            "event": "deleted.organization"
+            "event": "deleted.organization",
         }
 
-        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+        c.post("/pipedrive/", data=json.dumps(data), content_type="application/json")
 
         self.assertEquals(Organization.objects.count(), 1)
         self.assertEquals(Organization.objects.filter(deleted=True).count(), 1)
@@ -1136,13 +1037,8 @@ class TestPipedriveWebhooks(TestCase):
         User.objects.create(external_id=2428657)
         data = {
             "v": 1,
-            "matches_filters":
-            {
-                "current": [],
-                "previous": []
-            },
-            "meta":
-            {
+            "matches_filters": {"current": [], "previous": []},
+            "meta": {
                 "v": 1,
                 "action": "deleted",
                 "object": "organization",
@@ -1156,16 +1052,11 @@ class TestPipedriveWebhooks(TestCase):
                 "trans_pending": False,
                 "is_bulk_update": False,
                 "elastic_enabled": True,
-                "matches_filters":
-                {
-                    "current": [],
-                    "previous": []
-                }
+                "matches_filters": {"current": [], "previous": []},
             },
             "retry": 0,
             "current": None,
-            "previous":
-            {
+            "previous": {
                 "id": 997,
                 "company_id": 1689563,
                 "owner_id": 2428657,
@@ -1214,36 +1105,34 @@ class TestPipedriveWebhooks(TestCase):
                 "address_postal_code": None,
                 "address_formatted_address": None,
                 "owner_name": "OWNER",
-                "cc_email": "mycompany@pipedrivemail.com"
+                "cc_email": "mycompany@pipedrivemail.com",
             },
             "indexable_fields": [],
-            "event": "deleted.organization"
+            "event": "deleted.organization",
         }
 
-        class fake_organization_api():
+        class fake_organization_api:
             def get_instances(self, **kwargs):
                 return {
                     "success": True,
-                    'data': [data['previous']],
-                    "additional_data": {
-                        "company_id": 1142847
-                    }
+                    "data": [data["previous"]],
+                    "additional_data": {"company_id": 1142847},
                 }
 
             def get_instance(self, *args, **kwargs):
                 return {
                     "success": True,
-                    'data': data['previous'],
-                    "additional_data": {
-                        "company_id": 1142847
-                    }
+                    "data": data["previous"],
+                    "additional_data": {"company_id": 1142847},
                 }
 
         old_org_api = Organization.pipedrive_api_client
 
         try:
             Organization.pipedrive_api_client = fake_organization_api()
-            c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+            c.post(
+                "/pipedrive/", data=json.dumps(data), content_type="application/json"
+            )
 
             self.assertEquals(Organization.objects.count(), 1)
             self.assertEquals(Organization.objects.filter(deleted=True).count(), 1)
@@ -1255,22 +1144,14 @@ class TestPipedriveWebhooks(TestCase):
 
         c = Client()
 
-        Organization.objects.create(
-            name="TEST_ORGANIZATION",
-            external_id=997,
-        )
+        Organization.objects.create(name="TEST_ORGANIZATION", external_id=997)
 
         self.assertEquals(FieldModification.objects.count(), 0)
 
         data = {
             "v": 1,
-            "matches_filters":
-            {
-                "current": [],
-                "previous": []
-            },
-            "meta":
-            {
+            "matches_filters": {"current": [], "previous": []},
+            "meta": {
                 "v": 1,
                 "action": "deleted",
                 "object": "organization",
@@ -1284,16 +1165,11 @@ class TestPipedriveWebhooks(TestCase):
                 "trans_pending": False,
                 "is_bulk_update": False,
                 "elastic_enabled": True,
-                "matches_filters":
-                {
-                    "current": [],
-                    "previous": []
-                }
+                "matches_filters": {"current": [], "previous": []},
             },
             "retry": 0,
             "current": None,
-            "previous":
-            {
+            "previous": {
                 "id": 997,
                 "company_id": 1689563,
                 "owner_id": 2428657,
@@ -1342,13 +1218,13 @@ class TestPipedriveWebhooks(TestCase):
                 "address_postal_code": None,
                 "address_formatted_address": None,
                 "owner_name": "OWNER",
-                "cc_email": "mycompany@pipedrivemail.com"
+                "cc_email": "mycompany@pipedrivemail.com",
             },
             "indexable_fields": [],
-            "event": "deleted.organization"
+            "event": "deleted.organization",
         }
 
-        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+        c.post("/pipedrive/", data=json.dumps(data), content_type="application/json")
 
         self.assertEquals(FieldModification.objects.count(), 0)
 
@@ -1357,15 +1233,10 @@ class TestPipedriveWebhooks(TestCase):
         c = Client()
 
         Organization.objects.create(
-            name="TEST_ORGANIZATION_1",
-            external_id=996,
-            owner_id=111
+            name="TEST_ORGANIZATION_1", external_id=996, owner_id=111
         )
 
-        Organization.objects.create(
-            name="TEST_ORGANIZATION_2",
-            external_id=995,
-        )
+        Organization.objects.create(name="TEST_ORGANIZATION_2", external_id=995)
 
         User.objects.create(external_id=111)
 
@@ -1373,13 +1244,8 @@ class TestPipedriveWebhooks(TestCase):
 
         data = {
             "v": 1,
-            "matches_filters":
-            {
-                "current": [],
-                "previous": []
-            },
-            "meta":
-            {
+            "matches_filters": {"current": [], "previous": []},
+            "meta": {
                 "v": 1,
                 "action": "merged",
                 "object": "organization",
@@ -1392,14 +1258,10 @@ class TestPipedriveWebhooks(TestCase):
                 "permitted_user_ids": [2428657],
                 "trans_pending": False,
                 "is_bulk_update": False,
-                "matches_filters": {
-                    "current": [],
-                    "previous": []
-                }
+                "matches_filters": {"current": [], "previous": []},
             },
             "retry": 0,
-            "current":
-            {
+            "current": {
                 "id": 996,
                 "company_id": 1689563,
                 "owner_id": 111,
@@ -1450,10 +1312,9 @@ class TestPipedriveWebhooks(TestCase):
                 "cc_email": "mycompany@pipedrivemail.com",
                 "owner_name": "OWNER",
                 "edit_name": True,
-                "merge_what_id": 995
+                "merge_what_id": 995,
             },
-            "previous":
-            {
+            "previous": {
                 "id": 995,
                 "company_id": 1689563,
                 "owner_id": 222,
@@ -1503,12 +1364,12 @@ class TestPipedriveWebhooks(TestCase):
                 "address_formatted_address": "Sinfin Shopping Centre, Reino Unido",
                 "cc_email": "mycompany@pipedrivemail.com",
                 "owner_name": "OWNER",
-                "edit_name": True
+                "edit_name": True,
             },
-            "event": "merged.organization"
+            "event": "merged.organization",
         }
 
-        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+        c.post("/pipedrive/", data=json.dumps(data), content_type="application/json")
 
         self.assertEquals(Organization.objects.count(), 2)
 
@@ -1523,8 +1384,7 @@ class TestPipedriveWebhooks(TestCase):
         data = {
             "v": 1,
             "matches_filters": None,
-            "meta":
-            {
+            "meta": {
                 "v": 1,
                 "action": "added",
                 "object": "note",
@@ -1537,7 +1397,7 @@ class TestPipedriveWebhooks(TestCase):
                 "permitted_user_ids": ["*"],
                 "trans_pending": False,
                 "is_bulk_update": False,
-                "elastic_enabled": True
+                "elastic_enabled": True,
             },
             "retry": 0,
             "current": {
@@ -1561,16 +1421,16 @@ class TestPipedriveWebhooks(TestCase):
                     "email": "user@example.com",
                     "name": "TEST_USER",
                     "icon_url": None,
-                    "is_you": True
-                }
+                    "is_you": True,
+                },
             },
             "previous": None,
-            "event": "added.note"
+            "event": "added.note",
         }
 
         Person.objects.create(external_id=994)
 
-        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+        c.post("/pipedrive/", data=json.dumps(data), content_type="application/json")
 
         self.assertEquals(Note.objects.count(), 1)
 
@@ -1589,8 +1449,7 @@ class TestPipedriveWebhooks(TestCase):
         data = {
             "v": 1,
             "matches_filters": None,
-            "meta":
-            {
+            "meta": {
                 "v": 1,
                 "action": "added",
                 "object": "note",
@@ -1603,7 +1462,7 @@ class TestPipedriveWebhooks(TestCase):
                 "permitted_user_ids": ["*"],
                 "trans_pending": False,
                 "is_bulk_update": False,
-                "elastic_enabled": True
+                "elastic_enabled": True,
             },
             "retry": 0,
             "current": {
@@ -1627,16 +1486,16 @@ class TestPipedriveWebhooks(TestCase):
                     "email": "user@example.com",
                     "name": "TEST_USER",
                     "icon_url": None,
-                    "is_you": True
-                }
+                    "is_you": True,
+                },
             },
             "previous": None,
-            "event": "added.note"
+            "event": "added.note",
         }
 
         Organization.objects.create(external_id=993)
 
-        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+        c.post("/pipedrive/", data=json.dumps(data), content_type="application/json")
 
         self.assertEquals(Note.objects.count(), 1)
 
@@ -1668,7 +1527,7 @@ class TestPipedriveWebhooks(TestCase):
                 "permitted_user_ids": ["*"],
                 "trans_pending": False,
                 "is_bulk_update": False,
-                "elastic_enabled": True
+                "elastic_enabled": True,
             },
             "retry": 0,
             "current": {
@@ -1692,16 +1551,16 @@ class TestPipedriveWebhooks(TestCase):
                     "email": "user@example.com",
                     "name": "TEST_USER",
                     "icon_url": None,
-                    "is_you": True
-                }
+                    "is_you": True,
+                },
             },
             "previous": None,
-            "event": "added.note"
+            "event": "added.note",
         }
 
         Deal.objects.create(external_id=992)
 
-        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+        c.post("/pipedrive/", data=json.dumps(data), content_type="application/json")
 
         self.assertEquals(Note.objects.count(), 1)
 
@@ -1725,10 +1584,7 @@ class TestPipedriveWebhooks(TestCase):
 
         data = {
             "v": 1,
-            "matches_filters": {
-                "current": [],
-                "previous": []
-            },
+            "matches_filters": {"current": [], "previous": []},
             "meta": {
                 "v": 1,
                 "action": "added",
@@ -1742,10 +1598,7 @@ class TestPipedriveWebhooks(TestCase):
                 "permitted_user_ids": [2428657],
                 "trans_pending": False,
                 "is_bulk_update": False,
-                "matches_filters": {
-                    "current": [],
-                    "previous": []
-                }
+                "matches_filters": {"current": [], "previous": []},
             },
             "retry": 0,
             "current": {
@@ -1803,14 +1656,14 @@ class TestPipedriveWebhooks(TestCase):
                 "owner_name": "TEST_USER",
                 "cc_email": "mycompany+deal9@pipedrivemail.com",
                 "org_hidden": False,
-                "person_hidden": False
+                "person_hidden": False,
             },
             "previous": None,
             "indexable_fields": [],
-            "event": "added.deal"
+            "event": "added.deal",
         }
 
-        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+        c.post("/pipedrive/", data=json.dumps(data), content_type="application/json")
 
         deal = Deal.objects.get(external_id=9)
 
@@ -1827,10 +1680,7 @@ class TestPipedriveWebhooks(TestCase):
 
         data = {
             "v": 1,
-            "matches_filters": {
-                "current": [],
-                "previous": []
-            },
+            "matches_filters": {"current": [], "previous": []},
             "meta": {
                 "v": 1,
                 "action": "added",
@@ -1844,10 +1694,7 @@ class TestPipedriveWebhooks(TestCase):
                 "permitted_user_ids": [2428657, 1428742],
                 "trans_pending": False,
                 "is_bulk_update": False,
-                "matches_filters": {
-                    "current": [],
-                    "previous": []
-                }
+                "matches_filters": {"current": [], "previous": []},
             },
             "retry": 0,
             "current": {
@@ -1877,16 +1724,10 @@ class TestPipedriveWebhooks(TestCase):
                 "lost_deals_count": 0,
                 "related_lost_deals_count": 0,
                 "active_flag": True,
-                "phone": [{
-                    "label": "work",
-                    "value": "3232635+6",
-                    "primary": True
-                }],
-                "email": [{
-                    "label": "work",
-                    "value": "address@example.com",
-                    "primary": True
-                }],
+                "phone": [{"label": "work", "value": "3232635+6", "primary": True}],
+                "email": [
+                    {"label": "work", "value": "address@example.com", "primary": True}
+                ],
                 "first_char": "n",
                 "update_time": "2017-04-23 23:28:57",
                 "add_time": "2017-04-23 23:28:57",
@@ -1902,20 +1743,20 @@ class TestPipedriveWebhooks(TestCase):
                 "66fb3447cad79ece76413df362fea1122856bcb3": 45,
                 "org_name": None,
                 "cc_email": "mycompany@pipedrivemail.com",
-                "owner_name": "OWNER"
+                "owner_name": "OWNER",
             },
             "previous": None,
             "indexable_fields": ["66fb3447cad79ece76413df362fea1122856bcb3"],
-            "event": "added.person"
+            "event": "added.person",
         }
 
-        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+        c.post("/pipedrive/", data=json.dumps(data), content_type="application/json")
 
         person = Person.objects.get(external_id=84)
 
-        additional_field = '66fb3447cad79ece76413df362fea1122856bcb3'
+        additional_field = "66fb3447cad79ece76413df362fea1122856bcb3"
 
-        self.assertEquals(person.additional_fields[additional_field], u'45')
+        self.assertEquals(person.additional_fields[additional_field], u"45")
 
     def test_update_person_with_additional_fields(self):
 
@@ -1927,10 +1768,7 @@ class TestPipedriveWebhooks(TestCase):
 
         data = {
             "v": 1,
-            "matches_filters": {
-                "current": [],
-                "previous": []
-            },
+            "matches_filters": {"current": [], "previous": []},
             "meta": {
                 "v": 1,
                 "action": "updated",
@@ -1944,10 +1782,7 @@ class TestPipedriveWebhooks(TestCase):
                 "permitted_user_ids": [2428657, 1428742],
                 "trans_pending": False,
                 "is_bulk_update": False,
-                "matches_filters": {
-                    "current": [],
-                    "previous": []
-                }
+                "matches_filters": {"current": [], "previous": []},
             },
             "retry": 0,
             "current": {
@@ -1977,16 +1812,8 @@ class TestPipedriveWebhooks(TestCase):
                 "lost_deals_count": 0,
                 "related_lost_deals_count": 0,
                 "active_flag": True,
-                "phone": [{
-                    "label": "work",
-                    "value": "3242342",
-                    "primary": True
-                }],
-                "email": [{
-                    "label": "work",
-                    "value": "234234",
-                    "primary": True
-                }],
+                "phone": [{"label": "work", "value": "3242342", "primary": True}],
+                "email": [{"label": "work", "value": "234234", "primary": True}],
                 "first_char": "t",
                 "update_time": "2017-04-23 22:43:01",
                 "add_time": "2017-04-20 14:42:48",
@@ -2001,7 +1828,7 @@ class TestPipedriveWebhooks(TestCase):
                 "last_outgoing_mail_time": None,
                 "66fb3447cad79ece76413df362fea1122856bcb3": 123,
                 "org_name": None,
-                "cc_email": "miempresa2@pipedrivemail.com"
+                "cc_email": "miempresa2@pipedrivemail.com",
             },
             "previous": {
                 "id": 15,
@@ -2030,14 +1857,8 @@ class TestPipedriveWebhooks(TestCase):
                 "lost_deals_count": 0,
                 "related_lost_deals_count": 0,
                 "active_flag": True,
-                "phone": [{
-                    "value": "",
-                    "primary": True
-                }],
-                "email": [{
-                    "value": "",
-                    "primary": True
-                }],
+                "phone": [{"value": "", "primary": True}],
+                "email": [{"value": "", "primary": True}],
                 "first_char": "t",
                 "update_time": "2017-04-20 14:42:48",
                 "add_time": "2017-04-20 14:42:48",
@@ -2052,23 +1873,22 @@ class TestPipedriveWebhooks(TestCase):
                 "last_outgoing_mail_time": None,
                 "66fb3447cad79ece76413df362fea1122856bcb3": None,
                 "org_name": None,
-                "cc_email": "miempresa2@pipedrivemail.com"
+                "cc_email": "miempresa2@pipedrivemail.com",
             },
             "indexable_fields": ["66fb3447cad79ece76413df362fea1122856bcb3"],
-            "event": "updated.person"
+            "event": "updated.person",
         }
 
-        c.post('/pipedrive/', data=json.dumps(data), content_type="application/json")
+        c.post("/pipedrive/", data=json.dumps(data), content_type="application/json")
 
         person = Person.objects.get(external_id=15)
 
-        additional_field = '66fb3447cad79ece76413df362fea1122856bcb3'
+        additional_field = "66fb3447cad79ece76413df362fea1122856bcb3"
 
-        self.assertEquals(person.additional_fields[additional_field], u'123')
+        self.assertEquals(person.additional_fields[additional_field], u"123")
 
 
 class TestPipedriveCreation(TestCase):
-
     def setUp(self):
         Pipeline.fetch_from_pipedrive()
         self.pipeline = Pipeline.objects.first()
@@ -2092,8 +1912,7 @@ class TestPipedriveCreation(TestCase):
     def test_upload_organization_with_id_at_additional_attributes(self):
 
         organization = Organization.objects.create(
-            name="TEST_ORGANIZATION",
-            additional_fields={'id': '3'}
+            name="TEST_ORGANIZATION", additional_fields={"id": "3"}
         )
 
         result = organization.upload()
@@ -2117,8 +1936,7 @@ class TestPipedriveCreation(TestCase):
     def test_create_deal(self):
 
         deal = Deal.objects.create(
-            title="TEST_DEAL",
-            pipeline_id=self.pipeline.external_id,
+            title="TEST_DEAL", pipeline_id=self.pipeline.external_id
         )
 
         result = deal.upload()
@@ -2155,8 +1973,7 @@ class TestPipedriveCreation(TestCase):
         organization = Organization.objects.create(name="TEST_ORGANIZATION")
         organization.upload()
         person = Person.objects.create(
-            name="TEST_PERSON",
-            org_id=organization.external_id,
+            name="TEST_PERSON", org_id=organization.external_id
         )
 
         result = person.upload()
@@ -2174,10 +1991,7 @@ class TestPipedriveCreation(TestCase):
 
     def test_create_stage(self):
 
-        Pipeline.objects.create(
-            name="TEST_PIPELINE",
-            external_id=888,
-        )
+        Pipeline.objects.create(name="TEST_PIPELINE", external_id=888)
 
         stage = Stage.objects.create(name="TEST_STAGE", pipeline_id=888)
 
@@ -2241,25 +2055,21 @@ class TestPipedriveCreation(TestCase):
 
     def test_create_deal_field(self):
 
-        deal_field = DealField.objects.create(
-            name="TEST_DEAL_FIELD",
-            field_type="text",
-        )
+        deal_field = DealField.objects.create(name="TEST_DEAL_FIELD", field_type="text")
 
         result = deal_field.upload()
 
         self.assertTrue(result)
         self.assertIsNotNone(deal_field.external_id)
         self.assertIsNotNone(deal_field.field_type)
-        self.assertNotEquals(deal_field.key, u'')
+        self.assertNotEquals(deal_field.key, u"")
 
         self.for_delete.append(deal_field)
 
     def test_create_person_field(self):
 
         person_field = PersonField.objects.create(
-            name="TEST_PERSON_FIELD",
-            field_type="text",
+            name="TEST_PERSON_FIELD", field_type="text"
         )
 
         result = person_field.upload()
@@ -2267,15 +2077,14 @@ class TestPipedriveCreation(TestCase):
         self.assertTrue(result)
         self.assertIsNotNone(person_field.external_id)
         self.assertIsNotNone(person_field.field_type)
-        self.assertNotEquals(person_field.key, u'')
+        self.assertNotEquals(person_field.key, u"")
 
         self.for_delete.append(person_field)
 
     def test_create_organization_field(self):
 
         organization_field = OrganizationField.objects.create(
-            name="TEST_ORGANIZATION_FIELD",
-            field_type="text",
+            name="TEST_ORGANIZATION_FIELD", field_type="text"
         )
 
         result = organization_field.upload()
@@ -2283,13 +2092,12 @@ class TestPipedriveCreation(TestCase):
         self.assertTrue(result)
         self.assertIsNotNone(organization_field.external_id)
         self.assertIsNotNone(organization_field.field_type)
-        self.assertNotEquals(organization_field.key, u'')
+        self.assertNotEquals(organization_field.key, u"")
 
         self.for_delete.append(organization_field)
 
 
 class TestCreateSyncAndUpload(TestCase):
-
     def case_create_sync_and_upload_instance(self, cls, field_name, defaults={}):
         """
         The test case creates a local instance, then it uploads it.
@@ -2330,36 +2138,40 @@ class TestCreateSyncAndUpload(TestCase):
 
     def test_case_create_sync_and_upload_organization(self):
 
-        self.case_create_sync_and_upload_instance(Organization, 'name')
+        self.case_create_sync_and_upload_instance(Organization, "name")
 
     def test_case_create_sync_and_upload_person(self):
 
-        self.case_create_sync_and_upload_instance(Person, 'name')
+        self.case_create_sync_and_upload_instance(Person, "name")
 
     def test_case_create_sync_and_upload_pipeline(self):
 
-        self.case_create_sync_and_upload_instance(Pipeline, 'name')
+        self.case_create_sync_and_upload_instance(Pipeline, "name")
 
     def test_case_create_sync_and_upload_organization_field(self):
 
         self.case_create_sync_and_upload_instance(
-            OrganizationField, 'name', {'field_type': 'text'})
+            OrganizationField, "name", {"field_type": "text"}
+        )
 
     def test_case_create_sync_and_upload_deal_deal(self):
 
-        self.case_create_sync_and_upload_instance(DealField, 'name', {'field_type': 'text'})
+        self.case_create_sync_and_upload_instance(
+            DealField, "name", {"field_type": "text"}
+        )
 
     def test_case_create_sync_and_upload_person_field(self):
 
-        self.case_create_sync_and_upload_instance(PersonField, 'name', {'field_type': 'text'})
+        self.case_create_sync_and_upload_instance(
+            PersonField, "name", {"field_type": "text"}
+        )
 
     def test_case_create_sync_and_upload_activity(self):
 
-        self.case_create_sync_and_upload_instance(Activity, 'subject')
+        self.case_create_sync_and_upload_instance(Activity, "subject")
 
 
 class TestPipedriveCreationWithAdditionalFields(TestCase):
-
     def setUp(self):
         Pipeline.fetch_from_pipedrive()
 
@@ -2368,17 +2180,16 @@ class TestPipedriveCreationWithAdditionalFields(TestCase):
     def test_create_organization_with_additional_fields(self):
 
         organization_field = OrganizationField.objects.create(
-            name="TEST_ORGANIZATION_FIELD",
-            field_type="text",
+            name="TEST_ORGANIZATION_FIELD", field_type="text"
         )
 
         result = organization_field.upload()
 
         organization_kwargs = {}
-        organization_kwargs['name'] = "TEST_ORGANIZATION"
+        organization_kwargs["name"] = "TEST_ORGANIZATION"
         additional_fields = {}
         additional_fields[organization_field.key] = "TEST_TEXT"
-        organization_kwargs['additional_fields'] = additional_fields
+        organization_kwargs["additional_fields"] = additional_fields
 
         organization = Organization.objects.create(**organization_kwargs)
 
@@ -2390,32 +2201,37 @@ class TestPipedriveCreationWithAdditionalFields(TestCase):
         self.assertIsNotNone(organization.name)
         self.assertIsNotNone(organization.additional_fields)
         self.assertIsNotNone(organization.additional_fields[organization_field.key])
-        self.assertEquals(organization.additional_fields[organization_field.key], "TEST_TEXT")
+        self.assertEquals(
+            organization.additional_fields[organization_field.key], "TEST_TEXT"
+        )
 
         pipedrive_api_client = Organization.pipedrive_api_client
 
-        online_organization = pipedrive_api_client.get_instance(organization.external_id)
+        online_organization = pipedrive_api_client.get_instance(
+            organization.external_id
+        )
 
         # The information appears online
-        self.assertIsNotNone(online_organization[u'data'])
-        self.assertEquals(online_organization[u'data'][u'name'], u"TEST_ORGANIZATION")
-        self.assertTrue(organization_field.key in online_organization[u'data'])
-        self.assertEquals(online_organization[u'data'][organization_field.key], "TEST_TEXT")
+        self.assertIsNotNone(online_organization[u"data"])
+        self.assertEquals(online_organization[u"data"][u"name"], u"TEST_ORGANIZATION")
+        self.assertTrue(organization_field.key in online_organization[u"data"])
+        self.assertEquals(
+            online_organization[u"data"][organization_field.key], "TEST_TEXT"
+        )
 
     def test_create_person_with_additional_fields(self):
 
         person_field = PersonField.objects.create(
-            name="TEST_PERSON_FIELD",
-            field_type="text",
+            name="TEST_PERSON_FIELD", field_type="text"
         )
 
         person_field.upload()
 
         person_kwargs = {}
-        person_kwargs['name'] = "TEST_PERSON"
+        person_kwargs["name"] = "TEST_PERSON"
         additional_fields = {}
         additional_fields[person_field.key] = "TEST_TEXT"
-        person_kwargs['additional_fields'] = additional_fields
+        person_kwargs["additional_fields"] = additional_fields
 
         person = Person.objects.create(**person_kwargs)
 
@@ -2434,25 +2250,22 @@ class TestPipedriveCreationWithAdditionalFields(TestCase):
         online_person = pipedrive_api_client.get_instance(person.external_id)
 
         # The information appears online
-        self.assertIsNotNone(online_person[u'data'])
-        self.assertEquals(online_person[u'data'][u'name'], u"TEST_PERSON")
-        self.assertEquals(online_person[u'data'][person_field.key], "TEST_TEXT")
+        self.assertIsNotNone(online_person[u"data"])
+        self.assertEquals(online_person[u"data"][u"name"], u"TEST_PERSON")
+        self.assertEquals(online_person[u"data"][person_field.key], "TEST_TEXT")
 
     def test_create_deal_with_additional_fields(self):
 
-        deal_field = DealField.objects.create(
-            name="TEST_DEAL_FIELD",
-            field_type="text",
-        )
+        deal_field = DealField.objects.create(name="TEST_DEAL_FIELD", field_type="text")
 
         deal_field.upload()
 
         deal_kwargs = {}
-        deal_kwargs['title'] = "TEST_DEAL"
-        deal_kwargs['pipeline_id'] = self.pipeline.external_id
+        deal_kwargs["title"] = "TEST_DEAL"
+        deal_kwargs["pipeline_id"] = self.pipeline.external_id
         additional_fields = {}
         additional_fields[deal_field.key] = "TEST_TEXT"
-        deal_kwargs['additional_fields'] = additional_fields
+        deal_kwargs["additional_fields"] = additional_fields
 
         deal = Deal.objects.create(**deal_kwargs)
 
@@ -2471,13 +2284,12 @@ class TestPipedriveCreationWithAdditionalFields(TestCase):
         online_deal = pipedrive_api_client.get_instance(deal.external_id)
 
         # The information appears online
-        self.assertIsNotNone(online_deal[u'data'])
-        self.assertEquals(online_deal[u'data'][u'title'], u"TEST_DEAL")
-        self.assertEquals(online_deal[u'data'][deal_field.key], "TEST_TEXT")
+        self.assertIsNotNone(online_deal[u"data"])
+        self.assertEquals(online_deal[u"data"][u"title"], u"TEST_DEAL")
+        self.assertEquals(online_deal[u"data"][deal_field.key], "TEST_TEXT")
 
 
 class TestPipedrive(TestCase):
-
     def setUp(self):
         DealField.fetch_from_pipedrive()
         OrganizationField.fetch_from_pipedrive()
@@ -2485,12 +2297,11 @@ class TestPipedrive(TestCase):
 
     def test_datetime_from_fields_none_fields(self):
 
-        el = {
-            "next_activity_date": None,
-            "next_activity_time": None
-        }
+        el = {"next_activity_date": None, "next_activity_time": None}
 
-        result = Organization.datetime_from_fields(el, 'next_activity_date', 'next_activity_time')
+        result = Organization.datetime_from_fields(
+            el, "next_activity_date", "next_activity_time"
+        )
 
         self.assertIsNone(result)
 
@@ -2498,36 +2309,37 @@ class TestPipedrive(TestCase):
 
         el = {}
 
-        result = Organization.datetime_from_fields(el, 'next_activity_date', 'next_activity_time')
+        result = Organization.datetime_from_fields(
+            el, "next_activity_date", "next_activity_time"
+        )
 
         self.assertIsNone(result)
 
     def test_datetime_from_fields_correct(self):
 
-        el = {
-            "next_activity_date": "2017-03-20",
-            "next_activity_time": "14:01:02"
-        }
+        el = {"next_activity_date": "2017-03-20", "next_activity_time": "14:01:02"}
 
-        result = Organization.datetime_from_fields(el, 'next_activity_date', 'next_activity_time')
+        result = Organization.datetime_from_fields(
+            el, "next_activity_date", "next_activity_time"
+        )
         expected = datetime.datetime(2017, 3, 20, 14, 1, 2, 0, tzinfo=pytz.utc)
 
         self.assertEquals(result, expected)
 
     def test_datetime_from_simple_time_correct(self):
 
-        el = {u'update_time': u'2017-04-03 16:21:12'}
+        el = {u"update_time": u"2017-04-03 16:21:12"}
 
-        result = Organization.datetime_from_simple_time(el, u'update_time')
+        result = Organization.datetime_from_simple_time(el, u"update_time")
         expected = datetime.datetime(2017, 4, 3, 16, 21, 12, 0, tzinfo=pytz.utc)
 
         self.assertEquals(result, expected)
 
     def test_datetime_from_simple_time_zero(self):
 
-        el = {u'update_time': u'0000-00-00 00:00:00'}
+        el = {u"update_time": u"0000-00-00 00:00:00"}
 
-        result = Organization.datetime_from_simple_time(el, u'update_time')
+        result = Organization.datetime_from_simple_time(el, u"update_time")
 
         self.assertIsNone(result)
 
@@ -2535,63 +2347,58 @@ class TestPipedrive(TestCase):
 
         el = {}
 
-        result = Organization.datetime_from_simple_time(el, u'update_time')
+        result = Organization.datetime_from_simple_time(el, u"update_time")
 
         self.assertIsNone(result)
 
     def test_datetime_from_simple_time_blank_field(self):
 
-        el = {u'update_time': ''}
+        el = {u"update_time": ""}
 
-        result = Organization.datetime_from_simple_time(el, u'update_time')
+        result = Organization.datetime_from_simple_time(el, u"update_time")
 
         self.assertIsNone(result)
 
     def test_datetime_from_simple_time__field(self):
 
-        el = {u'update_time': None}
+        el = {u"update_time": None}
 
-        result = Organization.datetime_from_simple_time(el, u'update_time')
+        result = Organization.datetime_from_simple_time(el, u"update_time")
 
         self.assertIsNone(result)
 
     def test_get_value_or_none_none(self):
 
-        el = {
-            'due_time': u''
-        }
+        el = {"due_time": u""}
 
-        result = Activity.get_value_or_none(el, u'due_time')
+        result = Activity.get_value_or_none(el, u"due_time")
 
         self.assertIsNone(result)
 
     def test_get_value_or_none_value(self):
 
-        el = {
-            'due_time': u'16:00'
-        }
+        el = {"due_time": u"16:00"}
 
-        result = Activity.get_value_or_none(el, u'due_time')
-        expected = u'16:00'
+        result = Activity.get_value_or_none(el, u"due_time")
+        expected = u"16:00"
 
         self.assertEquals(result, expected)
 
     def test_get_primary_correct(self):
 
         el = {
-            u'email':
-                [
-                    {u'primary': False,
-                     u'value': u'example2@example.com',
-                     u'label': u'work'},
-                    {u'primary': True,
-                     u'value': u'example@example.com',
-                     u'label': u'work'}
-                ]
+            u"email": [
+                {
+                    u"primary": False,
+                    u"value": u"example2@example.com",
+                    u"label": u"work",
+                },
+                {u"primary": True, u"value": u"example@example.com", u"label": u"work"},
+            ]
         }
 
-        result = Person.get_primary(el, u'email')
-        expected = u'example@example.com'
+        result = Person.get_primary(el, u"email")
+        expected = u"example@example.com"
 
         self.assertEquals(result, expected)
 
@@ -2599,13 +2406,12 @@ class TestPipedrive(TestCase):
 
         el = {}
 
-        result = Person.get_primary(el, u'email')
+        result = Person.get_primary(el, u"email")
 
         self.assertIsNone(result)
 
 
 class TestFetchModels(TestCase):
-
     def test_fetch_from_pipedrive_organizations(self):
 
         result = Organization.fetch_from_pipedrive()
@@ -2677,8 +2483,7 @@ class TestFetchModels(TestCase):
         self.assertTrue(result)
 
     def test_fetch_data_null(self):
-
-        class fake_api():
+        class fake_api:
             def get_instances(self, **kwargs):
                 return {
                     "success": True,
@@ -2687,9 +2492,9 @@ class TestFetchModels(TestCase):
                         "pagination": {
                             "start": 0,
                             "limit": 100,
-                            "more_items_in_collection": False
+                            "more_items_in_collection": False,
                         }
-                    }
+                    },
                 }
 
         old_api = Organization.pipedrive_api_client
@@ -2701,40 +2506,39 @@ class TestFetchModels(TestCase):
 
 
 class TestCreateFromObject(TestCase):
-
     def test_activity_update_or_create_entity_from_api_post(self):
 
         obj = {
-            u'org_name': None,
-            u'deal_id': None,
-            u'assigned_to_user_id': 2428657,
-            u'marked_as_done_time': u'',
-            u'google_calendar_id': None,
-            u'done': False,
-            u'duration': u'',
-            u'gcal_event_id': None,
-            u'subject': u'TEST_ACTIVITY',
-            u'created_by_user_id': 2428657,
-            u'user_id': 2428657,
-            u'reference_type': u'none',
-            u'company_id': 1689563,
-            u'id': 2,
-            u'note': u'',
-            u'due_time': u'',
-            u'person_id': None,
-            u'type': u'call',
-            u'person_dropbox_bcc': None,
-            u'active_flag': True,
-            u'due_date': u'2017-04-21',
-            u'update_time': u'2017-04-21 12:21:10',
-            u'owner_name': u'TEST_OWNER',
-            u'person_name': None,
-            u'deal_dropbox_bcc': None,
-            u'reference_id': None,
-            u'add_time': u'2017-04-21 12:21:10',
-            u'google_calendar_etag': None,
-            u'org_id': None,
-            u'deal_title': None
+            u"org_name": None,
+            u"deal_id": None,
+            u"assigned_to_user_id": 2428657,
+            u"marked_as_done_time": u"",
+            u"google_calendar_id": None,
+            u"done": False,
+            u"duration": u"",
+            u"gcal_event_id": None,
+            u"subject": u"TEST_ACTIVITY",
+            u"created_by_user_id": 2428657,
+            u"user_id": 2428657,
+            u"reference_type": u"none",
+            u"company_id": 1689563,
+            u"id": 2,
+            u"note": u"",
+            u"due_time": u"",
+            u"person_id": None,
+            u"type": u"call",
+            u"person_dropbox_bcc": None,
+            u"active_flag": True,
+            u"due_date": u"2017-04-21",
+            u"update_time": u"2017-04-21 12:21:10",
+            u"owner_name": u"TEST_OWNER",
+            u"person_name": None,
+            u"deal_dropbox_bcc": None,
+            u"reference_id": None,
+            u"add_time": u"2017-04-21 12:21:10",
+            u"google_calendar_etag": None,
+            u"org_id": None,
+            u"deal_title": None,
         }
 
         result = Activity.update_or_create_entity_from_api_post(obj)
@@ -2743,10 +2547,8 @@ class TestCreateFromObject(TestCase):
 
 
 class TestIntegrity(TransactionTestCase):
-
     def test_fetch_from_pipedrive_with_integrity_error(self):
-
-        class fake_user_api():
+        class fake_user_api:
             def get_instance(self, external_id):
                 return {
                     "success": True,
@@ -2769,60 +2571,54 @@ class TestIntegrity(TransactionTestCase):
                         "timezone_name": "America/Santiago",
                         "active_flag": True,
                         "icon_url": None,
-                        "is_you": False
+                        "is_you": False,
                     },
-                    "additional_data": {
-                        "company_id": 1142847
-                    }
+                    "additional_data": {"company_id": 1142847},
                 }
 
-        class fake_person_api():
+        class fake_person_api:
             def get_instance(self, external_id):
                 return {
                     "success": True,
                     "data": {
                         "id": 8636,
                         "name": "PERSON",
-                        'open_deals_count': 0,
-                        'visible_to': 3,
-                        'won_deals_count': 0,
-                        'lost_deals_count': 0,
-                        'closed_deals_count': 0,
-                        'activities_count': 0,
-                        'done_activities_count': 0,
-                        'undone_activities_count': 0,
-                        'email_messages_count': 0,
+                        "open_deals_count": 0,
+                        "visible_to": 3,
+                        "won_deals_count": 0,
+                        "lost_deals_count": 0,
+                        "closed_deals_count": 0,
+                        "activities_count": 0,
+                        "done_activities_count": 0,
+                        "undone_activities_count": 0,
+                        "email_messages_count": 0,
                     },
-                    "additional_data": {
-                        "company_id": 1142847
-                    }
+                    "additional_data": {"company_id": 1142847},
                 }
 
-        class fake_organization_api():
+        class fake_organization_api:
             def get_instance(self, external_id):
                 return {
                     "success": True,
                     "data": {
                         "id": 10105,
                         "name": "EXAMPLE ORGANIZATION",
-                        'people_count': 0,
-                        'open_deals_count': 0,
-                        'won_deals_count': 0,
-                        'lost_deals_count': 0,
-                        'closed_deals_count': 0,
-                        'visible_to': 3,
-                        'activities_count': 0,
-                        'done_activities_count': 0,
-                        'undone_activities_count': 0,
-                        'email_messages_count': 0,
-                        'address_formatted_address': 0,
+                        "people_count": 0,
+                        "open_deals_count": 0,
+                        "won_deals_count": 0,
+                        "lost_deals_count": 0,
+                        "closed_deals_count": 0,
+                        "visible_to": 3,
+                        "activities_count": 0,
+                        "done_activities_count": 0,
+                        "undone_activities_count": 0,
+                        "email_messages_count": 0,
+                        "address_formatted_address": 0,
                     },
-                    "additional_data": {
-                        "company_id": 1142847
-                    }
+                    "additional_data": {"company_id": 1142847},
                 }
 
-        class fake_stage_api():
+        class fake_stage_api:
             def get_instance(self, external_id):
                 return {
                     "success": True,
@@ -2833,12 +2629,10 @@ class TestIntegrity(TransactionTestCase):
                         "order_nr": 1,
                         "active_flag": True,
                     },
-                    "additional_data": {
-                        "company_id": 1142847
-                    }
+                    "additional_data": {"company_id": 1142847},
                 }
 
-        class fake_pipeline_api():
+        class fake_pipeline_api:
             def get_instance(self, external_id):
                 return {
                     "success": True,
@@ -2848,12 +2642,10 @@ class TestIntegrity(TransactionTestCase):
                         "url_title": "EXAMPLE_URL_TITLE",
                         "active": True,
                     },
-                    "additional_data": {
-                        "company_id": 1142847
-                    }
+                    "additional_data": {"company_id": 1142847},
                 }
 
-        class fake_deal_api():
+        class fake_deal_api:
 
             deal = {
                 "id": 9973,
@@ -2864,7 +2656,7 @@ class TestIntegrity(TransactionTestCase):
                     "has_pic": False,
                     "pic_hash": None,
                     "active_flag": True,
-                    "value": 1629618
+                    "value": 1629618,
                 },
                 "user_id": {
                     "id": 1629618,
@@ -2873,7 +2665,7 @@ class TestIntegrity(TransactionTestCase):
                     "has_pic": False,
                     "pic_hash": None,
                     "active_flag": True,
-                    "value": 1629618
+                    "value": 1629618,
                 },
                 "person_id": {
                     "name": "PERSON",
@@ -2881,17 +2673,11 @@ class TestIntegrity(TransactionTestCase):
                         {
                             "label": "work",
                             "value": "example@example.com",
-                            "primary": True
+                            "primary": True,
                         }
                     ],
-                    "phone": [
-                        {
-                            "label": "work",
-                            "value": "22056282",
-                            "primary": True
-                        }
-                    ],
-                    "value": 8636
+                    "phone": [{"label": "work", "value": "22056282", "primary": True}],
+                    "value": 8636,
                 },
                 "org_id": {
                     "name": "EXAMPLE ORGANIZATION",
@@ -2899,7 +2685,7 @@ class TestIntegrity(TransactionTestCase):
                     "owner_id": 1629618,
                     "address": None,
                     "cc_email": "mycompany@pipedrivemail.com",
-                    "value": 10105
+                    "value": 10105,
                 },
                 "stage_id": 6,
                 "title": "EXAMPLE DEAL",
@@ -2947,7 +2733,7 @@ class TestIntegrity(TransactionTestCase):
                     "owner_id": 1629618,
                     "address": None,
                     "cc_email": "mycompany@pipedrivemail.com",
-                    "value": 10110
+                    "value": 10110,
                 },
                 "575333cd64992c1297dcc674cdc3191db3f1dd59": "2017-02-16",
                 "cc0e1e23219765fff52a966a919351987798d6ac": None,
@@ -2977,7 +2763,7 @@ class TestIntegrity(TransactionTestCase):
                 "owner_name": "OWNER_NAME",
                 "cc_email": "mycompany+deal9973@pipedrivemail.com",
                 "org_hidden": False,
-                "person_hidden": False
+                "person_hidden": False,
             }
 
             def get_instances(self, **kwargs):
@@ -3047,33 +2833,13 @@ class TestIntegrity(TransactionTestCase):
 
 
 class TestUtils(TestCase):
-
     def test_compare_dicts(self):
 
-        dic = {
-            'a': 1,
-            'b': 2,
-            'c': 3,
-        }
-        eq = {
-            'a': 1,
-            'b': 2,
-            'c': 3,
-        }
-        neq = {
-            'a': 1,
-            'b': 4,
-            'c': 3,
-        }
-        sub_set = {
-            'a': 1
-        }
-        super_set = {
-            'a': 1,
-            'b': 2,
-            'c': 3,
-            'd': 4,
-        }
+        dic = {"a": 1, "b": 2, "c": 3}
+        eq = {"a": 1, "b": 2, "c": 3}
+        neq = {"a": 1, "b": 4, "c": 3}
+        sub_set = {"a": 1}
+        super_set = {"a": 1, "b": 2, "c": 3, "d": 4}
 
         self.assertTrue(compare_dicts(dic, eq))
         self.assertTrue(compare_dicts(eq, dic))
@@ -3087,7 +2853,6 @@ class TestUtils(TestCase):
 
 
 class TestFields(TestCase):
-
     def test_truncating_char_field(self):
         person = Person.objects.create(name="a" * 1000)
 
@@ -3096,9 +2861,10 @@ class TestFields(TestCase):
 
 
 class DealTestCase(TestCase):
-
     def setUp(self):
-        self.user_1 = User.objects.create(name="User1", email="someemail1@mailinator.com")
+        self.user_1 = User.objects.create(
+            name="User1", email="someemail1@mailinator.com"
+        )
         self.deal = Deal.objects.create(title="Some Deal")
         self.user_1.upload()
         self.deal.upload()

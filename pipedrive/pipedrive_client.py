@@ -4,7 +4,7 @@
 import json
 import sys
 
-if (sys.version_info > (3, 0)):
+if sys.version_info > (3, 0):
     import urllib.parse as urlparse
 else:
     import urlparse
@@ -15,20 +15,14 @@ from django.conf import settings
 
 
 class PipedriveAPIClient(object):
-
     def __init__(
-        self,
-        api_key=None,
-        email=None,
-        password=None,
-        api_base_url=None,
-        endpoint=None,
+        self, api_key=None, email=None, password=None, api_base_url=None, endpoint=None
     ):
 
         self.endpoint = endpoint
 
         if api_base_url is None:
-            api_base_url = 'https://api.pipedrive.com/v1/'
+            api_base_url = "https://api.pipedrive.com/v1/"
         self.api_base_url = api_base_url
 
         if api_key is None:
@@ -41,15 +35,15 @@ class PipedriveAPIClient(object):
     def call_api(self, method, endpoint, payload):
         url = urlparse.urljoin(self.api_base_url, endpoint)
 
-        if method == 'POST':
+        if method == "POST":
             response = requests.post(url, data=payload)
-        elif method == 'delete':
+        elif method == "delete":
             response = requests.delete(url)
-        elif method == 'put':
+        elif method == "put":
             response = requests.put(url, data=payload)
         else:
             if self.api_key:
-                payload.update({'api_token': self.api_key})
+                payload.update({"api_token": self.api_key})
             response = requests.get(url, params=payload)
 
         content = json.loads(response.content)
@@ -60,16 +54,16 @@ class PipedriveAPIClient(object):
         if payload is None:
             payload = {}
 
-        return self.call_api('get', endpoint, payload)
+        return self.call_api("get", endpoint, payload)
 
     def post(self, endpoint, payload):
-        return self.call_api('POST', endpoint, payload)
+        return self.call_api("POST", endpoint, payload)
 
     def put(self, endpoint, payload):
-        return self.call_api('put', endpoint, payload)
+        return self.call_api("put", endpoint, payload)
 
     def delete(self, endpoint):
-        return self.call_api('delete', endpoint, payload=None)
+        return self.call_api("delete", endpoint, payload=None)
 
     # put methods
     def update(self, element_id, **kwargs):
@@ -78,7 +72,7 @@ class PipedriveAPIClient(object):
         using /endpoint/:id as url
         """
 
-        endpoint = str(self.endpoint) + '/' + str(element_id)
+        endpoint = str(self.endpoint) + "/" + str(element_id)
 
         restpoint = self.restify(endpoint)
 
@@ -122,11 +116,7 @@ class PipedriveAPIClient(object):
         get method on single items
         """
 
-        restful = (
-            str(endpoint) +
-            '/' +
-            str(pk)
-        )
+        restful = str(endpoint) + "/" + str(pk)
 
         return restful
 
@@ -136,17 +126,13 @@ class PipedriveAPIClient(object):
         post method
         """
 
-        restful = (
-            str(endpoint) +
-            '?api_token=' +
-            str(self.api_key)
-        )
+        restful = str(endpoint) + "?api_token=" + str(self.api_key)
 
         return restful
 
     def delete_instance(self, element_id):
 
-        endpoint = str(self.endpoint) + '/' + str(element_id)
+        endpoint = str(self.endpoint) + "/" + str(element_id)
 
         restpoint = self.restify(endpoint)
 

@@ -26,13 +26,13 @@ def index(request):
     enable_hstore()
 
     try:
-        if request.method == 'POST':
+        if request.method == "POST":
 
             json_data = json.loads(request.body)
-            meta = json_data[u'meta']
+            meta = json_data[u"meta"]
 
             # API v1
-            if meta[u'v'] == 1:
+            if meta[u"v"] == 1:
                 return handle_v1(json_data)
             else:
                 raise NonImplementedVersionException()
@@ -52,36 +52,37 @@ def enable_hstore():
 
     from django.db import connection
     from psycopg2.extras import register_hstore
+
     # And then in `def handle`
     register_hstore(connection.cursor(), globally=True, unicode=True)
 
 
 def handle_v1(json_data):
 
-    meta = json_data[u'meta']
+    meta = json_data[u"meta"]
 
-    object_type = meta[u'object']
-    action = meta[u'action']
-    external_id = meta[u'id']
+    object_type = meta[u"object"]
+    action = meta[u"action"]
+    external_id = meta[u"id"]
 
     model = map_models(object_type)
 
     # previous = json_data[u'previous']
-    current = json_data[u'current']
+    current = json_data[u"current"]
 
     try:
 
-        if action == 'updated':
+        if action == "updated":
 
             instance = model.objects.get(external_id=external_id)
 
             model.update_or_create_entity_from_api_post(current)
 
-        if action == 'added':
+        if action == "added":
 
             model.update_or_create_entity_from_api_post(current)
 
-        if action == 'deleted':
+        if action == "deleted":
 
             # The corresponding instance is found for delete
             instance = model.objects.get(external_id=external_id)
@@ -90,7 +91,7 @@ def handle_v1(json_data):
             instance.deleted = True
             instance.save()
 
-        if action == 'merged':
+        if action == "merged":
 
             # The corresponding instance is found for update
             instance = model.objects.get(external_id=external_id)
@@ -115,18 +116,22 @@ def handle_v1(json_data):
 
 def handle_does_not_exist(e, model, external_id, json_data):
     logging.warning(e.message)
-    logging.warning("Forcing sync from pipedrive for model: '{}' external_id: '{}'".format(model.__name__, external_id))
+    logging.warning(
+        "Forcing sync from pipedrive for model: '{}' external_id: '{}'".format(
+            model.__name__, external_id
+        )
+    )
     model.sync_one(external_id)
     handle_v1(json_data)
 
 
 def map_models(object_type):
     return {
-        'deal': Deal,
-        'person': Person,
-        'organization': Organization,
-        'note': Note,
-        'activity': Activity,
-        'pipeline': Pipeline,
-        'stage': Stage
+        "deal": Deal,
+        "person": Person,
+        "organization": Organization,
+        "note": Note,
+        "activity": Activity,
+        "pipeline": Pipeline,
+        "stage": Stage,
     }[object_type]
