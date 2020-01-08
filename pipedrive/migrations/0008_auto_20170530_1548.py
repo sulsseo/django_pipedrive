@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='deal',
             name='stage',
-            field=models.ForeignKey(to_field=b'external_id', blank=True, to='pipedrive.Stage', null=True, on_delete=models.PROTECT),
+            field=models.ForeignKey(to_field='external_id', blank=True, to='pipedrive.Stage', null=True, on_delete=models.PROTECT),
         ),
         migrations.AddField(
             model_name='deal',

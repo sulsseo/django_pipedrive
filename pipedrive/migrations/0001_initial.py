@@ -98,7 +98,7 @@ class Migration(migrations.Migration):
                 ('add_time', models.DateTimeField(null=True, blank=True)),
                 ('update_time', models.DateTimeField(null=True, blank=True)),
                 ('active_flag', models.NullBooleanField()),
-                ('deal', models.ForeignKey(to_field=b'external_id', blank=True, to='pipedrive.Deal', null=True, on_delete=models.PROTECT)),
+                ('deal', models.ForeignKey(to_field='external_id', blank=True, to='pipedrive.Deal', null=True, on_delete=models.PROTECT)),
             ],
             options={
                 'abstract': False,
@@ -179,7 +179,7 @@ class Migration(migrations.Migration):
                 ('email_messages_count', models.IntegerField(null=True)),
                 ('last_incoming_mail_time', models.DateTimeField(null=True, blank=True)),
                 ('last_outgoing_mail_time', models.DateTimeField(null=True, blank=True)),
-                ('org', models.ForeignKey(to_field=b'external_id', blank=True, to='pipedrive.Organization', null=True, on_delete=models.PROTECT)),
+                ('org', models.ForeignKey(to_field='external_id', blank=True, to='pipedrive.Organization', null=True, on_delete=models.PROTECT)),
             ],
             options={
                 'abstract': False,
@@ -231,7 +231,7 @@ class Migration(migrations.Migration):
                 ('active_flag', models.NullBooleanField()),
                 ('update_time', models.DateTimeField(null=True, blank=True)),
                 ('add_time', models.DateTimeField(null=True, blank=True)),
-                ('pipeline', models.ForeignKey(to_field=b'external_id', blank=True, to='pipedrive.Pipeline', null=True, on_delete=models.PROTECT)),
+                ('pipeline', models.ForeignKey(to_field='external_id', blank=True, to='pipedrive.Pipeline', null=True, on_delete=models.PROTECT)),
             ],
             options={
                 'abstract': False,
@@ -259,71 +259,71 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='person',
             name='owner',
-            field=models.ForeignKey(to_field=b'external_id', blank=True, to='pipedrive.User', null=True, on_delete=models.PROTECT),
+            field=models.ForeignKey(to_field='external_id', blank=True, to='pipedrive.User', null=True, on_delete=models.PROTECT),
         ),
         migrations.AddField(
             model_name='organization',
             name='owner',
-            field=models.ForeignKey(to_field=b'external_id', blank=True, to='pipedrive.User', null=True, on_delete=models.PROTECT),
+            field=models.ForeignKey(to_field='external_id', blank=True, to='pipedrive.User', null=True, on_delete=models.PROTECT),
         ),
         migrations.AddField(
             model_name='note',
             name='org',
-            field=models.ForeignKey(to_field=b'external_id', blank=True, to='pipedrive.Organization', null=True, on_delete=models.PROTECT),
+            field=models.ForeignKey(to_field='external_id', blank=True, to='pipedrive.Organization', null=True, on_delete=models.PROTECT),
         ),
         migrations.AddField(
             model_name='note',
             name='person',
-            field=models.ForeignKey(to_field=b'external_id', blank=True, to='pipedrive.Person', null=True, on_delete=models.PROTECT),
+            field=models.ForeignKey(to_field='external_id', blank=True, to='pipedrive.Person', null=True, on_delete=models.PROTECT),
         ),
         migrations.AddField(
             model_name='note',
             name='user',
-            field=models.ForeignKey(to_field=b'external_id', blank=True, to='pipedrive.User', null=True, on_delete=models.PROTECT),
+            field=models.ForeignKey(to_field='external_id', blank=True, to='pipedrive.User', null=True, on_delete=models.PROTECT),
         ),
         migrations.AddField(
             model_name='deal',
             name='creator_user',
-            field=models.ForeignKey(related_name='creator', to_field=b'external_id', blank=True, to='pipedrive.User', null=True, on_delete=models.PROTECT),
+            field=models.ForeignKey(related_name='creator', to_field='external_id', blank=True, to='pipedrive.User', null=True, on_delete=models.PROTECT),
         ),
         migrations.AddField(
             model_name='deal',
             name='org',
-            field=models.ForeignKey(to_field=b'external_id', blank=True, to='pipedrive.Organization', null=True, on_delete=models.PROTECT),
+            field=models.ForeignKey(to_field='external_id', blank=True, to='pipedrive.Organization', null=True, on_delete=models.PROTECT),
         ),
         migrations.AddField(
             model_name='deal',
             name='person',
-            field=models.ForeignKey(to_field=b'external_id', blank=True, to='pipedrive.Person', null=True, on_delete=models.PROTECT),
+            field=models.ForeignKey(to_field='external_id', blank=True, to='pipedrive.Person', null=True, on_delete=models.PROTECT),
         ),
         migrations.AddField(
             model_name='deal',
             name='pipeline',
-            field=models.ForeignKey(to_field=b'external_id', blank=True, to='pipedrive.Pipeline', null=True, on_delete=models.PROTECT),
+            field=models.ForeignKey(to_field='external_id', blank=True, to='pipedrive.Pipeline', null=True, on_delete=models.PROTECT),
         ),
         migrations.AddField(
             model_name='deal',
             name='user',
-            field=models.ForeignKey(related_name='user', to_field=b'external_id', blank=True, to='pipedrive.User', null=True, on_delete=models.PROTECT),
+            field=models.ForeignKey(related_name='user', to_field='external_id', blank=True, to='pipedrive.User', null=True, on_delete=models.PROTECT),
         ),
         migrations.AddField(
             model_name='activity',
             name='deal',
-            field=models.ForeignKey(to_field=b'external_id', blank=True, to='pipedrive.Deal', null=True, on_delete=models.PROTECT),
+            field=models.ForeignKey(to_field='external_id', blank=True, to='pipedrive.Deal', null=True, on_delete=models.PROTECT),
         ),
         migrations.AddField(
             model_name='activity',
             name='org',
-            field=models.ForeignKey(to_field=b'external_id', blank=True, to='pipedrive.Organization', null=True, on_delete=models.PROTECT),
+            field=models.ForeignKey(to_field='external_id', blank=True, to='pipedrive.Organization', null=True, on_delete=models.PROTECT),
         ),
         migrations.AddField(
             model_name='activity',
             name='person',
-            field=models.ForeignKey(to_field=b'external_id', blank=True, to='pipedrive.Person', null=True, on_delete=models.PROTECT),
+            field=models.ForeignKey(to_field='external_id', blank=True, to='pipedrive.Person', null=True, on_delete=models.PROTECT),
         ),
         migrations.AddField(
             model_name='activity',
             name='user',
-            field=models.ForeignKey(to_field=b'external_id', blank=True, to='pipedrive.User', null=True, on_delete=models.PROTECT),
+            field=models.ForeignKey(to_field='external_id', blank=True, to='pipedrive.User', null=True, on_delete=models.PROTECT),
         ),
     ]
