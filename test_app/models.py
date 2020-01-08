@@ -16,4 +16,6 @@ class PipedriveModelObserver(models.Model):
 
         PipedriveModelObserver.count = PipedriveModelObserver.count + 1
 
-        logging.debug(u"PipedriveModelObserver.count: {}".format(PipedriveModelObserver.count))
+        logging.debug(
+            u"PipedriveModelObserver.count: {}".format(PipedriveModelObserver.count)
+        )
