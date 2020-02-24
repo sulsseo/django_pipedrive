@@ -319,7 +319,7 @@ class PipedriveModel(BaseModel):
 
         for key in el.iterkeys():
             if key not in table_fields:
-                additional_fields[key] = unicode(el[key])
+                additional_fields[key] = str(el[key])
 
         entity, created = cls.update_or_create_entity_with_additional_fields(
             el, additional_fields
